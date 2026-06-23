@@ -181,29 +181,35 @@ template $OpensprogskoleMainView: Adw.Bin {
             }
           }
 
-          content: Stack content_stack {
-            StackPage {
-              name: "overview";
+          content: Adw.NavigationView content_nav {
+            Adw.NavigationPage {
+              tag: "overview";
+              title: _("Overview");
               child: $OpensprogskoleOverviewPage overview {};
             }
 
-            StackPage {
-              name: "schedule";
+            Adw.NavigationPage {
+              tag: "schedule";
+              title: _("Schedule");
               child: $OpensprogskoleScheduleView schedule {};
             }
 
-            StackPage {
-              name: "absence";
+            Adw.NavigationPage {
+              tag: "absence";
+              title: _("Absence");
               child: $OpensprogskoleAbsencePage absence {};
             }
 
-            StackPage {
-              name: "profile";
+            Adw.NavigationPage {
+              tag: "profile";
+              title: _("Your information");
               child: $OpensprogskoleProfilePage profile {};
             }
 
-            StackPage {
-              name: "grades";
+            Adw.NavigationPage {
+              tag: "grades";
+              title: _("Grades");
+
               child: Adw.StatusPage {
                 icon-name: "starred-symbolic";
                 title: _("Grades");
@@ -211,8 +217,10 @@ template $OpensprogskoleMainView: Adw.Bin {
               };
             }
 
-            StackPage {
-              name: "report";
+            Adw.NavigationPage {
+              tag: "report";
+              title: _("Report absence");
+
               child: Adw.StatusPage {
                 icon-name: "mail-send-symbolic";
                 title: _("Report absence");
@@ -220,8 +228,10 @@ template $OpensprogskoleMainView: Adw.Bin {
               };
             }
 
-            StackPage {
-              name: "news";
+            Adw.NavigationPage {
+              tag: "news";
+              title: _("News");
+
               child: Adw.StatusPage {
                 icon-name: "newspaper";
                 title: _("News");
@@ -229,8 +239,10 @@ template $OpensprogskoleMainView: Adw.Bin {
               };
             }
 
-            StackPage {
-              name: "homework";
+            Adw.NavigationPage {
+              tag: "homework";
+              title: _("Homework");
+
               child: Adw.StatusPage {
                 icon-name: "object-select-symbolic";
                 title: _("Homework");
@@ -238,8 +250,10 @@ template $OpensprogskoleMainView: Adw.Bin {
               };
             }
 
-            StackPage {
-              name: "links";
+            Adw.NavigationPage {
+              tag: "links";
+              title: _("Links");
+
               child: Adw.StatusPage {
                 icon-name: "web-browser-symbolic";
                 title: _("Links");

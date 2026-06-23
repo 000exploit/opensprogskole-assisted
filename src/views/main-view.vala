@@ -35,7 +35,7 @@ namespace Opensprogskole {
         [GtkChild] private unowned Gtk.ListBox nav_list;
         [GtkChild] private unowned Gtk.ListBox more_list;
         [GtkChild] private unowned Adw.NavigationPage content_page;
-        [GtkChild] private unowned Gtk.Stack content_stack;
+        [GtkChild] private unowned Adw.NavigationView content_nav;
         [GtkChild] private unowned Button profile_button;
         [GtkChild] private unowned Adw.Avatar profile_avatar;
         [GtkChild] private unowned Label profile_name;
@@ -62,31 +62,17 @@ namespace Opensprogskole {
             add_nav (more_list, "object-select-symbolic", _("Homework"), "homework");
             add_nav (more_list, "web-browser-symbolic", _("Links"), "links");
 
-            nav_list.row_activated.connect ((row) => {
-                more_list.unselect_all ();
-                activate_row (row);
-            });
-            more_list.row_activated.connect ((row) => {
-                nav_list.unselect_all ();
-                activate_row (row);
-            });
-            profile_button.clicked.connect (() => {
-                nav_list.unselect_all ();
-                more_list.unselect_all ();
-                select_page ("profile", _("Your information"), true);
-            });
-            overview.report_absence_requested.connect (() => {
-                select_page ("absence", _("Absence"), true);
-            });
-            overview.open_schedule.connect (() => {
-                select_page ("schedule", _("Schedule"), true);
-            });
-            overview.open_grades.connect (() => {
-                select_page ("grades", _("Grades"), true);
-            });
+            nav_list.row_activated.connect ((row) => navigate (page_of[row]));
+            more_list.row_activated.connect ((row) => navigate (page_of[row]));
+            profile_button.clicked.connect (() => navigate ("profile"));
+            overview.report_absence_requested.connect (() => navigate ("absence"));
+            overview.open_schedule.connect (() => navigate ("schedule"));
+            overview.open_grades.connect (() => navigate ("grades"));
 
-            // Start on Overview.
-            nav_list.select_row (nav_list.get_row_at_index (0));
+            // The sidebar selection always follows the actually-visible page, so
+            // navigating from anywhere (sidebar, buttons) keeps them in sync.
+            content_nav.notify["visible-page"].connect (sync_to_visible_page);
+            sync_to_visible_page ();
         }
 
         public void bind (Session session) {
@@ -120,16 +106,39 @@ namespace Opensprogskole {
             list.append (row);
         }
 
-        private void activate_row (Gtk.ListBoxRow row) {
-            select_page (page_of[row], title_of[row], split.collapsed);
-        }
-
-        private void select_page (string page, string title, bool show_content) {
-            content_stack.visible_child_name = page;
-            content_page.title = title;
-            if (show_content) {
+        /* Switch the visible section. Replaces the navigation stack (flat
+         * top-level navigation) and reveals the content pane when collapsed. */
+        private void navigate (string tag) {
+            content_nav.replace_with_tags ({ tag });
+            if (split.collapsed) {
                 split.show_content = true;
             }
+        }
+
+        /* Derive the header title and the sidebar highlight from whatever page
+         * is actually visible — the single source of truth. */
+        private void sync_to_visible_page () {
+            var page = content_nav.visible_page;
+            if (page == null) {
+                return;
+            }
+            content_page.title = page.title;
+            select_row_for_tag (nav_list, page.tag);
+            select_row_for_tag (more_list, page.tag);
+        }
+
+        private void select_row_for_tag (Gtk.ListBox list, string tag) {
+            for (int i = 0; ; i++) {
+                var row = list.get_row_at_index (i);
+                if (row == null) {
+                    break;
+                }
+                if (page_of[row] == tag) {
+                    list.select_row (row);
+                    return;
+                }
+            }
+            list.unselect_all ();
         }
     }
 }

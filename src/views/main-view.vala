@@ -78,6 +78,12 @@ namespace Opensprogskole {
             overview.report_absence_requested.connect (() => {
                 select_page ("absence", _("Absence"), true);
             });
+            overview.open_schedule.connect (() => {
+                select_page ("schedule", _("Schedule"), true);
+            });
+            overview.open_grades.connect (() => {
+                select_page ("grades", _("Grades"), true);
+            });
 
             // Start on Overview.
             nav_list.select_row (nav_list.get_row_at_index (0));

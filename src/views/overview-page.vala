@@ -37,13 +37,21 @@ namespace Opensprogskole {
         [GtkChild] private unowned Label attendance_caption;
         [GtkChild] private unowned Grades grades;
         [GtkChild] private unowned Button report_button;
+        [GtkChild] private unowned Button report_button_mobile;
+        [GtkChild] private unowned Button view_schedule_button;
+        [GtkChild] private unowned Button all_grades_button;
 
         public signal void report_absence_requested ();
+        public signal void open_schedule ();
+        public signal void open_grades ();
 
         private Session? session = null;
 
         construct {
             report_button.clicked.connect (() => report_absence_requested ());
+            report_button_mobile.clicked.connect (() => report_absence_requested ());
+            view_schedule_button.clicked.connect (() => open_schedule ());
+            all_grades_button.clicked.connect (() => open_grades ());
             today_lessons.lesson_activated.connect ((item) => {
                 new LessonDialog (item).present (this);
             });

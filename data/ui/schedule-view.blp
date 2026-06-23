@@ -50,19 +50,24 @@ template $OpensprogskoleScheduleView: Adw.Bin {
         StackPage {
           name: "month";
 
+          // The whole month view scrolls as one page, so the calendar + day
+          // panel never overflow the window however small it gets. Each card
+          // sizes to its own content (no internal scroll, no vexpand), and both
+          // are valign:start so selecting a day grows only the day panel — the
+          // calendar keeps a constant size.
           child: ScrolledWindow {
-            hscrollbar-policy: never;
             vexpand: true;
+            hscrollbar-policy: never;
 
             Box month_box {
               spacing: 18;
-              margin-start: 12;
-              margin-end: 12;
+              margin-start: 8;
+              margin-end: 8;
               margin-bottom: 12;
 
               Box {
-                hexpand: true;
                 valign: start;
+                hexpand: true;
 
                 styles [
                   "card",
@@ -72,14 +77,26 @@ template $OpensprogskoleScheduleView: Adw.Bin {
                   hexpand: true;
                   margin-top: 16;
                   margin-bottom: 16;
-                  margin-start: 16;
-                  margin-end: 16;
+                  margin-start: 10;
+                  margin-end: 10;
                 }
               }
 
-              $OpensprogskoleDayLessons day_lessons {
-                width-request: 280;
+              Box {
                 valign: start;
+                width-request: 260;
+
+                styles [
+                  "card",
+                ]
+
+                $OpensprogskoleDayLessons day_lessons {
+                  hexpand: true;
+                  margin-top: 12;
+                  margin-bottom: 12;
+                  margin-start: 12;
+                  margin-end: 12;
+                }
               }
             }
           };
@@ -94,7 +111,9 @@ template $OpensprogskoleScheduleView: Adw.Bin {
     };
 
     Adw.Breakpoint {
-      condition ("max-width: 560sp")
+      // Stack vertically until the content area can fit calendar + day panel
+      // side by side; below that they stack and the page scroll handles height.
+      condition ("max-width: 700sp")
 
       setters {
         month_box.orientation: vertical;

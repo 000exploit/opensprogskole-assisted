@@ -43,7 +43,9 @@ template $OpensprogskoleCalendar: Adw.Bin {
       hexpand: true;
       column-homogeneous: true;
       row-spacing: 6;
-      column-spacing: 6;
+      // Tight column spacing so a full 7-column month fits the 360 px minimum
+      // window without overflowing.
+      column-spacing: 2;
     }
   };
 }

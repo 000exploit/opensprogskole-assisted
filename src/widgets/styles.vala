@@ -47,9 +47,11 @@ namespace Opensprogskole {
         padding: 4px 10px;
     }
 
-    /* Calendar — day buttons */
+    /* Calendar — day buttons. The min-height reserves room for the optional
+     * lesson marker row, so cells with and without a marker are the same height
+     * and the calendar's overall height stays constant from month to month. */
     .calendar-cell {
-        min-height: 52px;
+        min-height: 58px;
         padding: 5px 7px;
         border-radius: 7px;
     }

@@ -25,30 +25,24 @@ template $OpensprogskoleScheduleView: Adw.Bin {
           ]
         }
 
-        Box {
+        Adw.InlineViewSwitcher {
           valign: center;
+          homogeneous: true;
+          stack: view_stack;
 
           styles [
-            "linked",
+            "round",
           ]
-
-          ToggleButton month_toggle {
-            label: _("Month");
-            active: true;
-          }
-
-          ToggleButton agenda_toggle {
-            label: _("Agenda");
-            group: month_toggle;
-          }
         }
       }
 
-      Stack view_stack {
+      Adw.ViewStack view_stack {
         vexpand: true;
+        enable-transitions: true;
 
-        StackPage {
+        Adw.ViewStackPage {
           name: "month";
+          title: _("Month");
 
           // The whole month view scrolls as one page, so the calendar + day
           // panel never overflow the window however small it gets. Each card
@@ -102,8 +96,9 @@ template $OpensprogskoleScheduleView: Adw.Bin {
           };
         }
 
-        StackPage {
+        Adw.ViewStackPage {
           name: "agenda";
+          title: _("Agenda");
 
           child: $OpensprogskoleAgenda agenda {};
         }

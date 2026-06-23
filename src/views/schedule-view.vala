@@ -38,10 +38,6 @@ namespace Opensprogskole {
         private unowned DayLessons day_lessons;
         [GtkChild]
         private unowned Agenda agenda;
-        [GtkChild]
-        private unowned Gtk.Stack view_stack;
-        [GtkChild]
-        private unowned Gtk.ToggleButton agenda_toggle;
 
         // Set via use_store (); starts empty so the widget is usable standalone.
         private TimetableStore store = new TimetableStore ();
@@ -53,10 +49,6 @@ namespace Opensprogskole {
             calendar.month_changed.connect (on_month_changed);
             day_lessons.lesson_activated.connect (open_lesson);
             agenda.lesson_activated.connect (open_lesson);
-            agenda_toggle.toggled.connect (() => {
-                view_stack.visible_child_name =
-                    agenda_toggle.active ? "agenda" : "month";
-            });
 
             store.changed.connect (on_store_changed);
         }

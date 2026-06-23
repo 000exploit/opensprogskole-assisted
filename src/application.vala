@@ -31,6 +31,7 @@ public class Opensprogskole.Application : Adw.Application {
         ActionEntry[] action_entries = {
             { "about", this.on_about_action },
             { "preferences", this.on_preferences_action },
+            { "logout", this.on_logout_action },
             { "quit", this.quit }
         };
         this.add_action_entries (action_entries, this);
@@ -60,5 +61,12 @@ public class Opensprogskole.Application : Adw.Application {
 
     private void on_preferences_action () {
         message ("app.preferences action activated");
+    }
+
+    private void on_logout_action () {
+        var win = this.active_window as Opensprogskole.Window;
+        if (win != null) {
+            win.logout ();
+        }
     }
 }

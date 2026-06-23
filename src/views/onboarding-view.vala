@@ -34,13 +34,15 @@ namespace Opensprogskole {
         [GtkChild] private unowned Adw.ComboRow school_row;
         [GtkChild] private unowned Adw.EntryRow username_row;
         [GtkChild] private unowned Adw.PasswordEntryRow password_row;
+        [GtkChild] private unowned Adw.SwitchRow save_password_row;
         [GtkChild] private unowned Adw.Banner error_banner;
         [GtkChild] private unowned Adw.Spinner spinner;
         [GtkChild] private unowned Button login_button;
         [GtkChild] private unowned Button continue_button;
 
         /* The Window handles these. */
-        public signal void authenticate_request (School school, string username, string password);
+        public signal void authenticate_request (School school, string username,
+                                                 string password, bool save_password);
         public signal void finished ();
 
         private GLib.GenericArray<School> schools;
@@ -62,7 +64,8 @@ namespace Opensprogskole {
             error_banner.revealed = false;
             uint idx = school_row.selected;
             var school = idx < schools.length ? schools[idx] : Schools.spc_midt ();
-            authenticate_request (school, username_row.text, password_row.text);
+            authenticate_request (school, username_row.text, password_row.text,
+                                  save_password_row.active);
         }
 
         /* Called by the Window while authentication is in flight. */
@@ -89,6 +92,13 @@ namespace Opensprogskole {
         public void prefill (string username) {
             username_row.text = username;
             nav.push_by_tag ("login");
+        }
+
+        /* Return to the hello page after a log out. */
+        public void reset () {
+            password_row.text = "";
+            error_banner.revealed = false;
+            nav.pop_to_tag ("hello");
         }
     }
 }

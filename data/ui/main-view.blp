@@ -98,48 +98,68 @@ template $OpensprogskoleMainView: Adw.Bin {
 
             Separator {}
 
-            Button profile_button {
-              styles [
-                "flat",
-              ]
+            // Bottom bar: the whole section opens "Your information"; the
+            // trailing button opens the Edit/Log out menu (Tuba-style).
+            Box {
+              spacing: 4;
 
-              child: Box {
-                spacing: 10;
-                margin-top: 6;
-                margin-bottom: 6;
-                margin-start: 6;
+              Button profile_button {
+                hexpand: true;
+
+                styles [
+                  "flat",
+                ]
+
+                child: Box {
+                  spacing: 10;
+                  margin-top: 6;
+                  margin-bottom: 6;
+                  margin-start: 6;
+                  margin-end: 6;
+
+                  Adw.Avatar profile_avatar {
+                    size: 32;
+                    show-initials: true;
+                  }
+
+                  Box {
+                    orientation: vertical;
+                    valign: center;
+                    hexpand: true;
+
+                    Label profile_name {
+                      halign: start;
+                      ellipsize: end;
+
+                      styles [
+                        "heading",
+                      ]
+                    }
+
+                    Label {
+                      label: _("Student");
+                      halign: start;
+
+                      styles [
+                        "caption",
+                        "dim-label",
+                      ]
+                    }
+                  }
+                };
+              }
+
+              MenuButton {
+                valign: center;
                 margin-end: 6;
+                icon-name: "view-more-horizontal-symbolic";
+                tooltip-text: _("Account menu");
+                menu-model: profile_menu;
 
-                Adw.Avatar profile_avatar {
-                  size: 32;
-                  show-initials: true;
-                }
-
-                Box {
-                  orientation: vertical;
-                  valign: center;
-                  hexpand: true;
-
-                  Label profile_name {
-                    halign: start;
-                    ellipsize: end;
-
-                    styles [
-                      "heading",
-                    ]
-                  }
-
-                  Label {
-                    label: _("Student");
-                    halign: start;
-
-                    styles [
-                      "caption",
-                      "dim-label",
-                    ]
-                  }
-                }
-              };
+                styles [
+                  "flat",
+                ]
+              }
             }
           };
         };
@@ -150,7 +170,15 @@ template $OpensprogskoleMainView: Adw.Bin {
 
         child: Adw.ToolbarView {
           [top]
-          Adw.HeaderBar {}
+          Adw.HeaderBar {
+            [end]
+            MenuButton {
+              primary: true;
+              icon-name: "open-menu-symbolic";
+              tooltip-text: _("Main Menu");
+              menu-model: primary_menu;
+            }
+          }
 
           content: Stack content_stack {
             StackPage {
@@ -230,4 +258,38 @@ template $OpensprogskoleMainView: Adw.Bin {
       }
     }
   };
+}
+
+menu primary_menu {
+  section {
+    item {
+      label: _("_Log out");
+      action: "app.logout";
+    }
+  }
+
+  section {
+    item {
+      label: _("_About OpenSprogskole");
+      action: "app.about";
+    }
+  }
+}
+
+menu profile_menu {
+  section {
+    // No "app.edit-profile" action exists yet, so this item renders insensitive
+    // ("greyed out") until profile editing is implemented.
+    item {
+      label: _("_Edit information");
+      action: "app.edit-profile";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Log out");
+      action: "app.logout";
+    }
+  }
 }

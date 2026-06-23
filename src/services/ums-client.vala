@@ -40,6 +40,8 @@ namespace Opensprogskole {
 
         public string base_url { get; construct; }   // ".../api"
         public string token { get; set; default = ""; }
+        // Unix seconds the token expires (from the JWT 'exp' claim); 0 = unknown.
+        public int64 token_expires_at { get; set; default = 0; }
 
         public UmsClient (string base_url) {
             Object (base_url: base_url);
@@ -77,6 +79,38 @@ namespace Opensprogskole {
             if (token == "") {
                 throw new UmsError.MALFORMED ("No token in login response");
             }
+            token_expires_at = decode_jwt_exp (token);
+        }
+
+        /* Read the 'exp' (unix seconds) claim from a JWT, or 0 if absent/
+         * unparseable. The login response carries no expiry of its own, so this
+         * is how we learn when the token lapses. */
+        public static int64 decode_jwt_exp (string token) {
+            string[] parts = token.split (".");
+            if (parts.length < 2) {
+                return 0;
+            }
+            string payload = parts[1].replace ("-", "+").replace ("_", "/");
+            switch (payload.length % 4) {
+                case 2: payload += "=="; break;
+                case 3: payload += "="; break;
+                case 1: return 0;   // not valid base64
+            }
+            uint8[] data = GLib.Base64.decode (payload);
+            if (data.length == 0) {
+                return 0;
+            }
+            try {
+                var parser = new Json.Parser ();
+                parser.load_from_data ((string) data, data.length);
+                var root = parser.get_root ();
+                if (root == null || root.get_node_type () != Json.NodeType.OBJECT) {
+                    return 0;
+                }
+                return root.get_object ().get_int_member_with_default ("exp", 0);
+            } catch (GLib.Error e) {
+                return 0;
+            }
         }
 
         /* Authenticated GET returning the parsed JSON root. */
@@ -98,6 +132,18 @@ namespace Opensprogskole {
                 throw new UmsError.MALFORMED ("Empty/invalid JSON for %s".printf (path));
             }
             return root;
+        }
+
+        /* Authenticated POST with no body; the response is ignored. Used for
+         * fire-and-forget endpoints like DeleteToken. */
+        public async void post (string path, string version = "2") throws GLib.Error {
+            var msg = new Soup.Message ("POST", base_url + path);
+            msg.request_headers.append ("X-UMS-AppMaui", "1");
+            msg.request_headers.append ("X-UMS-Version", version);
+            if (token != "") {
+                msg.request_headers.append ("Authorization", "Bearer " + token);
+            }
+            yield session.send_and_read_async (msg, Priority.DEFAULT, null);
         }
 
         /* base64url, used for the UserInfo path segment (username). */

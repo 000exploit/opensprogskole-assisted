@@ -41,11 +41,28 @@ namespace Opensprogskole {
             this.device_id = device_id;
         }
 
+        /* The current Bearer token (after login or resume). */
+        public string token { owned get { return client.token; } }
+
+        /* When the token expires (unix seconds), or 0 if unknown. Set by login. */
+        public int64 token_expires_at { get { return client.token_expires_at; } }
+
         public async bool login (string username, string password) throws GLib.Error {
             yield client.authenticate (username, password,
                                        school.login_type, school.auth_type,
                                        device_name, device_id);
             return true;
+        }
+
+        /* Resume with a previously saved token — no network call. */
+        public void resume (string token) {
+            client.token = token;
+        }
+
+        /* Invalidate the token server-side. Best effort — the caller logs out
+         * locally regardless. */
+        public async void logout () throws GLib.Error {
+            yield client.post ("/Login/DeleteToken");
         }
 
         public async Json.Node? fetch_timetable () throws GLib.Error {

@@ -73,6 +73,12 @@ template $OpensprogskoleOnboardingView: Adw.Bin {
                 Adw.PasswordEntryRow password_row {
                   title: _("Password");
                 }
+
+                Adw.SwitchRow save_password_row {
+                  title: _("Save password");
+                  subtitle: _("Stay signed in without re-entering it");
+                  active: true;
+                }
               }
 
               Box {

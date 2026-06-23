@@ -71,6 +71,8 @@ namespace Opensprogskole {
                 activate_row (row);
             });
             profile_button.clicked.connect (() => {
+                nav_list.unselect_all ();
+                more_list.unselect_all ();
                 select_page ("profile", _("Your information"), true);
             });
             overview.report_absence_requested.connect (() => {

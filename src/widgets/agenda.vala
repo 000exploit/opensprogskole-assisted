@@ -143,8 +143,7 @@ namespace Opensprogskole {
             var dot = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 0) {
                 valign = Gtk.Align.CENTER
             };
-            dot.add_css_class ("lesson-dot");
-            dot.add_css_class (lesson_dot_class (lesson.color));
+            bind_lesson_dot (dot, lesson);
             row.add_prefix (dot);
 
             var time = new Gtk.Label (lesson.time_range) {

@@ -88,6 +88,12 @@ namespace Opensprogskole {
     .lesson-dot-purple { background-color: #9141ac; }
     .lesson-dot-teal   { background-color: #1a9ba4; }
     .lesson-dot-pink   { background-color: #d56199; }
+
+    /* Attendance ("check-in") dot states — override the category colour once
+     * attendance is known. Lime = present, amber = late, dark = absent. */
+    .lesson-dot-present { background-color: #9bd236; }
+    .lesson-dot-late    { background-color: #e5a50a; }
+    .lesson-dot-absent  { background-color: #3d3846; }
     """;
 
     private bool widget_styles_loaded = false;
@@ -115,6 +121,40 @@ namespace Opensprogskole {
         );
 
         widget_styles_loaded = true;
+    }
+
+    /* Turn an empty Box into a lesson dot whose colour tracks the lesson's
+     * attendance: it shows the attendance colour once known, else the category
+     * colour, and updates live if the attendance changes after the row is built
+     * (the absence data arrives after the schedule). The notify handler is
+     * disconnected when the dot is destroyed. */
+    internal void bind_lesson_dot (Gtk.Box dot, TimetableItem lesson) {
+        dot.add_css_class ("lesson-dot");
+        apply_lesson_dot_class (dot, lesson);
+
+        ulong handler = lesson.notify["attendance"].connect (() => {
+            apply_lesson_dot_class (dot, lesson);
+        });
+        dot.destroy.connect (() => lesson.disconnect (handler));
+    }
+
+    private void apply_lesson_dot_class (Gtk.Box dot, TimetableItem lesson) {
+        foreach (string css in dot.get_css_classes ()) {
+            if (css.has_prefix ("lesson-dot-")) {
+                dot.remove_css_class (css);
+            }
+        }
+        dot.add_css_class (attendance_dot_class (lesson));
+    }
+
+    /* Attendance colour class if known, else the category colour class. */
+    internal string attendance_dot_class (TimetableItem lesson) {
+        switch (lesson.attendance) {
+            case AttendanceStatus.PRESENT: return "lesson-dot-present";
+            case AttendanceStatus.LATE:    return "lesson-dot-late";
+            case AttendanceStatus.ABSENT:  return "lesson-dot-absent";
+            default:                       return lesson_dot_class (lesson.color);
+        }
     }
 
     /* Map a backend category colour name (e.g. "Yellow") to the CSS class that

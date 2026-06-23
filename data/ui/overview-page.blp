@@ -257,6 +257,8 @@ template $OpensprogskoleOverviewPage: Adw.Bin {
       setters {
         cards_row.orientation: vertical;
         cards_row.homogeneous: false;
+        // Compact "Up next" rows (start time + room only) to save space.
+        today_lessons.compact: true;
         // Compact attendance: small donut beside the text (mobile).
         attendance_chart_box.orientation: horizontal;
         attendance_chart_box.spacing: 14;

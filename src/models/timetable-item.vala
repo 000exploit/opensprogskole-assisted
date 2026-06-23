@@ -20,6 +20,17 @@
 
 namespace Opensprogskole {
 
+    /* Per-lesson attendance ("check-in") state, shown as the coloured dot in the
+     * lessons list. Filled in after the timetable is loaded, once the absence
+     * data has been fetched and linked (EventId <-> TimetableId). UNKNOWN means
+     * not yet determined — the dot then falls back to the category colour. */
+    public enum AttendanceStatus {
+        UNKNOWN,
+        PRESENT,   // checked in / attended (lime in the official app)
+        LATE,      // attended, but late
+        ABSENT;    // did not attend
+    }
+
     /* One lesson / event in the timetable.
      *
      * This is the *normalized* in-app representation of a single entry of the
@@ -63,8 +74,12 @@ namespace Opensprogskole {
         public DateTime? time_table_real_date { get; set; }
 
         // Per-lesson absence status (UMS "AbsenceStatus"); -1 = none reported.
-        // Used to compute the attendance percentage on the overview.
         public int absence_status { get; set; default = -1; }
+
+        // UI-facing attendance state for the lessons-list dot. Not from the
+        // timetable JSON — set later from the linked absence data. Notifying so
+        // the dots update live after the schedule is already built.
+        public AttendanceStatus attendance { get; set; default = AttendanceStatus.UNKNOWN; }
 
         // --- Computed helpers (normalization) -------------------------------
 

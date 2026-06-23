@@ -1,0 +1,104 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OpensprogskoleScheduleView: Adw.Bin {
+  child: Adw.BreakpointBin {
+    width-request: 300;
+    height-request: 300;
+
+    child: Box {
+      orientation: vertical;
+      spacing: 14;
+
+      Box {
+        margin-top: 12;
+        margin-start: 12;
+        margin-end: 12;
+
+        Label {
+          label: _("Schedule");
+          hexpand: true;
+          halign: start;
+
+          styles [
+            "title-4",
+          ]
+        }
+
+        Box {
+          valign: center;
+
+          styles [
+            "linked",
+          ]
+
+          ToggleButton month_toggle {
+            label: _("Month");
+            active: true;
+          }
+
+          ToggleButton agenda_toggle {
+            label: _("Agenda");
+            group: month_toggle;
+          }
+        }
+      }
+
+      Stack view_stack {
+        vexpand: true;
+
+        StackPage {
+          name: "month";
+
+          child: ScrolledWindow {
+            hscrollbar-policy: never;
+            vexpand: true;
+
+            Box month_box {
+              spacing: 18;
+              margin-start: 12;
+              margin-end: 12;
+              margin-bottom: 12;
+
+              Box {
+                hexpand: true;
+                valign: start;
+
+                styles [
+                  "card",
+                ]
+
+                $OpensprogskoleCalendar calendar {
+                  hexpand: true;
+                  margin-top: 16;
+                  margin-bottom: 16;
+                  margin-start: 16;
+                  margin-end: 16;
+                }
+              }
+
+              $OpensprogskoleDayLessons day_lessons {
+                width-request: 280;
+                valign: start;
+              }
+            }
+          };
+        }
+
+        StackPage {
+          name: "agenda";
+
+          child: $OpensprogskoleAgenda agenda {};
+        }
+      }
+    };
+
+    Adw.Breakpoint {
+      condition ("max-width: 560sp")
+
+      setters {
+        month_box.orientation: vertical;
+      }
+    }
+  };
+}

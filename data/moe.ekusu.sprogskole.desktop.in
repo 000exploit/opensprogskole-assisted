@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=OpenSprogskole
+Exec=opensprogskole
+Icon=moe.ekusu.sprogskole
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=GTK;
+StartupNotify=true
+DBusActivatable=true

@@ -1,0 +1,233 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OpensprogskoleMainView: Adw.Bin {
+  child: Adw.BreakpointBin {
+    width-request: 360;
+    height-request: 400;
+
+    child: Adw.NavigationSplitView split {
+      min-sidebar-width: 240;
+      max-sidebar-width: 300;
+
+      sidebar: Adw.NavigationPage {
+        title: _("OpenSprogskole");
+
+        child: Adw.ToolbarView {
+          [top]
+          Adw.HeaderBar {}
+
+          content: Box {
+            orientation: vertical;
+
+            Box {
+              spacing: 10;
+              margin-top: 6;
+              margin-bottom: 10;
+              margin-start: 12;
+              margin-end: 12;
+
+              Adw.Avatar school_avatar {
+                size: 36;
+                show-initials: true;
+              }
+
+              Box {
+                orientation: vertical;
+                valign: center;
+                hexpand: true;
+
+                Label school_label {
+                  halign: start;
+                  ellipsize: end;
+
+                  styles [
+                    "heading",
+                  ]
+                }
+
+                Label {
+                  label: _("Connected");
+                  halign: start;
+
+                  styles [
+                    "caption",
+                    "dim-label",
+                  ]
+                }
+              }
+            }
+
+            ScrolledWindow {
+              vexpand: true;
+              hscrollbar-policy: never;
+
+              Box {
+                orientation: vertical;
+
+                ListBox nav_list {
+                  selection-mode: single;
+
+                  styles [
+                    "navigation-sidebar",
+                  ]
+                }
+
+                Label {
+                  label: _("More");
+                  halign: start;
+                  margin-top: 8;
+                  margin-start: 16;
+                  margin-bottom: 4;
+
+                  styles [
+                    "caption",
+                    "dim-label",
+                  ]
+                }
+
+                ListBox more_list {
+                  selection-mode: none;
+
+                  styles [
+                    "navigation-sidebar",
+                  ]
+                }
+              }
+            }
+
+            Separator {}
+
+            Button profile_button {
+              styles [
+                "flat",
+              ]
+
+              child: Box {
+                spacing: 10;
+                margin-top: 6;
+                margin-bottom: 6;
+                margin-start: 6;
+                margin-end: 6;
+
+                Adw.Avatar profile_avatar {
+                  size: 32;
+                  show-initials: true;
+                }
+
+                Box {
+                  orientation: vertical;
+                  valign: center;
+                  hexpand: true;
+
+                  Label profile_name {
+                    halign: start;
+                    ellipsize: end;
+
+                    styles [
+                      "heading",
+                    ]
+                  }
+
+                  Label {
+                    label: _("Student");
+                    halign: start;
+
+                    styles [
+                      "caption",
+                      "dim-label",
+                    ]
+                  }
+                }
+              };
+            }
+          };
+        };
+      };
+
+      content: Adw.NavigationPage content_page {
+        title: _("Overview");
+
+        child: Adw.ToolbarView {
+          [top]
+          Adw.HeaderBar {}
+
+          content: Stack content_stack {
+            StackPage {
+              name: "overview";
+              child: $OpensprogskoleOverviewPage overview {};
+            }
+
+            StackPage {
+              name: "schedule";
+              child: $OpensprogskoleScheduleView schedule {};
+            }
+
+            StackPage {
+              name: "absence";
+              child: $OpensprogskoleAbsencePage absence {};
+            }
+
+            StackPage {
+              name: "profile";
+              child: $OpensprogskoleProfilePage profile {};
+            }
+
+            StackPage {
+              name: "grades";
+              child: Adw.StatusPage {
+                icon-name: "starred-symbolic";
+                title: _("Grades");
+                description: _("Coming soon.");
+              };
+            }
+
+            StackPage {
+              name: "report";
+              child: Adw.StatusPage {
+                icon-name: "mail-send-symbolic";
+                title: _("Report absence");
+                description: _("Coming soon.");
+              };
+            }
+
+            StackPage {
+              name: "news";
+              child: Adw.StatusPage {
+                icon-name: "newspaper";
+                title: _("News");
+                description: _("Your school hasn't published any news.");
+              };
+            }
+
+            StackPage {
+              name: "homework";
+              child: Adw.StatusPage {
+                icon-name: "object-select-symbolic";
+                title: _("Homework");
+                description: _("Coming soon.");
+              };
+            }
+
+            StackPage {
+              name: "links";
+              child: Adw.StatusPage {
+                icon-name: "web-browser-symbolic";
+                title: _("Links");
+                description: _("Coming soon.");
+              };
+            }
+          };
+        };
+      };
+    };
+
+    Adw.Breakpoint {
+      condition ("max-width: 700sp")
+
+      setters {
+        split.collapsed: true;
+      }
+    }
+  };
+}

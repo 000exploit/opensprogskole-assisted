@@ -1,0 +1,211 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OpensprogskoleOverviewPage: Adw.Bin {
+  child: Adw.BreakpointBin {
+    width-request: 360;
+    height-request: 360;
+
+    child: ScrolledWindow {
+      hscrollbar-policy: never;
+
+      Adw.Clamp {
+        maximum-size: 900;
+        margin-top: 20;
+        margin-bottom: 24;
+        margin-start: 12;
+        margin-end: 12;
+
+        Box {
+          orientation: vertical;
+          spacing: 18;
+
+          Box {
+            orientation: vertical;
+            spacing: 2;
+
+            Label greeting {
+              halign: start;
+              wrap: true;
+
+              styles [
+                "title-1",
+              ]
+            }
+
+            Label subtitle {
+              halign: start;
+              wrap: true;
+
+              styles [
+                "dim-label",
+              ]
+            }
+          }
+
+          Box cards_row {
+            spacing: 18;
+            homogeneous: true;
+
+            Box {
+              orientation: vertical;
+              spacing: 6;
+              hexpand: true;
+
+              styles [
+                "card",
+              ]
+
+              Label {
+                label: _("Up next today");
+                halign: start;
+                margin-top: 12;
+                margin-start: 12;
+
+                styles [
+                  "heading",
+                ]
+              }
+
+              $OpensprogskoleDayLessons today_lessons {
+                margin-top: 4;
+                margin-bottom: 12;
+                margin-start: 12;
+                margin-end: 12;
+              }
+            }
+
+            Box {
+              orientation: vertical;
+              spacing: 6;
+              hexpand: true;
+
+              styles [
+                "card",
+              ]
+
+              Label {
+                label: _("Attendance");
+                halign: start;
+                margin-top: 12;
+                margin-start: 12;
+
+                styles [
+                  "heading",
+                ]
+              }
+
+              Stack attendance_stack {
+                StackPage {
+                  name: "loading";
+
+                  child: Box {
+                    orientation: vertical;
+                    spacing: 8;
+                    height-request: 160;
+
+                    Adw.Spinner {
+                      width-request: 28;
+                      height-request: 28;
+                      halign: center;
+                      valign: center;
+                      vexpand: true;
+                    }
+
+                    Label {
+                      label: _("Loading attendance…");
+                      margin-bottom: 12;
+
+                      styles [
+                        "dim-label",
+                        "caption",
+                      ]
+                    }
+                  };
+                }
+
+                StackPage {
+                  name: "chart";
+
+                  child: Box {
+                    orientation: vertical;
+                    spacing: 6;
+
+                    $OpensprogskoleChart chart {
+                      height-request: 160;
+                      margin-start: 12;
+                      margin-end: 12;
+                    }
+
+                    Label attendance_caption {
+                      margin-bottom: 12;
+                      wrap: true;
+
+                      styles [
+                        "dim-label",
+                        "caption",
+                      ]
+                    }
+                  };
+                }
+              }
+            }
+          }
+
+          Box {
+            orientation: vertical;
+            spacing: 8;
+
+            Label {
+              label: _("Recent grades");
+              halign: start;
+
+              styles [
+                "title-4",
+              ]
+            }
+
+            $OpensprogskoleGrades grades {}
+          }
+
+          Button report_button {
+            label: _("Report absence");
+            halign: start;
+
+            styles [
+              "pill",
+            ]
+          }
+
+          Box {
+            orientation: vertical;
+            height-request: 240;
+
+            styles [
+              "card",
+            ]
+
+            Adw.StatusPage {
+              icon-name: "network-wireless-symbolic";
+              title: _("No news right now");
+              description: _("Your school hasn't published any news.");
+
+              styles [
+                "compact",
+              ]
+            }
+          }
+        }
+      }
+    };
+
+    Adw.Breakpoint {
+      condition ("max-width: 620sp")
+
+      setters {
+        cards_row.orientation: vertical;
+        cards_row.homogeneous: false;
+      }
+    }
+  };
+}

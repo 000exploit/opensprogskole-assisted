@@ -1,0 +1,8 @@
+# List of source files containing translatable strings.
+# Please keep this file sorted alphabetically.
+data/moe.ekusu.sprogskole.desktop.in
+data/moe.ekusu.sprogskole.metainfo.xml.in
+data/moe.ekusu.sprogskole.gschema.xml
+src/main.vala
+src/window.vala
+src/window.blp

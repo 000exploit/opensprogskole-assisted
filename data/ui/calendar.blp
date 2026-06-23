@@ -1,0 +1,49 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OpensprogskoleCalendar: Adw.Bin {
+  child: Box {
+    orientation: vertical;
+    spacing: 12;
+
+    Box {
+      spacing: 6;
+
+      Label month_label {
+        hexpand: true;
+        halign: start;
+
+        styles [
+          "title-2",
+        ]
+      }
+
+      Button prev_button {
+        icon-name: "pan-start-symbolic";
+        tooltip-text: _("Previous month");
+
+        styles [
+          "flat",
+          "circular",
+        ]
+      }
+
+      Button next_button {
+        icon-name: "pan-end-symbolic";
+        tooltip-text: _("Next month");
+
+        styles [
+          "flat",
+          "circular",
+        ]
+      }
+    }
+
+    Grid grid {
+      hexpand: true;
+      column-homogeneous: true;
+      row-spacing: 6;
+      column-spacing: 6;
+    }
+  };
+}

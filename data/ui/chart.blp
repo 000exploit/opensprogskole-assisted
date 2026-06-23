@@ -1,0 +1,33 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OpensprogskoleChart: Adw.Bin {
+  child: Overlay {
+    DrawingArea area {
+      hexpand: true;
+      vexpand: true;
+      content-width: 140;
+      content-height: 140;
+    }
+
+    [overlay]
+    Box {
+      orientation: vertical;
+      halign: center;
+      valign: center;
+
+      Label center_label {
+        styles [
+          "title-1",
+        ]
+      }
+
+      Label sub_label {
+        styles [
+          "caption",
+          "dim-label",
+        ]
+      }
+    }
+  };
+}

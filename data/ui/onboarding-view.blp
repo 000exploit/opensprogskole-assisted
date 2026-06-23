@@ -1,0 +1,132 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OpensprogskoleOnboardingView: Adw.Bin {
+  child: Adw.NavigationView nav {
+
+    Adw.NavigationPage {
+      tag: "hello";
+      title: _("Welcome");
+
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {
+          show-title: false;
+        }
+
+        content: Adw.StatusPage {
+          icon-name: "moe.ekusu.sprogskole";
+          title: _("OpenSprogskole");
+          description: _("Your language school — schedule, attendance and grades in one place.");
+
+          child: Button hello_next_button {
+            label: _("Get started");
+            halign: center;
+
+            styles [
+              "suggested-action",
+              "pill",
+            ]
+          };
+        };
+      };
+    }
+
+    Adw.NavigationPage {
+      tag: "login";
+      title: _("Log in");
+
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {}
+
+        content: ScrolledWindow {
+          hscrollbar-policy: never;
+
+          Adw.Clamp {
+            maximum-size: 420;
+            margin-top: 24;
+            margin-bottom: 24;
+            margin-start: 12;
+            margin-end: 12;
+
+            Box {
+              orientation: vertical;
+              spacing: 18;
+              valign: center;
+
+              Adw.Banner error_banner {
+                revealed: false;
+              }
+
+              Adw.PreferencesGroup {
+                title: _("Account");
+
+                Adw.ComboRow school_row {
+                  title: _("School");
+                }
+
+                Adw.EntryRow username_row {
+                  title: _("Username");
+                }
+
+                Adw.PasswordEntryRow password_row {
+                  title: _("Password");
+                }
+              }
+
+              Box {
+                spacing: 10;
+                halign: center;
+
+                Adw.Spinner spinner {
+                  visible: false;
+                  width-request: 24;
+                  height-request: 24;
+                }
+
+                Button login_button {
+                  label: _("Log in");
+
+                  styles [
+                    "suggested-action",
+                    "pill",
+                  ]
+                }
+              }
+            }
+          }
+        };
+      };
+    }
+
+    Adw.NavigationPage {
+      tag: "welcome";
+      title: _("Welcome");
+
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {
+          show-back-button: false;
+          show-title: false;
+        }
+
+        content: Adw.StatusPage {
+          icon-name: "emblem-ok-symbolic";
+          title: _("You're all set");
+          description: _("Your account is connected and your details are saved.");
+
+          child: Button continue_button {
+            label: _("Continue");
+            halign: center;
+
+            styles [
+              "suggested-action",
+              "pill",
+            ]
+          };
+        };
+      };
+    }
+  };
+}

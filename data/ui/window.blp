@@ -1,0 +1,37 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OpensprogskoleWindow: Adw.ApplicationWindow {
+  title: _("OpenSprogskole");
+  default-width: 960;
+  default-height: 760;
+  width-request: 360;
+  height-request: 400;
+
+  content: Stack root_stack {
+    StackPage {
+      name: "onboarding";
+      child: $OpensprogskoleOnboardingView onboarding {};
+    }
+
+    StackPage {
+      name: "loading";
+
+      child: Adw.StatusPage {
+        title: _("Updating information…");
+        description: _("Fetching your latest schedule, grades and absence.");
+
+        child: Adw.Spinner {
+          width-request: 32;
+          height-request: 32;
+          halign: center;
+        };
+      };
+    }
+
+    StackPage {
+      name: "main";
+      child: $OpensprogskoleMainView main_view {};
+    }
+  };
+}

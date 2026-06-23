@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/moe/ekusu/sprogskole">
+    <file preprocess="xml-stripblanks">ui/window.ui</file>
+    <file preprocess="xml-stripblanks">ui/shortcuts-dialog.ui</file>
+    <file preprocess="xml-stripblanks">ui/chart.ui</file>
+    <file preprocess="xml-stripblanks">ui/calendar.ui</file>
+    <file preprocess="xml-stripblanks">ui/calendar-day.ui</file>
+    <file preprocess="xml-stripblanks">ui/grades.ui</file>
+    <file preprocess="xml-stripblanks">ui/day-lessons.ui</file>
+    <file preprocess="xml-stripblanks">ui/agenda.ui</file>
+    <file preprocess="xml-stripblanks">ui/lesson-dialog.ui</file>
+    <file preprocess="xml-stripblanks">ui/schedule-view.ui</file>
+    <file preprocess="xml-stripblanks">ui/onboarding-view.ui</file>
+    <file preprocess="xml-stripblanks">ui/main-view.ui</file>
+    <file preprocess="xml-stripblanks">ui/overview-page.ui</file>
+    <file preprocess="xml-stripblanks">ui/absence-page.ui</file>
+    <file preprocess="xml-stripblanks">ui/profile-page.ui</file>
+  </gresource>
+</gresources>

@@ -1,0 +1,28 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OpensprogskoleLessonDialog: Adw.Dialog {
+  title: _("Lesson");
+  content-width: 460;
+  content-height: 620;
+
+  child: Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
+
+    content: ScrolledWindow {
+      Adw.Clamp {
+        maximum-size: 460;
+        margin-top: 8;
+        margin-bottom: 24;
+        margin-start: 18;
+        margin-end: 18;
+
+        Box content_box {
+          orientation: vertical;
+          spacing: 18;
+        }
+      }
+    };
+  };
+}

@@ -1,0 +1,41 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OpensprogskoleAbsencePage: Adw.Bin {
+  child: ScrolledWindow {
+    hscrollbar-policy: never;
+
+    Adw.Clamp {
+      maximum-size: 680;
+      margin-top: 18;
+      margin-bottom: 24;
+      margin-start: 12;
+      margin-end: 12;
+
+      Stack stack {
+        StackPage {
+          name: "list";
+
+          child: ListBox list {
+            selection-mode: none;
+            valign: start;
+
+            styles [
+              "boxed-list",
+            ]
+          };
+        }
+
+        StackPage {
+          name: "empty";
+
+          child: Adw.StatusPage {
+            icon-name: "appointment-missed-symbolic";
+            title: _("No absences");
+            description: _("Reported absences will appear here.");
+          };
+        }
+      }
+    }
+  };
+}

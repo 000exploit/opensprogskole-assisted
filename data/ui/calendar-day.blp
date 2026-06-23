@@ -1,0 +1,47 @@
+using Gtk 4.0;
+
+template $OpensprogskoleCalendarDay: Button {
+  styles [
+    "flat",
+    "calendar-cell",
+  ]
+
+  child: Box {
+    orientation: vertical;
+    spacing: 3;
+
+    // Top row: lesson dot in the upper-left corner, day number in the
+    // upper-right. The dot is always part of the layout but hidden until a
+    // lesson marker is set (see CalendarDay.set_marker).
+    Box {
+      Box dot {
+        visible: false;
+        valign: center;
+        halign: start;
+
+        styles [
+          "lesson-dot",
+        ]
+      }
+
+      Label number_label {
+        hexpand: true;
+        halign: end;
+
+        styles [
+          "calendar-day-number",
+        ]
+      }
+    }
+
+    Label lesson_label {
+      visible: false;
+      ellipsize: end;
+      xalign: 0;
+
+      styles [
+        "lesson-label",
+      ]
+    }
+  };
+}

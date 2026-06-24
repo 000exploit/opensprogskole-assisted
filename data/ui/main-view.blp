@@ -166,101 +166,149 @@ template $OpensprogskoleMainView: Adw.Bin {
         };
       };
 
+      // Overview is the permanent root; every other section is pushed on top of
+      // it (with an automatic back arrow). Each page owns its header so the back
+      // button and title render; the Overview header carries the menu + the
+      // mobile sidebar reveal.
       content: Adw.NavigationPage content_page {
-        title: _("Overview");
+        title: _("OpenSprogskole");
 
-        child: Adw.ToolbarView {
-          [top]
-          Adw.HeaderBar {
-            [end]
-            MenuButton {
-              primary: true;
-              icon-name: "open-menu-symbolic";
-              tooltip-text: _("Main Menu");
-              menu-model: primary_menu;
-            }
+        child: Adw.NavigationView content_nav {
+          Adw.NavigationPage {
+            tag: "overview";
+            title: _("Overview");
+
+            child: Adw.ToolbarView {
+              [top]
+              Adw.HeaderBar {
+                [end]
+                MenuButton {
+                  primary: true;
+                  icon-name: "open-menu-symbolic";
+                  tooltip-text: _("Main Menu");
+                  menu-model: primary_menu;
+                }
+              }
+
+              content: $OpensprogskoleOverviewPage overview {};
+            };
           }
 
-          content: Adw.NavigationView content_nav {
-            Adw.NavigationPage {
-              tag: "overview";
-              title: _("Overview");
-              child: $OpensprogskoleOverviewPage overview {};
-            }
+          Adw.NavigationPage {
+            tag: "schedule";
+            title: _("Schedule");
 
-            Adw.NavigationPage {
-              tag: "schedule";
-              title: _("Schedule");
-              child: $OpensprogskoleScheduleView schedule {};
-            }
+            child: Adw.ToolbarView {
+              [top]
+              Adw.HeaderBar {}
 
-            Adw.NavigationPage {
-              tag: "absence";
-              title: _("Absence");
-              child: $OpensprogskoleAbsencePage absence {};
-            }
+              content: $OpensprogskoleScheduleView schedule {};
+            };
+          }
 
-            Adw.NavigationPage {
-              tag: "profile";
-              title: _("Your information");
-              child: $OpensprogskoleProfilePage profile {};
-            }
+          Adw.NavigationPage {
+            tag: "absence";
+            title: _("Absence");
 
-            Adw.NavigationPage {
-              tag: "grades";
-              title: _("Grades");
+            child: Adw.ToolbarView {
+              [top]
+              Adw.HeaderBar {}
 
-              child: Adw.StatusPage {
+              content: $OpensprogskoleAbsencePage absence {};
+            };
+          }
+
+          Adw.NavigationPage {
+            tag: "profile";
+            title: _("Your information");
+
+            child: Adw.ToolbarView {
+              [top]
+              Adw.HeaderBar {}
+
+              content: $OpensprogskoleProfilePage profile {};
+            };
+          }
+
+          Adw.NavigationPage {
+            tag: "grades";
+            title: _("Grades");
+
+            child: Adw.ToolbarView {
+              [top]
+              Adw.HeaderBar {}
+
+              content: Adw.StatusPage {
                 icon-name: "starred-symbolic";
                 title: _("Grades");
                 description: _("Coming soon.");
               };
-            }
+            };
+          }
 
-            Adw.NavigationPage {
-              tag: "report";
-              title: _("Report absence");
+          Adw.NavigationPage {
+            tag: "report";
+            title: _("Report absence");
 
-              child: Adw.StatusPage {
+            child: Adw.ToolbarView {
+              [top]
+              Adw.HeaderBar {}
+
+              content: Adw.StatusPage {
                 icon-name: "mail-send-symbolic";
                 title: _("Report absence");
                 description: _("Coming soon.");
               };
-            }
+            };
+          }
 
-            Adw.NavigationPage {
-              tag: "news";
-              title: _("News");
+          Adw.NavigationPage {
+            tag: "news";
+            title: _("News");
 
-              child: Adw.StatusPage {
+            child: Adw.ToolbarView {
+              [top]
+              Adw.HeaderBar {}
+
+              content: Adw.StatusPage {
                 icon-name: "newspaper";
                 title: _("News");
                 description: _("Your school hasn't published any news.");
               };
-            }
+            };
+          }
 
-            Adw.NavigationPage {
-              tag: "homework";
-              title: _("Homework");
+          Adw.NavigationPage {
+            tag: "homework";
+            title: _("Homework");
 
-              child: Adw.StatusPage {
+            child: Adw.ToolbarView {
+              [top]
+              Adw.HeaderBar {}
+
+              content: Adw.StatusPage {
                 icon-name: "object-select-symbolic";
                 title: _("Homework");
                 description: _("Coming soon.");
               };
-            }
+            };
+          }
 
-            Adw.NavigationPage {
-              tag: "links";
-              title: _("Links");
+          Adw.NavigationPage {
+            tag: "links";
+            title: _("Links");
 
-              child: Adw.StatusPage {
+            child: Adw.ToolbarView {
+              [top]
+              Adw.HeaderBar {}
+
+              content: Adw.StatusPage {
                 icon-name: "web-browser-symbolic";
                 title: _("Links");
                 description: _("Coming soon.");
               };
-            }
-          };
+            };
+          }
         };
       };
     };

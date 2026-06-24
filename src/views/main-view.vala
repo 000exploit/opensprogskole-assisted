@@ -69,8 +69,7 @@ namespace Opensprogskole {
             overview.open_schedule.connect (() => navigate ("schedule"));
             overview.open_grades.connect (() => navigate ("grades"));
 
-            // The sidebar selection always follows the actually-visible page, so
-            // navigating from anywhere (sidebar, buttons) keeps them in sync.
+            content_nav.replace_with_tags ({ "overview" });
             content_nav.notify["visible-page"].connect (sync_to_visible_page);
             sync_to_visible_page ();
         }
@@ -106,23 +105,27 @@ namespace Opensprogskole {
             list.append (row);
         }
 
-        /* Switch the visible section. Replaces the navigation stack (flat
-         * top-level navigation) and reveals the content pane when collapsed. */
+        /* Push a section on top of the Overview root (back arrow returns to it);
+         * "overview" just pops back to the root. Reveals content when collapsed. */
         private void navigate (string tag) {
-            content_nav.replace_with_tags ({ tag });
+            if (tag == "overview") {
+                content_nav.pop_to_tag ("overview");
+            } else {
+                content_nav.pop_to_tag ("overview");
+                content_nav.push_by_tag (tag);
+            }
             if (split.collapsed) {
                 split.show_content = true;
             }
         }
 
-        /* Derive the header title and the sidebar highlight from whatever page
-         * is actually visible — the single source of truth. */
+        /* Keep the sidebar highlight on whatever page is actually visible — the
+         * single source of truth, so the two can never desync. */
         private void sync_to_visible_page () {
             var page = content_nav.visible_page;
             if (page == null) {
                 return;
             }
-            content_page.title = page.title;
             select_row_for_tag (nav_list, page.tag);
             select_row_for_tag (more_list, page.tag);
         }

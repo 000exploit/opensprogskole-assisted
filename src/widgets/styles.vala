@@ -55,6 +55,13 @@ namespace Opensprogskole {
         padding: 5px 7px;
         border-radius: 7px;
     }
+    /* Vertically compact calendar for narrow windows — toggled by adding the
+     * "calendar-compact" class on the Calendar (a breakpoint setter does this). */
+    .calendar-compact .calendar-cell {
+        min-height: 40px;
+        padding: 2px 5px;
+    }
+    .calendar-compact .lesson-label { font-size: 0.7em; }
     .calendar-cell .calendar-day-number { font-weight: 600; }
     .calendar-cell.selected-day {
         background-color: alpha(@accent_bg_color, 0.12);

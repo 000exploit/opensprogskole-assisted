@@ -60,6 +60,11 @@ namespace Opensprogskole {
          * order. Changing it re-lays out the grid. */
         public int first_weekday { get; set; default = 1; }
 
+        /* Vertically compact rows for narrow windows. Toggling it just adds or
+         * removes the "calendar-compact" CSS class (see styles.vala); a
+         * breakpoint setter drives it. */
+        public bool compact { get; set; default = false; }
+
         /* Lesson markers, keyed by date so they survive month navigation. */
         private GLib.HashTable<int, string> markers
             = new GLib.HashTable<int, string> (direct_hash, direct_equal);
@@ -88,6 +93,13 @@ namespace Opensprogskole {
             });
 
             notify["first-weekday"].connect (rebuild_grid);
+            notify["compact"].connect (() => {
+                if (compact) {
+                    add_css_class ("calendar-compact");
+                } else {
+                    remove_css_class ("calendar-compact");
+                }
+            });
 
             var now = new DateTime.now_local ();
             year = now.get_year ();

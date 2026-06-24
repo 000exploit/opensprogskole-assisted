@@ -112,6 +112,8 @@ template $OpensprogskoleScheduleView: Adw.Bin {
 
       setters {
         month_box.orientation: vertical;
+        // Shrink the calendar rows vertically on narrow/stacked layouts.
+        calendar.compact: true;
       }
     }
   };

@@ -74,16 +74,33 @@ template $OpensprogskoleOverviewPage: Adw.Bin {
                 margin-top: 6;
                 margin-start: 12;
                 margin-end: 6;
+                spacing: 6;
 
-                Label {
-                  label: _("Up next today");
+                Box {
+                  orientation: vertical;
                   hexpand: true;
-                  halign: start;
                   valign: center;
 
-                  styles [
-                    "heading",
-                  ]
+                  Label {
+                    label: _("Up next");
+                    halign: start;
+
+                    styles [
+                      "heading",
+                    ]
+                  }
+
+                  // The day the lessons below belong to ("Today" or a date).
+                  // Gets its own line so a long date never squeezes the title.
+                  Label lessons_subheading {
+                    halign: start;
+                    ellipsize: end;
+
+                    styles [
+                      "caption",
+                      "dim-label",
+                    ]
+                  }
                 }
 
                 Button view_schedule_button {
@@ -97,11 +114,37 @@ template $OpensprogskoleOverviewPage: Adw.Bin {
                 }
               }
 
-              $OpensprogskoleDayLessons today_lessons {
-                margin-top: 4;
-                margin-bottom: 12;
-                margin-start: 12;
-                margin-end: 12;
+              Stack lessons_stack {
+                // Size to the visible page only; otherwise the tall "no more
+                // lessons" status page would pad the short lessons list with
+                // empty space when there's room to spare.
+                vhomogeneous: false;
+
+                StackPage {
+                  name: "lessons";
+
+                  child: $OpensprogskoleDayLessons today_lessons {
+                    compact: true;
+                    margin-top: 4;
+                    margin-bottom: 12;
+                    margin-start: 12;
+                    margin-end: 12;
+                  };
+                }
+
+                StackPage {
+                  name: "none";
+
+                  child: Adw.StatusPage {
+                    icon-name: "face-sad-symbolic";
+                    title: _("No more lessons");
+                    description: _("You have no upcoming lessons scheduled.");
+
+                    styles [
+                      "compact",
+                    ]
+                  };
+                }
               }
             }
 
@@ -257,8 +300,6 @@ template $OpensprogskoleOverviewPage: Adw.Bin {
       setters {
         cards_row.orientation: vertical;
         cards_row.homogeneous: false;
-        // Compact "Up next" rows (start time + room only) to save space.
-        today_lessons.compact: true;
         // Compact attendance: small donut beside the text (mobile).
         attendance_chart_box.orientation: horizontal;
         attendance_chart_box.spacing: 14;

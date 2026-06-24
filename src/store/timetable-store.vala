@@ -106,6 +106,40 @@ namespace Opensprogskole {
             return by_day.lookup (key);
         }
 
+        /* The day the overview should surface as "up next": today while it still
+         * has a lesson that hasn't ended, otherwise the closest strictly-future
+         * day that has lessons. Returns null when there are no current or future
+         * lessons at all (so the caller can show an empty state). */
+        public string? upcoming_day_key (DateTime now) {
+            string today = now.format ("%Y-%m-%d");
+
+            var today_store = by_day.lookup (today);
+            if (today_store != null && day_has_remaining (today_store, now)) {
+                return today;
+            }
+
+            // Closest day after today (keys sort lexicographically = by date).
+            string? best = null;
+            foreach (string key in by_day.get_keys ()) {
+                if (strcmp (key, today) > 0
+                    && (best == null || strcmp (key, best) < 0)) {
+                    best = key;
+                }
+            }
+            return best;
+        }
+
+        /* True when at least one lesson of the day ends after `now`. */
+        private static bool day_has_remaining (GLib.ListStore store, DateTime now) {
+            for (uint i = 0; i < store.get_n_items (); i++) {
+                var end = ((TimetableItem) store.get_item (i)).end_datetime;
+                if (end != null && end.compare (now) > 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private static string day_key (int year, int month, int day) {
             return "%04d-%02d-%02d".printf (year, month, day);
         }

@@ -31,6 +31,8 @@ namespace Opensprogskole {
 
         [GtkChild] private unowned Label greeting;
         [GtkChild] private unowned Label subtitle;
+        [GtkChild] private unowned Label lessons_subheading;
+        [GtkChild] private unowned Gtk.Stack lessons_stack;
         [GtkChild] private unowned DayLessons today_lessons;
         [GtkChild] private unowned Gtk.Stack attendance_stack;
         [GtkChild] private unowned Chart chart;
@@ -79,12 +81,38 @@ namespace Opensprogskole {
             subtitle.label = "%s · %s".printf (
                 now.format ("%A, %-d %B %Y"), session.school.name);
 
-            today_lessons.bind (
-                session.timetable.get_day (now.get_year (), now.get_month (),
-                                           now.get_day_of_month ()),
-                _("Today"));
+            reload_lessons (now);
 
             grades.bind (session.grades);
+        }
+
+        /* Surface the next relevant day's lessons: today while it still has a
+         * lesson to come, otherwise the closest future day. When nothing is
+         * upcoming at all, swap in the "no more lessons" status page. */
+        private void reload_lessons (DateTime now) {
+            string? key = session.timetable.upcoming_day_key (now);
+            if (key == null) {
+                lessons_stack.visible_child_name = "none";
+                return;
+            }
+
+            string today = now.format ("%Y-%m-%d");
+            if (key == today) {
+                lessons_subheading.label = _("Today");
+            } else {
+                var day = new DateTime.local (
+                    int.parse (key.substring (0, 4)),
+                    int.parse (key.substring (5, 2)),
+                    int.parse (key.substring (8, 2)), 0, 0, 0);
+                /* Translators: a weekday + date, e.g. "Tuesday, 30 June".
+                   Reorder the %A/%-d/%B parts to suit your locale —
+                   see `man strftime` for what each one means. */
+                lessons_subheading.label = day.format (_("%A, %-d %B"));
+            }
+
+            today_lessons.bind (session.timetable.get_day_for_key (key),
+                                lessons_subheading.label);
+            lessons_stack.visible_child_name = "lessons";
         }
 
         private void update_attendance () {

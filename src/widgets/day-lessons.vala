@@ -97,6 +97,7 @@ namespace Opensprogskole {
                 time.add_css_class ("numeric");
                 row.add_prefix (time);
 
+                /* WTF? */
                 string rooms = compact_rooms (lesson);
                 if (rooms != "") {
                     var room = new Gtk.Label (rooms) {
@@ -123,9 +124,8 @@ namespace Opensprogskole {
         }
 
         private static string row_subtitle (TimetableItem lesson) {
-            var rooms = lesson.rooms;
-            if (rooms.length > 0) {
-                return _("Room %s").printf (string.joinv (", ", rooms));
+            if (lesson.rooms.length > 0) {
+                return _("Room %s").printf (string.joinv (", ", lesson.rooms));
             }
             return lesson.activity_code;
         }
@@ -133,14 +133,13 @@ namespace Opensprogskole {
         /* One room verbatim; many rooms collapse to "first +N" (full list in the
          * row tooltip) so a busy day still fits a narrow row. */
         private static string compact_rooms (TimetableItem lesson) {
-            var rooms = lesson.rooms;
-            if (rooms.length == 0) {
+            if (lesson.rooms.length == 0) {
                 return "";
             }
-            if (rooms.length == 1) {
-                return rooms[0];
+            if (lesson.rooms.length == 1) {
+                return lesson.rooms[0];
             }
-            return "%s +%d".printf (rooms[0], rooms.length - 1);
+            return "%s +%d".printf (lesson.rooms[0], lesson.rooms.length - 1);
         }
     }
 }

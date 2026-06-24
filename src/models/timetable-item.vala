@@ -1,6 +1,6 @@
 /* timetable-item.vala
  *
- * Copyright 2026 flex
+ * Copyright 2026 000exploit
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,9 +72,6 @@ namespace Opensprogskole {
         public DateTime? time_table_real_end_date_time { get; set; }
         // Day stamp (midnight), e.g. "2026-05-20T00:00:00".
         public DateTime? time_table_real_date { get; set; }
-
-        // Per-lesson absence status (UMS "AbsenceStatus"); -1 = none reported.
-        public int absence_status { get; set; default = -1; }
 
         // UI-facing attendance state for the lessons-list dot. Not from the
         // timetable JSON — set later from the linked absence data. Notifying so

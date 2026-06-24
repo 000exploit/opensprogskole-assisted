@@ -1,6 +1,6 @@
 /* grade.vala
  *
- * Copyright 2026 flex
+ * Copyright 2026 000exploit
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ namespace Opensprogskole {
      * The Grades widget maps a tone to a chip colour and nothing more, so the
      * widget never has to know whether a school uses points, pass/fail, letters
      * or anything else. Per-school scales are turned into a tone + a label by a
-     * normalizer (see Grade.from_danish), keeping the widget scale-agnostic. */
+     * normalizer (see apply_danish_scale), keeping the widget scale-agnostic. */
     public enum GradeTone {
         NEUTRAL,
         SUCCESS,
@@ -124,15 +124,6 @@ namespace Opensprogskole {
 
             display_label = label;
             tone = t;
-        }
-
-        /* Convenience for demo/manual construction. */
-        public static GradeItem from_danish (string course, string grade_scale,
-                                         string raw, string due_date) {
-            var grade = new GradeItem (course, grade_scale, "", GradeTone.NEUTRAL, due_date);
-            grade.grade_value = raw.strip ();
-            grade.apply_danish_scale ();
-            return grade;
         }
     }
 }

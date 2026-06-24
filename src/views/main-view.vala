@@ -1,6 +1,6 @@
 /* main-view.vala
  *
- * Copyright 2026 flex
+ * Copyright 2026 000exploit
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@ namespace Opensprogskole {
         [GtkChild] private unowned Label school_label;
         [GtkChild] private unowned Gtk.ListBox nav_list;
         [GtkChild] private unowned Gtk.ListBox more_list;
-        [GtkChild] private unowned Adw.NavigationPage content_page;
         [GtkChild] private unowned Adw.NavigationView content_nav;
         [GtkChild] private unowned Button profile_button;
         [GtkChild] private unowned Adw.Avatar profile_avatar;
@@ -46,10 +45,8 @@ namespace Opensprogskole {
 
         private Session? session = null;
 
-        // row -> (page name, title)
+        // row -> page tag
         private GLib.HashTable<Gtk.ListBoxRow, string> page_of
-            = new GLib.HashTable<Gtk.ListBoxRow, string> (direct_hash, direct_equal);
-        private GLib.HashTable<Gtk.ListBoxRow, string> title_of
             = new GLib.HashTable<Gtk.ListBoxRow, string> (direct_hash, direct_equal);
 
         construct {
@@ -104,7 +101,6 @@ namespace Opensprogskole {
 
             var row = new Gtk.ListBoxRow () { child = box };
             page_of[row] = page;
-            title_of[row] = label;
             list.append (row);
         }
 

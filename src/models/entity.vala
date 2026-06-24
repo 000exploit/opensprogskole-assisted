@@ -28,7 +28,7 @@
  *    json-glib does not recurse into collections of GObjects automatically.
  *
  *  - C# enums round-trip as integers; the deserializer leaves them as int.
- *    Cast to your Vala enum type when reading: `(AbsenceCode) item.absence_status`.
+ *    Declare such fields as int and cast to your Vala enum type when reading.
  *
  *  - DateTime serialization out uses "YYYY-MM-DDTHH:MM:SS" with NO timezone,
  *    to match what the UMS server emits. format_iso8601() would add an

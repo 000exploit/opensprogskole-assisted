@@ -1,6 +1,6 @@
 /* timetable-store.vala
  *
- * Copyright 2026 flex
+ * Copyright 2026 000exploit
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,18 +69,6 @@ namespace Opensprogskole {
             });
 
             changed ();
-        }
-
-        /* Convenience: load directly from a JSON document string. The optional
-         * length lets callers pass non-null-terminated buffers (e.g. the bytes
-         * of a GResource). */
-        public void load_from_string (string json, ssize_t length = -1) throws GLib.Error {
-            var parser = new Json.Parser ();
-            parser.load_from_data (json, length);
-            var root = parser.get_root ();
-            if (root != null && root.get_node_type () == Json.NodeType.ARRAY) {
-                load (root.get_array ());
-            }
         }
 
         /* The lessons of a day as a list model, or null when there are none.

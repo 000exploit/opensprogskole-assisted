@@ -38,32 +38,69 @@ template $OpensprogskoleOnboardingView: Adw.Bin {
 
       child: Adw.ToolbarView {
         [top]
-        Adw.HeaderBar {}
+        Adw.HeaderBar {
+          show-title: false;
+        }
 
         content: ScrolledWindow {
           hscrollbar-policy: never;
 
           Adw.Clamp {
-            maximum-size: 420;
-            margin-top: 24;
-            margin-bottom: 24;
-            margin-start: 12;
-            margin-end: 12;
+            maximum-size: 360;
+            margin-top: 12;
+            margin-bottom: 18;
+            margin-start: 18;
+            margin-end: 18;
 
             Box {
               orientation: vertical;
               spacing: 18;
               valign: center;
 
+              // Branding header.
+              Box {
+                orientation: vertical;
+                spacing: 2;
+                margin-bottom: 6;
+
+                Image {
+                  icon-name: "moe.ekusu.sprogskole";
+                  pixel-size: 88;
+                  halign: center;
+                }
+
+                Label {
+                  label: _("OpenSprogskole");
+                  halign: center;
+
+                  styles [
+                    "title-1",
+                  ]
+                }
+
+                Label {
+                  label: _("Sign in to continue");
+                  halign: center;
+
+                  styles [
+                    "dim-label",
+                  ]
+                }
+              }
+
               Adw.Banner error_banner {
                 revealed: false;
               }
 
               Adw.PreferencesGroup {
-                title: _("Account");
-
                 Adw.ComboRow school_row {
                   title: _("School");
+
+                  [prefix]
+                  Adw.Avatar school_avatar {
+                    size: 28;
+                    show-initials: true;
+                  }
                 }
 
                 Adw.EntryRow username_row {
@@ -75,30 +112,40 @@ template $OpensprogskoleOnboardingView: Adw.Bin {
                 }
 
                 Adw.SwitchRow save_password_row {
-                  title: _("Save password");
-                  subtitle: _("Stay signed in without re-entering it");
+                  title: _("Remember me");
                   active: true;
                 }
               }
 
               Box {
                 spacing: 10;
-                halign: center;
 
                 Adw.Spinner spinner {
                   visible: false;
                   width-request: 24;
                   height-request: 24;
+                  valign: center;
                 }
 
                 Button login_button {
                   label: _("Log in");
+                  hexpand: true;
 
                   styles [
                     "suggested-action",
                     "pill",
                   ]
                 }
+              }
+
+              Label version_label {
+                halign: center;
+                margin-top: 4;
+
+                styles [
+                  "caption",
+                  "dim-label",
+                ]
               }
             }
           }

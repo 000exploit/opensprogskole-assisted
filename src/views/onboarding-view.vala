@@ -32,6 +32,7 @@ namespace Opensprogskole {
         [GtkChild] private unowned Adw.NavigationView nav;
         [GtkChild] private unowned Button hello_next_button;
         [GtkChild] private unowned Adw.ComboRow school_row;
+        [GtkChild] private unowned Adw.Avatar school_avatar;
         [GtkChild] private unowned Adw.EntryRow username_row;
         [GtkChild] private unowned Adw.PasswordEntryRow password_row;
         [GtkChild] private unowned Adw.SwitchRow save_password_row;
@@ -39,6 +40,7 @@ namespace Opensprogskole {
         [GtkChild] private unowned Adw.Spinner spinner;
         [GtkChild] private unowned Button login_button;
         [GtkChild] private unowned Button continue_button;
+        [GtkChild] private unowned Label version_label;
 
         /* The Window handles these. */
         public signal void authenticate_request (School school, string username,
@@ -54,10 +56,21 @@ namespace Opensprogskole {
                 names.append (schools[i].name);
             }
             school_row.model = names;
+            school_row.notify["selected"].connect (update_school_avatar);
+            update_school_avatar ();
+
+            version_label.label = _("Version %s").printf (Config.PACKAGE_VERSION);
 
             hello_next_button.clicked.connect (() => nav.push_by_tag ("login"));
             login_button.clicked.connect (on_login);
             continue_button.clicked.connect (() => finished ());
+        }
+
+        private void update_school_avatar () {
+            uint idx = school_row.selected;
+            if (idx < schools.length) {
+                school_avatar.text = schools[idx].short_code;
+            }
         }
 
         private void on_login () {

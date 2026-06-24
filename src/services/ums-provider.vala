@@ -83,5 +83,26 @@ namespace Opensprogskole {
             return yield client.get_json (
                 "/UserInfo/GetUserInfo/" + UmsClient.base64url (username), "2");
         }
+
+        public async int create_future_absence (string reason, string start_iso,
+                                                string end_iso) throws GLib.Error {
+            var b = new Json.Builder ();
+            b.begin_object ();
+            b.set_member_name ("ID"); b.add_int_value (0);
+            b.set_member_name ("SLI_ID"); b.add_int_value (0);
+            b.set_member_name ("Reason"); b.add_string_value (reason);
+            b.set_member_name ("StartDateTime"); b.add_string_value (start_iso);
+            b.set_member_name ("EndDateTime"); b.add_string_value (end_iso);
+            b.set_member_name ("WhenCalculated"); b.add_string_value ("");
+            b.end_object ();
+
+            var gen = new Json.Generator ();
+            gen.set_root (b.get_root ());
+
+            var result = yield client.post_json (
+                "/Absence/CreateFutureStudentAbsence", gen.to_data (null), "2");
+            // 200 returns a bare number — the new absence id.
+            return (int) result.get_int ();
+        }
     }
 }

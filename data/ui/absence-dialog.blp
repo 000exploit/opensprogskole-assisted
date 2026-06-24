@@ -1,0 +1,380 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OpensprogskoleAbsenceDialog: Adw.Dialog {
+  title: _("Report absence");
+  content-width: 420;
+  content-height: 640;
+
+  child: Adw.NavigationView nav {
+    Adw.NavigationPage {
+      tag: "choose";
+      title: _("Report absence");
+
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {}
+
+        content: Adw.Clamp {
+          maximum-size: 380;
+          margin-top: 18;
+          margin-bottom: 18;
+          margin-start: 18;
+          margin-end: 18;
+
+          Box {
+            orientation: vertical;
+            spacing: 12;
+            valign: center;
+
+            Label {
+              label: _("When does the absence apply?");
+              halign: start;
+              margin-bottom: 4;
+
+              styles [
+                "dim-label",
+              ]
+            }
+
+            Button today_button {
+              sensitive: false;
+
+              child: Box {
+                orientation: vertical;
+                margin-top: 10;
+                margin-bottom: 10;
+                margin-start: 12;
+                margin-end: 12;
+                spacing: 2;
+
+                Label {
+                  label: _("Today");
+                  halign: start;
+
+                  styles [
+                    "heading",
+                  ]
+                }
+
+                Label {
+                  label: _("Report absence for the whole of today.");
+                  halign: start;
+                  wrap: true;
+
+                  styles [
+                    "caption",
+                    "dim-label",
+                  ]
+                }
+              };
+            }
+
+            Button earlier_button {
+              sensitive: false;
+
+              child: Box {
+                orientation: vertical;
+                margin-top: 10;
+                margin-bottom: 10;
+                margin-start: 12;
+                margin-end: 12;
+                spacing: 2;
+
+                Label {
+                  label: _("Earlier");
+                  halign: start;
+
+                  styles [
+                    "heading",
+                  ]
+                }
+
+                Label {
+                  label: _("Give a reason for a past lesson.");
+                  halign: start;
+                  wrap: true;
+
+                  styles [
+                    "caption",
+                    "dim-label",
+                  ]
+                }
+              };
+            }
+
+            Button future_button {
+              child: Box {
+                orientation: vertical;
+                margin-top: 10;
+                margin-bottom: 10;
+                margin-start: 12;
+                margin-end: 12;
+                spacing: 2;
+
+                Label {
+                  label: _("Future");
+                  halign: start;
+
+                  styles [
+                    "heading",
+                  ]
+                }
+
+                Label {
+                  label: _("Plan an absence ahead of time.");
+                  halign: start;
+                  wrap: true;
+
+                  styles [
+                    "caption",
+                  ]
+                }
+              };
+
+              styles [
+                "suggested-action",
+              ]
+            }
+          }
+        };
+      };
+    }
+
+    Adw.NavigationPage {
+      tag: "form";
+      title: _("Future absence");
+
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {}
+
+        content: ScrolledWindow {
+          hscrollbar-policy: never;
+
+          Adw.Clamp {
+            maximum-size: 400;
+            margin-top: 12;
+            margin-bottom: 18;
+            margin-start: 12;
+            margin-end: 12;
+
+            Box {
+              orientation: vertical;
+              spacing: 14;
+
+              Adw.Banner error_banner {
+                revealed: false;
+              }
+
+              Adw.PreferencesGroup {
+                Adw.EntryRow reason_row {
+                  title: _("Reason");
+                }
+              }
+
+              Adw.PreferencesGroup {
+                title: _("Date");
+
+                Adw.ComboRow month_row {
+                  title: _("Month");
+                }
+
+                Adw.SpinRow day_row {
+                  title: _("Day");
+
+                  adjustment: Adjustment {
+                    lower: 1;
+                    upper: 31;
+                    step-increment: 1;
+                    value: 1;
+                  };
+                }
+
+                Adw.SpinRow year_row {
+                  title: _("Year");
+
+                  adjustment: Adjustment {
+                    lower: 2024;
+                    upper: 2035;
+                    step-increment: 1;
+                    value: 2026;
+                  };
+                }
+              }
+
+              Label {
+                label: _("Time");
+                halign: start;
+
+                styles [
+                  "heading",
+                ]
+              }
+
+              Box {
+                homogeneous: true;
+                spacing: 18;
+
+                Box {
+                  orientation: vertical;
+                  spacing: 6;
+
+                  Label {
+                    label: _("Start");
+                    halign: center;
+
+                    styles [
+                      "caption",
+                      "dim-label",
+                    ]
+                  }
+
+                  Box {
+                    halign: center;
+                    spacing: 4;
+
+                    SpinButton start_hour {
+                      orientation: vertical;
+                      numeric: true;
+                      wrap: true;
+                      width-request: 56;
+
+                      styles [
+                        "time-field",
+                        "numeric",
+                      ]
+
+                      adjustment: Adjustment {
+                        lower: 0;
+                        upper: 23;
+                        step-increment: 1;
+                        value: 8;
+                      };
+                    }
+
+                    Label {
+                      label: ":";
+                      valign: center;
+
+                      styles [
+                        "time-colon",
+                      ]
+                    }
+
+                    SpinButton start_minute {
+                      orientation: vertical;
+                      numeric: true;
+                      wrap: true;
+                      width-request: 56;
+
+                      styles [
+                        "time-field",
+                        "numeric",
+                      ]
+
+                      adjustment: Adjustment {
+                        lower: 0;
+                        upper: 59;
+                        step-increment: 5;
+                        value: 0;
+                      };
+                    }
+                  }
+                }
+
+                Box {
+                  orientation: vertical;
+                  spacing: 6;
+
+                  Label {
+                    label: _("End");
+                    halign: center;
+
+                    styles [
+                      "caption",
+                      "dim-label",
+                    ]
+                  }
+
+                  Box {
+                    halign: center;
+                    spacing: 4;
+
+                    SpinButton end_hour {
+                      orientation: vertical;
+                      numeric: true;
+                      wrap: true;
+                      width-request: 56;
+
+                      styles [
+                        "time-field",
+                        "numeric",
+                      ]
+
+                      adjustment: Adjustment {
+                        lower: 0;
+                        upper: 23;
+                        step-increment: 1;
+                        value: 15;
+                      };
+                    }
+
+                    Label {
+                      label: ":";
+                      valign: center;
+
+                      styles [
+                        "time-colon",
+                      ]
+                    }
+
+                    SpinButton end_minute {
+                      orientation: vertical;
+                      numeric: true;
+                      wrap: true;
+                      width-request: 56;
+
+                      styles [
+                        "time-field",
+                        "numeric",
+                      ]
+
+                      adjustment: Adjustment {
+                        lower: 0;
+                        upper: 59;
+                        step-increment: 5;
+                        value: 0;
+                      };
+                    }
+                  }
+                }
+              }
+
+              Box {
+                halign: center;
+                spacing: 10;
+                margin-top: 6;
+
+                Adw.Spinner spinner {
+                  visible: false;
+                  width-request: 24;
+                  height-request: 24;
+                }
+
+                Button submit_button {
+                  label: _("Report absence");
+
+                  styles [
+                    "suggested-action",
+                    "pill",
+                  ]
+                }
+              }
+            }
+          }
+        };
+      };
+    }
+  };
+}

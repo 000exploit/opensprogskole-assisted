@@ -146,6 +146,32 @@ namespace Opensprogskole {
             yield session.send_and_read_async (msg, Priority.DEFAULT, null);
         }
 
+        /* Authenticated POST with a JSON body, returning the parsed response.
+         * Throws on a non-200 status. */
+        public async Json.Node post_json (string path, string body, string version = "2")
+            throws GLib.Error {
+            var msg = new Soup.Message ("POST", base_url + path);
+            msg.request_headers.append ("X-UMS-AppMaui", "1");
+            msg.request_headers.append ("X-UMS-Version", version);
+            if (token != "") {
+                msg.request_headers.append ("Authorization", "Bearer " + token);
+            }
+            msg.set_request_body_from_bytes ("application/json", new Bytes (body.data));
+
+            var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, null);
+            if (msg.status_code == 400 || msg.status_code == 401) {
+                throw new UmsError.UNAUTHORIZED ("Request rejected (HTTP %u)".printf (msg.status_code));
+            }
+            if (msg.status_code != 200) {
+                throw new UmsError.HTTP ("HTTP %u for %s".printf (msg.status_code, path));
+            }
+            var root = parse (bytes);
+            if (root == null) {
+                throw new UmsError.MALFORMED ("Empty/invalid JSON for %s".printf (path));
+            }
+            return root;
+        }
+
         /* base64url, used for the UserInfo path segment (username). */
         public static string base64url (string text) {
             string b64 = GLib.Base64.encode (text.data);

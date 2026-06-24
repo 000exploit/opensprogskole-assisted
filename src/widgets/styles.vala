@@ -101,6 +101,11 @@ namespace Opensprogskole {
     .lesson-dot-present { background-color: #9bd236; }
     .lesson-dot-late    { background-color: #e5a50a; }
     .lesson-dot-absent  { background-color: #3d3846; }
+
+    /* Absence dialog — large vertical time steppers (GNOME Settings style). */
+    .time-field { font-size: 1.6em; }
+    .time-field text { padding-left: 2px; padding-right: 2px; }
+    .time-colon { font-size: 1.6em; font-weight: 700; opacity: 0.55; }
     """;
 
     private bool widget_styles_loaded = false;

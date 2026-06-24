@@ -44,6 +44,8 @@ namespace Opensprogskole {
         [GtkChild] private unowned AbsencePage absence;
         [GtkChild] private unowned ProfilePage profile;
 
+        private Session? session = null;
+
         // row -> (page name, title)
         private GLib.HashTable<Gtk.ListBoxRow, string> page_of
             = new GLib.HashTable<Gtk.ListBoxRow, string> (direct_hash, direct_equal);
@@ -65,7 +67,7 @@ namespace Opensprogskole {
             nav_list.row_activated.connect ((row) => navigate (page_of[row]));
             more_list.row_activated.connect ((row) => navigate (page_of[row]));
             profile_button.clicked.connect (() => navigate ("profile"));
-            overview.report_absence_requested.connect (() => navigate ("absence"));
+            overview.report_absence_requested.connect (open_absence_dialog);
             overview.open_schedule.connect (() => navigate ("schedule"));
             overview.open_grades.connect (() => navigate ("grades"));
 
@@ -75,6 +77,7 @@ namespace Opensprogskole {
         }
 
         public void bind (Session session) {
+            this.session = session;
             school_label.label = session.school.name;
             school_avatar.text = session.school.short_code;
             profile_name.label = session.display_name;
@@ -108,6 +111,13 @@ namespace Opensprogskole {
         /* Push a section on top of the Overview root (back arrow returns to it);
          * "overview" just pops back to the root. Reveals content when collapsed. */
         private void navigate (string tag) {
+            // "Report absence" is an action, not a page — open the dialog and keep
+            // the sidebar highlight on whatever page is actually shown.
+            if (tag == "report") {
+                open_absence_dialog ();
+                sync_to_visible_page ();
+                return;
+            }
             if (tag == "overview") {
                 content_nav.pop_to_tag ("overview");
             } else {
@@ -116,6 +126,12 @@ namespace Opensprogskole {
             }
             if (split.collapsed) {
                 split.show_content = true;
+            }
+        }
+
+        private void open_absence_dialog () {
+            if (session != null) {
+                new AbsenceDialog (session).present (this);
             }
         }
 

@@ -90,6 +90,15 @@ namespace Opensprogskole {
             updated ();
         }
 
+        /* Report a future absence; returns the new id. Refreshes the absence
+         * cache on success so the Overview attendance stays current. */
+        public async int report_future_absence (string reason, string start_iso,
+                                                string end_iso) throws GLib.Error {
+            int id = yield provider.create_future_absence (reason, start_iso, end_iso);
+            refresh_absence.begin ();
+            return id;
+        }
+
         /* Absence is fetched on its own so it doesn't slow the first paint. */
         public async void refresh_absence () {
             try {

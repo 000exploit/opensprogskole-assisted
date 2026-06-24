@@ -247,22 +247,6 @@ template $OpensprogskoleMainView: Adw.Bin {
           }
 
           Adw.NavigationPage {
-            tag: "report";
-            title: _("Report absence");
-
-            child: Adw.ToolbarView {
-              [top]
-              Adw.HeaderBar {}
-
-              content: Adw.StatusPage {
-                icon-name: "mail-send-symbolic";
-                title: _("Report absence");
-                description: _("Coming soon.");
-              };
-            };
-          }
-
-          Adw.NavigationPage {
             tag: "news";
             title: _("News");
 

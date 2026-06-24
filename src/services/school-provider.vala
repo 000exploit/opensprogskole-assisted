@@ -55,5 +55,12 @@ namespace Opensprogskole {
         /* The student's profile (JSON object). */
         public abstract async Json.Node? fetch_user_info (string username)
             throws GLib.Error;
+
+        /* Report a future absence; returns the new absence id. ISO datetimes are
+         * "yyyy-MM-ddTHH:mm:ss". */
+        public abstract async int create_future_absence (string reason,
+                                                         string start_iso,
+                                                         string end_iso)
+            throws GLib.Error;
     }
 }

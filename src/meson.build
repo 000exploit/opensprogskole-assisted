@@ -31,6 +31,7 @@ opensprogskole_vala_sources = [
   'widgets/day-lessons.vala',
   'widgets/agenda.vala',
   'widgets/lesson-dialog.vala',
+  'widgets/absence-dialog.vala',
 ]
 
 opensprogskole_sources = [

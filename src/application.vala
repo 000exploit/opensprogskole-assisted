@@ -19,6 +19,9 @@
  */
 
 public class Opensprogskole.Application : Adw.Application {
+
+    private SessionController controller;
+
     public Application () {
         Object (
             application_id: "moe.ekusu.sprogskole",
@@ -36,24 +39,30 @@ public class Opensprogskole.Application : Adw.Application {
         };
         this.add_action_entries (action_entries, this);
         this.set_accels_for_action ("app.quit", {"<control>q"});
+
+        controller = new SessionController ();
     }
 
     public override void activate () {
         base.activate ();
-        var win = this.active_window ?? new Opensprogskole.Window (this);
-        win.present ();
+        if (this.active_window == null) {
+            new Opensprogskole.Window (this, controller).present ();
+            controller.start ();   // drive the initial screen once the window listens
+        } else {
+            this.active_window.present ();
+        }
     }
 
     private void on_about_action () {
-        string[] developers = { "flex" };
+        string[] developers = { "000exploit" };
         var about = new Adw.AboutDialog () {
             application_name = "OpenSprogskole",
             application_icon = "moe.ekusu.sprogskole",
-            developer_name = "flex",
+            developer_name = "000exploit",
             translator_credits = _("translator-credits"),
-            version = "0.1.0",
+            version = "0.5.0",
             developers = developers,
-            copyright = "© 2026 flex",
+            copyright = "© 2026 000exploit",
         };
 
         about.present (this.active_window);
@@ -64,9 +73,6 @@ public class Opensprogskole.Application : Adw.Application {
     }
 
     private void on_logout_action () {
-        var win = this.active_window as Opensprogskole.Window;
-        if (win != null) {
-            win.logout ();
-        }
+        controller.logout ();
     }
 }

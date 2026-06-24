@@ -16,6 +16,7 @@ opensprogskole_vala_sources = [
   'services/ums-client.vala',
   'services/ums-provider.vala',
   'services/session.vala',
+  'services/session-controller.vala',
   'views/schedule-view.vala',
   'views/onboarding-view.vala',
   'views/main-view.vala',

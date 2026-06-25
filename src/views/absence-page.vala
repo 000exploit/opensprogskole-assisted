@@ -32,15 +32,24 @@ namespace Opensprogskole {
 
         public void bind (Session session) {
             this.session = session;
-            session.updated.connect (reload);
-            reload ();
+            // The ListBox tracks the store directly, so rows appear the moment
+            // absences land. The stack (loading / list / empty) is driven by the
+            // same signals: items-changed for live list edits, absence_updated
+            // for the loading→loaded transition (incl. the "loaded but empty" case).
+            list.bind_model (session.absences, create_row);
+            session.absences.items_changed.connect (sync_stack);
+            session.absence_updated.connect (sync_stack);
+            sync_stack ();
         }
 
-        private void reload () {
+        private void sync_stack () {
             if (session == null) {
                 return;
             }
-            list.bind_model (session.absences, create_row);
+            if (!session.absence_loaded) {
+                stack.visible_child_name = "loading";
+                return;
+            }
             stack.visible_child_name =
                 session.absences.get_n_items () > 0 ? "list" : "empty";
         }

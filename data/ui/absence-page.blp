@@ -14,6 +14,30 @@ template $OpensprogskoleAbsencePage: Adw.Bin {
 
       Stack stack {
         StackPage {
+          name: "loading";
+
+          child: Box {
+            orientation: vertical;
+            spacing: 8;
+            valign: center;
+
+            Adw.Spinner {
+              width-request: 32;
+              height-request: 32;
+              halign: center;
+            }
+
+            Label {
+              label: _("Loading absences…");
+
+              styles [
+                "dim-label",
+              ]
+            }
+          };
+        }
+
+        StackPage {
           name: "list";
 
           child: ListBox list {

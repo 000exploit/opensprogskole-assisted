@@ -51,6 +51,8 @@ namespace Opensprogskole {
         /* False until the first timetable fetch settles, so widgets can show a
          * spinner instead of an empty "no lessons" state while it loads. */
         public bool timetable_loaded { get; private set; default = false; }
+        /* Likewise for absence: distinguishes "still loading" from "no absences". */
+        public bool absence_loaded { get; private set; default = false; }
 
         public Session (School school, SchoolProvider provider, string username) {
             Object (school: school, provider: provider, username: username);
@@ -236,6 +238,7 @@ namespace Opensprogskole {
             } catch (GLib.Error e) {
                 warning ("absence fetch failed: %s", e.message);
             }
+            absence_loaded = true;
             debug ("refresh: absence in %lld ms", (get_monotonic_time () - t) / 1000);
             absence_updated ();
         }

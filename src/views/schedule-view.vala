@@ -33,6 +33,8 @@ namespace Opensprogskole {
     public class ScheduleView : Adw.Bin {
 
         [GtkChild]
+        private unowned Adw.ViewStack view_stack;
+        [GtkChild]
         private unowned Calendar calendar;
         [GtkChild]
         private unowned DayLessons day_lessons;
@@ -41,6 +43,9 @@ namespace Opensprogskole {
 
         // Set via use_store (); starts empty so the widget is usable standalone.
         private TimetableStore store = new TimetableStore ();
+        // The calendar's selected day (yyyy-MM-dd); the agenda scrolls here when
+        // it's switched to. Set by on_day_selected.
+        private string selected_key = "";
 
         construct {
             ensure_widget_styles (this);
@@ -49,6 +54,20 @@ namespace Opensprogskole {
             calendar.month_changed.connect (on_month_changed);
             day_lessons.lesson_activated.connect (open_lesson);
             agenda.lesson_activated.connect (open_lesson);
+
+            // Scroll the agenda to the calendar's selected day each time it's
+            // switched to (not just the first time it's shown). Falls back to the
+            // upcoming-day anchor before any selection exists.
+            view_stack.notify["visible-child"].connect (() => {
+                if (view_stack.visible_child != agenda) {
+                    return;
+                }
+                if (selected_key != "") {
+                    agenda.scroll_to_day (selected_key);
+                } else {
+                    agenda.reveal_anchor ();
+                }
+            });
 
             store.changed.connect (on_store_changed);
         }
@@ -118,6 +137,7 @@ namespace Opensprogskole {
         }
 
         private void on_day_selected (int year, int month, int day) {
+            selected_key = "%04d-%02d-%02d".printf (year, month, day);
             var model = store.get_day (year, month, day);
             day_lessons.bind (model, day_title (year, month, day));
         }

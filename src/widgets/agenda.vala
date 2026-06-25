@@ -48,6 +48,12 @@ namespace Opensprogskole {
         private Gtk.Widget? scroll_anchor = null;
         /* Whether we still owe a scroll-to-anchor once we are on screen. */
         private bool scroll_pending = false;
+        /* day key (yyyy-MM-dd) -> its heading widget, and the same keys in order,
+         * so scroll_to_day can land on (or near) an arbitrary day. Rebuilt by
+         * set_all. */
+        private GLib.HashTable<string, Gtk.Widget> headings
+            = new GLib.HashTable<string, Gtk.Widget> (str_hash, str_equal);
+        private GLib.GenericArray<string> day_keys = new GLib.GenericArray<string> ();
 
         construct {
             ensure_widget_styles (this);
@@ -68,6 +74,8 @@ namespace Opensprogskole {
                 content.remove (child);
             }
             scroll_anchor = null;
+            headings.remove_all ();
+            day_keys.remove_range (0, day_keys.length);
 
             string today_key = new DateTime.now_local ().format ("%Y-%m-%d");
 
@@ -82,6 +90,8 @@ namespace Opensprogskole {
                 };
                 heading.add_css_class ("heading");
                 content.append (heading);
+                headings.set (key, heading);
+                day_keys.add (key);
 
                 // The first day that is not in the past becomes the anchor.
                 if (scroll_anchor == null && strcmp (key, today_key) >= 0) {
@@ -106,10 +116,42 @@ namespace Opensprogskole {
 
             // Scroll to the anchor; if there is none (all lessons are past),
             // leave the scroll position alone.
+            reveal_anchor ();
+        }
+
+        /* Re-scroll to the upcoming-day anchor. Called both after a rebuild and
+         * whenever the agenda becomes the visible view again, so switching back
+         * always lands on the current day rather than wherever the list was last
+         * left. A no-op when there is no upcoming day. If the agenda isn't mapped
+         * yet (e.g. the switch is still in progress), the map handler does it. */
+        public void reveal_anchor () {
             scroll_pending = scroll_anchor != null;
             if (scroll_pending && get_mapped ()) {
                 scroll_to_anchor ();
             }
+        }
+
+        /* Scroll so `key` (yyyy-MM-dd) sits at the top. If that day has no
+         * lessons of its own, fall back to the nearest later day that does, else
+         * the last day in the list. Used when switching to the agenda so it
+         * follows the calendar's selected day. A no-op when the list is empty. */
+        public void scroll_to_day (string key) {
+            Gtk.Widget? target = headings.lookup (key);
+            if (target == null) {
+                for (uint i = 0; i < day_keys.length; i++) {
+                    if (strcmp (day_keys[i], key) >= 0) {
+                        target = headings.lookup (day_keys[i]);
+                        break;
+                    }
+                }
+                if (target == null && day_keys.length > 0) {
+                    target = headings.lookup (day_keys[day_keys.length - 1]);
+                }
+            }
+            if (target != null) {
+                scroll_anchor = target;
+            }
+            reveal_anchor ();
         }
 
         private void scroll_to_anchor () {

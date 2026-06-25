@@ -20,34 +20,46 @@
 
 namespace Opensprogskole {
 
-    /* On-disk cache for profile pictures. Avatars rarely change and the bytes
-     * are reusable across sessions, so the first request downloads via the
-     * provider and writes the file; later requests decode straight from disk
-     * with no network hit. A failure anywhere yields null and the caller falls
-     * back to initials — a missing avatar is never fatal. */
+    /* Profile-picture loader with an on-disk offline fallback.
+     *
+     * The backend serves avatars from a *stable* per-user URL
+     * (getImage.ashx?id=<user-hash>…) whose bytes change in place when the user
+     * uploads a new photo. A URL-keyed cache therefore can't tell a new picture
+     * from the old one, so we fetch network-first and keep the last download
+     * only as a fallback for when the request fails (offline). A failure with no
+     * cached copy yields null and the caller falls back to initials — a missing
+     * avatar is never fatal. */
     namespace AvatarCache {
 
-        /* Return the picture at `url` as a paintable, downloading + caching on a
-         * miss. null when the bytes can't be fetched or decoded. */
+        /* Return the current picture at `url` as a paintable. Fetches fresh;
+         * on a failed fetch, returns the last cached copy if there is one, else
+         * null. */
         public async Gdk.Paintable? load (SchoolProvider provider, string url) {
             var file = cache_file (url);
+
+            /* TODO: stale-while-revalidate — return the cached copy immediately,
+             * fetch in the background and swap the widget's image only if the
+             * bytes changed, to avoid a network GET on every load. */
+            try {
+                GLib.Bytes? bytes = yield provider.fetch_picture (url);
+                if (bytes != null && bytes.get_size () > 0) {
+                    var texture = Gdk.Texture.from_bytes (bytes);
+                    save (file, bytes);   // refresh the offline fallback
+                    return texture;
+                }
+            } catch (GLib.Error e) {
+                warning ("avatar fetch failed: %s", e.message);
+            }
+
+            // Offline or undecodable response: use the previous copy if present.
             try {
                 if (file.query_exists ()) {
                     return Gdk.Texture.from_file (file);
                 }
-
-                GLib.Bytes? bytes = yield provider.fetch_picture (url);
-                if (bytes == null || bytes.get_size () == 0) {
-                    return null;
-                }
-
-                var texture = Gdk.Texture.from_bytes (bytes);
-                save (file, bytes);
-                return texture;
             } catch (GLib.Error e) {
-                warning ("avatar load failed: %s", e.message);
-                return null;
+                warning ("avatar cache read failed: %s", e.message);
             }
+            return null;
         }
 
         private static GLib.File cache_file (string url) {

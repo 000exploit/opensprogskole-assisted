@@ -86,15 +86,16 @@ namespace Opensprogskole {
             }
         }
 
-        /* The picture to show, by priority: an approved upload, else the current
-         * picture, else a pending (not-yet-approved) one. Empty when there is
-         * none — the backend leaves these as "" or null, so both count as empty.
-         * The actual download/caching lives in AvatarCache. */
+        /* The picture to show, by priority: a pending (not-yet-approved) upload
+         * first — so the owner sees the photo they just submitted, like the
+         * official client — then an approved upload, then the current picture.
+         * Empty when there is none (the backend leaves these as "" or null, both
+         * count as empty). The actual download/caching lives in AvatarCache. */
         public string best_picture_url {
             owned get {
+                if (nonempty (pending_picture_url)) return pending_picture_url;
                 if (nonempty (approved_picture_url)) return approved_picture_url;
                 if (nonempty (picture_url)) return picture_url;
-                if (nonempty (pending_picture_url)) return pending_picture_url;
                 return "";
             }
         }

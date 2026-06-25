@@ -63,5 +63,9 @@ executable('opensprogskole', opensprogskole_sources,
   dependencies: opensprogskole_deps,
   include_directories: config_inc,
         vala_args: opensprogskole_vala_args,
+          # Name the GLib log domain so our debug()/warning()/message() calls can
+          # be filtered on their own, e.g. `G_MESSAGES_DEBUG=opensprogskole`,
+          # without pulling in libsoup/GIO debug spam (which `=all` would).
+            c_args: ['-DG_LOG_DOMAIN="opensprogskole"'],
           install: true,
 )

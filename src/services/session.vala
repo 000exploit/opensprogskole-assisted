@@ -184,14 +184,22 @@ namespace Opensprogskole {
         /* The profile picture as a paintable (downloaded + cached), or null when
          * there is none — the caller then shows initials. */
         public async Gdk.Paintable? load_avatar () {
-            if (user_info == null || user_info.best_picture_url == "") {
+            if (user_info == null) {
+                return null;
+            }
+            debug ("avatar: pending='%s' approved='%s' picture='%s' -> '%s'",
+                   user_info.pending_picture_url, user_info.approved_picture_url,
+                   user_info.picture_url, user_info.best_picture_url);
+            if (user_info.best_picture_url == "") {
                 return null;
             }
             return yield AvatarCache.load (provider, user_info.best_picture_url);
         }
 
         /* Upload a new profile picture; on success re-pull the profile so the
-         * pending picture/banner state updates. Returns true on success. */
+         * pending picture/banner state updates. The avatar itself refreshes via
+         * load_avatar (network-first), so no cache eviction is needed. Returns
+         * true on success. */
         public async bool upload_avatar (GLib.Bytes image) throws GLib.Error {
             bool ok = yield provider.update_user_image (image);
             if (ok) {

@@ -251,10 +251,9 @@ namespace Opensprogskole {
             if (session == null) {
                 return;
             }
-            var paintable = yield session.load_avatar ();
-            if (paintable != null) {
-                avatar.custom_image = paintable;
-            }
+            // Setting null reverts to initials (e.g. after removing a pending
+            // photo), so assign unconditionally.
+            avatar.custom_image = yield session.load_avatar ();
         }
 
         private void toast (string text) {

@@ -11,6 +11,7 @@ template $OpensprogskoleAbsencePage: Adw.Bin {
       margin-bottom: 24;
       margin-start: 12;
       margin-end: 12;
+      tightening-threshold: 280;
 
       Stack stack {
         StackPage {
@@ -24,13 +25,45 @@ template $OpensprogskoleAbsencePage: Adw.Bin {
         StackPage {
           name: "list";
 
-          child: ListBox list {
-            selection-mode: none;
-            valign: start;
+          child: Box {
+            orientation: vertical;
+            spacing: 16;
 
-            styles [
-              "boxed-list",
-            ]
+            Box {
+              orientation: horizontal;
+              homogeneous: false;
+
+              Label {
+                label: _("Reported absences");
+                halign: start;
+                hexpand: true;
+
+                styles [
+                  "title-4",
+                ]
+              }
+
+              Button report_button {
+                icon-name: "list-add-symbolic";
+                accessibility {
+                	description: _("Report absence");
+                }
+                accessible-role: button;
+
+                styles [
+                  "pill",
+                  "warning",
+                ]
+              }
+            }
+            ListBox list {
+              selection-mode: none;
+              valign: start;
+
+              styles [
+                "boxed-list",
+              ]
+            }
           };
         }
 

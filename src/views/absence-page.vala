@@ -27,6 +27,13 @@ namespace Opensprogskole {
 
         [GtkChild] private unowned Gtk.ListBox list;
         [GtkChild] private unowned Gtk.Stack stack;
+        [GtkChild] private unowned Gtk.Button report_button;
+
+        public signal void report_absence_requested ();
+
+        construct {
+            report_button.clicked.connect (() => report_absence_requested ());
+        }
 
         private Session? session = null;
 

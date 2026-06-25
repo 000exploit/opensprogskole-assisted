@@ -55,18 +55,18 @@ namespace Opensprogskole {
             add_nav (nav_list, "view-grid-symbolic", _("Overview"), "overview");
             add_nav (nav_list, "x-office-calendar-symbolic", _("Schedule"), "schedule");
             add_nav (nav_list, "starred-symbolic", _("Grades"), "grades");
-            add_nav (nav_list, "appointment-missed-symbolic", _("Absence"), "absence");
-            add_nav (nav_list, "mail-send-symbolic", _("Report absence"), "report");
+            add_nav (nav_list, "appointment-soon-symbolic", _("Absence"), "absence");
             add_nav (nav_list, "avatar-default-symbolic", _("Your information"), "profile");
 
-            add_nav (more_list, "emblem-documents-symbolic", _("News"), "news");
-            add_nav (more_list, "object-select-symbolic", _("Homework"), "homework");
+            add_nav (more_list, "application-rss+xml-symbolic", _("News"), "news");
+            add_nav (more_list, "folder-documents-symbolic", _("Homework"), "homework");
             add_nav (more_list, "web-browser-symbolic", _("Links"), "links");
 
             nav_list.row_activated.connect ((row) => navigate (page_of[row]));
             more_list.row_activated.connect ((row) => navigate (page_of[row]));
             profile_button.clicked.connect (() => navigate ("profile"));
             overview.report_absence_requested.connect (open_absence_dialog);
+            absence.report_absence_requested.connect (open_absence_dialog);
             overview.open_schedule.connect (() => navigate ("schedule"));
             overview.open_grades.connect (() => navigate ("grades"));
             profile.edit_requested.connect (open_profile_edit);
@@ -157,11 +157,6 @@ namespace Opensprogskole {
         private void navigate (string tag) {
             // "Report absence" is an action, not a page — open the dialog and keep
             // the sidebar highlight on whatever page is actually shown.
-            if (tag == "report") {
-                open_absence_dialog ();
-                sync_to_visible_page ();
-                return;
-            }
             if (tag == "overview") {
                 content_nav.pop_to_tag ("overview");
             } else {

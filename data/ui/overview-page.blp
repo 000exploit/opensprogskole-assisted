@@ -121,6 +121,34 @@ template $OpensprogskoleOverviewPage: Adw.Bin {
                 vhomogeneous: false;
 
                 StackPage {
+                  name: "loading";
+
+                  child: Box {
+                    orientation: vertical;
+                    spacing: 8;
+                    height-request: 120;
+
+                    Adw.Spinner {
+                      width-request: 28;
+                      height-request: 28;
+                      halign: center;
+                      valign: center;
+                      vexpand: true;
+                    }
+
+                    Label {
+                      label: _("Loading lessons…");
+                      margin-bottom: 12;
+
+                      styles [
+                        "dim-label",
+                        "caption",
+                      ]
+                    }
+                  };
+                }
+
+                StackPage {
                   name: "lessons";
 
                   child: $OpensprogskoleDayLessons today_lessons {

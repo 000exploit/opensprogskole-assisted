@@ -146,10 +146,13 @@ namespace Opensprogskole {
 
         private async void enter_session (Session s) {
             loading ();
-            yield s.refresh ();          // general data — keeps startup quick
+            yield s.refresh ();           // fast critical data — paints the shell
             session = s;
             authenticated (s);
-            s.refresh_absence.begin ();  // heavier; loads in the background
+            // Slow endpoints stream into their own cards (spinners) afterwards,
+            // so a sluggish GetTimetable/GetUserAbsence never holds up startup.
+            s.refresh_timetable.begin ();
+            s.refresh_absence.begin ();
         }
 
         /* Invalidate the token server-side (best effort), forget the account, and

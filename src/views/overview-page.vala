@@ -62,11 +62,16 @@ namespace Opensprogskole {
         public void bind (Session session) {
             this.session = session;
             session.updated.connect (reload);
+            session.timetable_updated.connect (reload_lessons_now);
             session.absence_updated.connect (update_attendance);
             reload ();
             if (session.absence_summary != null) {
                 update_attendance ();   // already loaded (e.g. re-bind)
             }
+        }
+
+        private void reload_lessons_now () {
+            reload_lessons (new DateTime.now_local ());
         }
 
         private void reload () {
@@ -90,6 +95,13 @@ namespace Opensprogskole {
          * lesson to come, otherwise the closest future day. When nothing is
          * upcoming at all, swap in the "no more lessons" status page. */
         private void reload_lessons (DateTime now) {
+            // Timetable is fetched after the first paint; show a spinner until
+            // it settles rather than a premature "no lessons" state.
+            if (!session.timetable_loaded) {
+                lessons_stack.visible_child_name = "loading";
+                return;
+            }
+
             string? key = session.timetable.upcoming_day_key (now);
             if (key == null) {
                 lessons_stack.visible_child_name = "none";

@@ -41,10 +41,16 @@ namespace Opensprogskole {
         public UserInfoSettings? user_settings { get; private set; default = null; }
         public AbsenceSummary? absence_summary { get; private set; default = null; }
 
-        /* After general data (timetable/grades/profile). */
+        /* After the fast general data (grades/profile/settings). */
         public signal void updated ();
+        /* After the (separately, often slowly fetched) timetable. */
+        public signal void timetable_updated ();
         /* After the absence summary + events. */
         public signal void absence_updated ();
+
+        /* False until the first timetable fetch settles, so widgets can show a
+         * spinner instead of an empty "no lessons" state while it loads. */
+        public bool timetable_loaded { get; private set; default = false; }
 
         public Session (School school, SchoolProvider provider, string username) {
             Object (school: school, provider: provider, username: username);
@@ -60,8 +66,45 @@ namespace Opensprogskole {
             }
         }
 
-        /* General data shown right after login. Never throws. */
+        /* The fast critical data the shell needs to paint: grades, profile and
+         * the edit settings. Never throws.
+         *
+         * These three are independent, so they're fetched concurrently over the
+         * shared Soup session (which the splash waits on): the user waits for
+         * the slowest single call, not the sum. The timetable and absence
+         * summary are far slower on some backends, so they load separately
+         * (refresh_timetable / refresh_absence) and stream into their cards
+         * without holding up the first paint. */
         public async void refresh () {
+            int64 t0 = get_monotonic_time ();
+
+            SourceFunc resume = refresh.callback;
+            int remaining = 3;
+
+            load_grades_data.begin ((o, r) => {
+                load_grades_data.end (r);
+                if (--remaining == 0) resume ();
+            });
+            load_user_info.begin ((o, r) => {
+                load_user_info.end (r);
+                if (--remaining == 0) resume ();
+            });
+            load_settings.begin ((o, r) => {
+                load_settings.end (r);
+                if (--remaining == 0) resume ();
+            });
+
+            yield;   // resumed once all three loaders report back
+
+            debug ("refresh: critical data in %lld ms",
+                   (get_monotonic_time () - t0) / 1000);
+            updated ();
+        }
+
+        /* The timetable, fetched on its own so a slow GetTimetable doesn't block
+         * the first paint. The "Up next" card shows a spinner until this fires. */
+        public async void refresh_timetable () {
+            int64 t = get_monotonic_time ();
             try {
                 var node = yield provider.fetch_timetable ();
                 if (node != null && node.get_node_type () == Json.NodeType.ARRAY) {
@@ -70,16 +113,24 @@ namespace Opensprogskole {
             } catch (GLib.Error e) {
                 warning ("timetable fetch failed: %s", e.message);
             }
+            timetable_loaded = true;
+            debug ("refresh: timetable in %lld ms", (get_monotonic_time () - t) / 1000);
+            timetable_updated ();
+        }
 
+        private async void load_grades_data () {
+            int64 t = get_monotonic_time ();
             try {
                 var node = yield provider.fetch_grades ();
                 load_grades (node);
             } catch (GLib.Error e) {
                 warning ("grades fetch failed: %s", e.message);
             }
+            debug ("refresh: grades in %lld ms", (get_monotonic_time () - t) / 1000);
+        }
 
-            yield load_user_info ();
-
+        private async void load_settings () {
+            int64 t = get_monotonic_time ();
             try {
                 var node = yield provider.fetch_user_info_settings ();
                 if (node != null && node.get_node_type () == Json.NodeType.OBJECT) {
@@ -89,14 +140,14 @@ namespace Opensprogskole {
             } catch (GLib.Error e) {
                 warning ("user info settings fetch failed: %s", e.message);
             }
-
-            updated ();
+            debug ("refresh: settings in %lld ms", (get_monotonic_time () - t) / 1000);
         }
 
         /* Re-fetch just the profile (GetUserInfo) into user_info. Best effort —
          * a failed fetch leaves the previous value in place. Shared by the
          * initial refresh() and the picture-change helpers. */
         private async void load_user_info () {
+            int64 t = get_monotonic_time ();
             try {
                 var node = yield provider.fetch_user_info (username);
                 if (node != null && node.get_node_type () == Json.NodeType.OBJECT) {
@@ -106,6 +157,7 @@ namespace Opensprogskole {
             } catch (GLib.Error e) {
                 warning ("user info fetch failed: %s", e.message);
             }
+            debug ("refresh: user info in %lld ms", (get_monotonic_time () - t) / 1000);
         }
 
         /* Re-pull the profile and notify listeners. Used after a picture change,
@@ -169,12 +221,14 @@ namespace Opensprogskole {
 
         /* Absence is fetched on its own so it doesn't slow the first paint. */
         public async void refresh_absence () {
+            int64 t = get_monotonic_time ();
             try {
                 var node = yield provider.fetch_absence ();
                 parse_absence (node);
             } catch (GLib.Error e) {
                 warning ("absence fetch failed: %s", e.message);
             }
+            debug ("refresh: absence in %lld ms", (get_monotonic_time () - t) / 1000);
             absence_updated ();
         }
 

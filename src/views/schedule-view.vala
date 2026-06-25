@@ -68,8 +68,6 @@ namespace Opensprogskole {
                     agenda.reveal_anchor ();
                 }
             });
-
-            store.changed.connect (on_store_changed);
         }
 
         /* Use a shared store (e.g. the Session's). Renders its current contents
@@ -85,7 +83,27 @@ namespace Opensprogskole {
          * bits are refreshed for whatever month is currently shown. */
         private void on_store_changed () {
             agenda.set_all (store);
-            refresh_month (calendar.year, calendar.month);
+            position_to_upcoming ();
+        }
+
+        /* On a fresh data load, jump the calendar to the soonest upcoming lesson
+         * (which may be in a later month) and select it — rather than landing on
+         * the first lesson of whatever month happens to be showing. Falls back to
+         * the normal per-month pick when there is no upcoming lesson at all. */
+        private void position_to_upcoming () {
+            string? key = store.upcoming_day_key (new DateTime.now_local ());
+            if (key == null) {
+                refresh_month (calendar.year, calendar.month);
+                return;
+            }
+
+            int year = int.parse (key.substring (0, 4));
+            int month = int.parse (key.substring (5, 2));
+            int day = int.parse (key.substring (8, 2));
+
+            calendar.set_date (year, month);
+            refresh_markers (year, month);
+            show_day (year, month, day);
         }
 
         /* Refresh the parts that depend on the visible month. */
@@ -122,8 +140,7 @@ namespace Opensprogskole {
                     day = first;
                 }
             }
-            calendar.select_day (day);
-            on_day_selected (year, month, day);
+            show_day (year, month, day);
         }
 
         private int first_lesson_day (int year, int month) {
@@ -134,6 +151,13 @@ namespace Opensprogskole {
                 }
             }
             return 0;
+        }
+
+        /* Highlight a day and show its lessons — the programmatic counterpart to
+         * the user clicking a day (calendar.select_day doesn't emit day_selected). */
+        private void show_day (int year, int month, int day) {
+            calendar.select_day (day);
+            on_day_selected (year, month, day);
         }
 
         private void on_day_selected (int year, int month, int day) {

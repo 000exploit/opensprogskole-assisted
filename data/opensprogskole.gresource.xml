@@ -17,5 +17,6 @@
     <file preprocess="xml-stripblanks">ui/overview-page.ui</file>
     <file preprocess="xml-stripblanks">ui/absence-page.ui</file>
     <file preprocess="xml-stripblanks">ui/profile-page.ui</file>
+    <file preprocess="xml-stripblanks">ui/edit-profile-page.ui</file>
   </gresource>
 </gresources>

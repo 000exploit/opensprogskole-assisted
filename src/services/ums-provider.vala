@@ -84,6 +84,57 @@ namespace Opensprogskole {
                 "/UserInfo/GetUserInfo/" + UmsClient.base64url (username), "2");
         }
 
+        public async Json.Node? fetch_user_info_settings () throws GLib.Error {
+            return yield client.get_json ("/UserInfo/GetUserInfoSettings", "2");
+        }
+
+        /* UpdateUserInfo accepts exactly the editable fields. We send the current
+         * value of each from `info`, so the caller only has to mutate what
+         * changed (a flipped SMS switch, an edited e-mail) before calling. */
+        public async bool update_user_info (UserInfoItem info) throws GLib.Error {
+            var b = new Json.Builder ();
+            b.begin_object ();
+            b.set_member_name ("PrivateMail"); b.add_string_value (info.private_mail);
+            b.set_member_name ("WorkMail"); b.add_string_value (info.work_mail);
+            b.set_member_name ("WorkPhoneNumber"); b.add_string_value (info.work_phone_number);
+            b.set_member_name ("PhoneNumber"); b.add_string_value (info.phone_number);
+            b.set_member_name ("PrivateMobilePhone"); b.add_string_value (info.private_mobile_phone);
+            b.set_member_name ("WorkMobilePhone"); b.add_string_value (info.work_mobile_phone);
+            b.set_member_name ("OtherInfo"); b.add_string_value (info.other_info);
+            b.set_member_name ("NeverReceiveSms"); b.add_boolean_value (info.never_receive_sms);
+            b.set_member_name ("PicturePrivacySetting"); b.add_int_value (info.picture_privacy_setting);
+            b.end_object ();
+
+            var gen = new Json.Generator ();
+            gen.set_root (b.get_root ());
+
+            yield client.post_void ("/UserInfo/UpdateUserInfo", gen.to_data (null), "2");
+            return true;
+        }
+
+        public async bool update_user_image (GLib.Bytes image) throws GLib.Error {
+            yield client.post_multipart ("/UserInfo/UpdateUserImage",
+                "profilepicture", "profilepicture.jpg", "image/jpeg", image, "2");
+            return true;
+        }
+
+        public async bool delete_pending_image () throws GLib.Error {
+            yield client.post_action ("/UserInfo/DeletePendingImage", "2");
+            return true;
+        }
+
+        public async GLib.Bytes? fetch_picture (string url) throws GLib.Error {
+            if (url.has_prefix ("http")) {
+                return yield client.fetch_picture (url);
+            }
+            // Relative URL: resolve against the host origin, not the /api base.
+            string origin = school.base_url.has_suffix ("/api")
+                ? school.base_url.substring (0, school.base_url.length - 4)
+                : school.base_url;
+            return yield client.fetch_picture (
+                origin + (url.has_prefix ("/") ? url : "/" + url));
+        }
+
         public async int create_future_absence (string reason, string start_iso,
                                                 string end_iso) throws GLib.Error {
             var b = new Json.Builder ();

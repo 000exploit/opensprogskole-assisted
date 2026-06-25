@@ -56,6 +56,27 @@ namespace Opensprogskole {
         public abstract async Json.Node? fetch_user_info (string username)
             throws GLib.Error;
 
+        /* Which profile fields the school lets the student edit (JSON object). */
+        public abstract async Json.Node? fetch_user_info_settings ()
+            throws GLib.Error;
+
+        /* Persist the editable profile fields of `info`. Returns true on success. */
+        public abstract async bool update_user_info (UserInfoItem info)
+            throws GLib.Error;
+
+        /* Upload a new profile picture (raw image bytes). It becomes a pending,
+         * not-yet-approved picture server-side. Returns true on success. */
+        public abstract async bool update_user_image (GLib.Bytes image)
+            throws GLib.Error;
+
+        /* Discard the pending (awaiting-approval) profile picture. Returns true
+         * on success. */
+        public abstract async bool delete_pending_image () throws GLib.Error;
+
+        /* Download a profile picture by URL (raw image bytes), or null. */
+        public abstract async GLib.Bytes? fetch_picture (string url)
+            throws GLib.Error;
+
         /* Report a future absence; returns the new absence id. ISO datetimes are
          * "yyyy-MM-ddTHH:mm:ss". */
         public abstract async int create_future_absence (string reason,

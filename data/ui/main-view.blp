@@ -325,11 +325,11 @@ menu primary_menu {
 
 menu profile_menu {
   section {
-    // No "app.edit-profile" action exists yet, so this item renders insensitive
-    // ("greyed out") until profile editing is implemented.
+    // Backed by the "profile.edit" action group on MainView; disabled when the
+    // school doesn't allow editing any field.
     item {
       label: _("_Edit information");
-      action: "app.edit-profile";
+      action: "profile.edit";
     }
   }
 

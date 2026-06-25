@@ -76,7 +76,7 @@ namespace Opensprogskole {
 
             var now = new DateTime.now_local ();
             string first = session.display_name.split (" ")[0];
-            /* TODO: diffent time */
+            /* TODO: different time */
             greeting.label = _("Good day, %s").printf (first);
             subtitle.label = "%s · %s".printf (
                 now.format ("%A, %-d %B %Y"), session.school.name);

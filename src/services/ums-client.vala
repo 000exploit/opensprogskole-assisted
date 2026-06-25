@@ -113,16 +113,22 @@ namespace Opensprogskole {
             }
         }
 
-        /* Authenticated GET returning the parsed JSON root. */
-        public async Json.Node get_json (string path, string version = "2")
-            throws GLib.Error {
-            var msg = new Soup.Message ("GET", base_url + path);
+        /* Build an authenticated request to base_url + path carrying the standard
+         * UMS headers. A JSON body, if any, is attached by the caller. */
+        private Soup.Message authed (string method, string path, string version) {
+            var msg = new Soup.Message (method, base_url + path);
             msg.request_headers.append ("X-UMS-AppMaui", "1");
             msg.request_headers.append ("X-UMS-Version", version);
             if (token != "") {
                 msg.request_headers.append ("Authorization", "Bearer " + token);
             }
+            return msg;
+        }
 
+        /* Authenticated GET returning the parsed JSON root. */
+        public async Json.Node get_json (string path, string version = "2")
+            throws GLib.Error {
+            var msg = authed ("GET", path, version);
             var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, null);
             if (msg.status_code != 200) {
                 throw new UmsError.HTTP ("HTTP %u for %s".printf (msg.status_code, path));
@@ -137,39 +143,91 @@ namespace Opensprogskole {
         /* Authenticated POST with no body; the response is ignored. Used for
          * fire-and-forget endpoints like DeleteToken. */
         public async void post (string path, string version = "2") throws GLib.Error {
-            var msg = new Soup.Message ("POST", base_url + path);
+            var msg = authed ("POST", path, version);
+            yield session.send_and_read_async (msg, Priority.DEFAULT, null);
+        }
+
+        /* Authenticated POST with no body whose status is checked (the response
+         * body is still ignored). For action endpoints where success matters,
+         * e.g. DeletePendingImage. */
+        public async void post_action (string path, string version = "2")
+            throws GLib.Error {
+            var msg = authed ("POST", path, version);
+            yield session.send_and_read_async (msg, Priority.DEFAULT, null);
+            check_post_status (msg.status_code, path);
+        }
+
+        /* Authenticated multipart/form-data POST of a single file part; the
+         * response body is ignored, the status is checked. Used to upload the
+         * profile picture (UpdateUserImage). */
+        public async void post_multipart (string path, string control_name,
+                                          string filename, string content_type,
+                                          GLib.Bytes body, string version = "2")
+            throws GLib.Error {
+            var multipart = new Soup.Multipart ("multipart/form-data");
+            multipart.append_form_file (control_name, filename, content_type, body);
+
+            var msg = new Soup.Message.from_multipart (base_url + path, multipart);
             msg.request_headers.append ("X-UMS-AppMaui", "1");
             msg.request_headers.append ("X-UMS-Version", version);
             if (token != "") {
                 msg.request_headers.append ("Authorization", "Bearer " + token);
             }
+
             yield session.send_and_read_async (msg, Priority.DEFAULT, null);
+            check_post_status (msg.status_code, path);
         }
 
         /* Authenticated POST with a JSON body, returning the parsed response.
          * Throws on a non-200 status. */
         public async Json.Node post_json (string path, string body, string version = "2")
             throws GLib.Error {
-            var msg = new Soup.Message ("POST", base_url + path);
-            msg.request_headers.append ("X-UMS-AppMaui", "1");
-            msg.request_headers.append ("X-UMS-Version", version);
-            if (token != "") {
-                msg.request_headers.append ("Authorization", "Bearer " + token);
-            }
+            var msg = authed ("POST", path, version);
             msg.set_request_body_from_bytes ("application/json", new Bytes (body.data));
 
             var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, null);
-            if (msg.status_code == 400 || msg.status_code == 401) {
-                throw new UmsError.UNAUTHORIZED ("Request rejected (HTTP %u)".printf (msg.status_code));
-            }
-            if (msg.status_code != 200) {
-                throw new UmsError.HTTP ("HTTP %u for %s".printf (msg.status_code, path));
-            }
+            check_post_status (msg.status_code, path);
             var root = parse (bytes);
             if (root == null) {
                 throw new UmsError.MALFORMED ("Empty/invalid JSON for %s".printf (path));
             }
             return root;
+        }
+
+        /* Authenticated POST with a JSON body whose response body is ignored.
+         * For endpoints that reply 200 with empty/non-JSON content (UpdateUserInfo). */
+        public async void post_void (string path, string body, string version = "2")
+            throws GLib.Error {
+            var msg = authed ("POST", path, version);
+            msg.set_request_body_from_bytes ("application/json", new Bytes (body.data));
+            yield session.send_and_read_async (msg, Priority.DEFAULT, null);
+            check_post_status (msg.status_code, path);
+        }
+
+        /* GET raw bytes from an absolute URL (a profile picture), carrying the
+         * Bearer token. Returns null on any non-200 instead of throwing — a
+         * missing avatar is not an error worth propagating. */
+        public async GLib.Bytes? fetch_picture (string url) {
+            var msg = new Soup.Message ("GET", url);
+            if (token != "") {
+                msg.request_headers.append ("Authorization", "Bearer " + token);
+            }
+            try {
+                var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, null);
+                return msg.status_code == 200 ? bytes : null;
+            } catch (GLib.Error e) {
+                warning ("picture fetch failed: %s", e.message);
+                return null;
+            }
+        }
+
+        private static void check_post_status (uint status, string path) throws UmsError {
+            if (status == 400 || status == 401) {
+                throw new UmsError.UNAUTHORIZED ("Request rejected (HTTP %u)".printf (status));
+            }
+            if (status != 200) {
+                throw new UmsError.HTTP ("HTTP %u for %s".printf (status, path));
+            }
         }
 
         /* base64url, used for the UserInfo path segment (username). */

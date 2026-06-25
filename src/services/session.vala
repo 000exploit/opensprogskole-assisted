@@ -38,6 +38,7 @@ namespace Opensprogskole {
         public GLib.ListStore grades { get; default = new GLib.ListStore (typeof (GradeItem)); }
         public GLib.ListStore absences { get; default = new GLib.ListStore (typeof (AbsenceItem)); }
         public UserInfoItem? user_info { get; private set; default = null; }
+        public UserInfoSettings? user_settings { get; private set; default = null; }
         public AbsenceSummary? absence_summary { get; private set; default = null; }
 
         /* After general data (timetable/grades/profile). */
@@ -77,6 +78,25 @@ namespace Opensprogskole {
                 warning ("grades fetch failed: %s", e.message);
             }
 
+            yield load_user_info ();
+
+            try {
+                var node = yield provider.fetch_user_info_settings ();
+                if (node != null && node.get_node_type () == Json.NodeType.OBJECT) {
+                    user_settings = (UserInfoSettings) Json.gobject_deserialize (
+                        typeof (UserInfoSettings), node);
+                }
+            } catch (GLib.Error e) {
+                warning ("user info settings fetch failed: %s", e.message);
+            }
+
+            updated ();
+        }
+
+        /* Re-fetch just the profile (GetUserInfo) into user_info. Best effort —
+         * a failed fetch leaves the previous value in place. Shared by the
+         * initial refresh() and the picture-change helpers. */
+        private async void load_user_info () {
             try {
                 var node = yield provider.fetch_user_info (username);
                 if (node != null && node.get_node_type () == Json.NodeType.OBJECT) {
@@ -86,8 +106,56 @@ namespace Opensprogskole {
             } catch (GLib.Error e) {
                 warning ("user info fetch failed: %s", e.message);
             }
+        }
 
+        /* Re-pull the profile and notify listeners. Used after a picture change,
+         * where the new pending/approved URL only shows up in a fresh fetch. */
+        public async void refresh_user_info () {
+            yield load_user_info ();
             updated ();
+        }
+
+        /* Persist the editable profile fields. The caller mutates user_info
+         * first (an edited e-mail, a flipped SMS preference) and, on a thrown
+         * error, reverts its UI. On success listeners refresh via updated(). */
+        public async bool save_user_info () throws GLib.Error {
+            if (user_info == null) {
+                return false;
+            }
+            bool ok = yield provider.update_user_info (user_info);
+            if (ok) {
+                updated ();
+            }
+            return ok;
+        }
+
+        /* The profile picture as a paintable (downloaded + cached), or null when
+         * there is none — the caller then shows initials. */
+        public async Gdk.Paintable? load_avatar () {
+            if (user_info == null || user_info.best_picture_url == "") {
+                return null;
+            }
+            return yield AvatarCache.load (provider, user_info.best_picture_url);
+        }
+
+        /* Upload a new profile picture; on success re-pull the profile so the
+         * pending picture/banner state updates. Returns true on success. */
+        public async bool upload_avatar (GLib.Bytes image) throws GLib.Error {
+            bool ok = yield provider.update_user_image (image);
+            if (ok) {
+                yield refresh_user_info ();
+            }
+            return ok;
+        }
+
+        /* Discard the pending profile picture; on success re-pull the profile.
+         * Returns true on success. */
+        public async bool remove_pending_avatar () throws GLib.Error {
+            bool ok = yield provider.delete_pending_image ();
+            if (ok) {
+                yield refresh_user_info ();
+            }
+            return ok;
         }
 
         /* Report a future absence; returns the new id. Refreshes the absence

@@ -2,88 +2,149 @@ using Gtk 4.0;
 using Adw 1;
 
 template $OpensprogskoleProfilePage: Adw.Bin {
-  child: ScrolledWindow {
-    hscrollbar-policy: never;
+  child: Adw.ToastOverlay toast_overlay {
+    child: ScrolledWindow {
+      hscrollbar-policy: never;
 
-    Adw.Clamp {
-      maximum-size: 640;
-      margin-top: 20;
-      margin-bottom: 24;
-      margin-start: 12;
-      margin-end: 12;
-
-      Box {
-        orientation: vertical;
-        spacing: 18;
+      Adw.Clamp {
+        maximum-size: 640;
+        margin-top: 20;
+        margin-bottom: 24;
+        margin-start: 12;
+        margin-end: 12;
 
         Box {
-          spacing: 16;
-
-          Adw.Avatar avatar {
-            size: 72;
-            show-initials: true;
-          }
+          orientation: vertical;
+          spacing: 18;
 
           Box {
-            orientation: vertical;
-            valign: center;
+            spacing: 16;
 
-            Label name_label {
-              halign: start;
-              wrap: true;
+            // Avatar with an overlaid camera button for selfie upload.
+            Overlay {
+              valign: center;
 
-              styles [
-                "title-2",
-              ]
+              Adw.Avatar avatar {
+                size: 96;
+                show-initials: true;
+              }
+
+              [overlay]
+              Button avatar_edit_button {
+                icon-name: "camera-photo-symbolic";
+                halign: end;
+                valign: end;
+                visible: false;
+                tooltip-text: _("Change profile photo");
+
+                styles [
+                  "circular",
+                  "osd",
+                ]
+              }
             }
 
-            Label sub_label {
-              halign: start;
-              wrap: true;
+            Box {
+              orientation: vertical;
+              valign: center;
+              hexpand: true;
+
+              Label name_label {
+                halign: start;
+                wrap: true;
+
+                styles [
+                  "title-2",
+                ]
+              }
+
+              Label sub_label {
+                halign: start;
+                wrap: true;
+
+                styles [
+                  "dim-label",
+                ]
+              }
+            }
+
+            // Opens the editable sub-page; hidden when nothing is editable.
+            Button edit_button {
+              icon-name: "document-edit-symbolic";
+              valign: center;
+              visible: false;
+              tooltip-text: _("Edit information");
 
               styles [
-                "dim-label",
+                "flat",
               ]
             }
           }
-        }
 
-        Label {
-          label: _("About");
-          halign: start;
+          Adw.Banner error_banner {
+            revealed: false;
+          }
 
-          styles [
-            "title-4",
-          ]
-        }
+          // Shown only while an uploaded picture awaits school approval.
+          Adw.Banner pending_banner {
+            revealed: false;
+            title: _("Profile photo awaiting approval");
+            button-label: _("Remove");
+          }
 
-        ListBox about_list {
-          selection-mode: none;
-          valign: start;
+          // About / Contact rows are appended in code (non-empty fields only).
+          Adw.PreferencesGroup about_group {
+            title: _("About");
+          }
 
-          styles [
-            "boxed-list",
-          ]
-        }
+          Adw.PreferencesGroup contact_group {
+            title: _("Contact");
+          }
 
-        Label {
-          label: _("Contact");
-          halign: start;
+          // Quick, auto-saving settings. The whole group is hidden unless at least
+          // one of its rows is permitted by GetUserInfoSettings.
+          Adw.PreferencesGroup prefs_group {
+            title: _("Preferences");
+            visible: false;
 
-          styles [
-            "title-4",
-          ]
-        }
+            Adw.SwitchRow sms_row {
+              title: _("Receive SMS reminders");
+              subtitle: _("Texts about exams, appointments and schedule changes");
+              visible: false;
 
-        ListBox contact_list {
-          selection-mode: none;
-          valign: start;
+              [suffix]
+              MenuButton sms_warning_button {
+                icon-name: "dialog-warning-symbolic";
+                valign: center;
+                visible: false;
+                tooltip-text: _("Why this matters");
 
-          styles [
-            "boxed-list",
-          ]
+                styles [
+                  "flat",
+                  "warning",
+                ]
+
+                popover: Popover {
+                  Label {
+                    label: _("SMS reminders are off. You could miss an exam or an important appointment.");
+                    wrap: true;
+                    max-width-chars: 28;
+                    margin-top: 12;
+                    margin-bottom: 12;
+                    margin-start: 12;
+                    margin-end: 12;
+                  }
+                };
+              }
+            }
+
+            Adw.ComboRow privacy_row {
+              title: _("Picture visibility");
+              visible: false;
+            }
+          }
         }
       }
-    }
+    };
   };
 }

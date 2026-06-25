@@ -44,6 +44,7 @@ namespace Opensprogskole {
         [GtkChild] private unowned ProfilePage profile;
 
         private Session? session = null;
+        private GLib.SimpleAction edit_action;
 
         // row -> page tag
         private GLib.HashTable<Gtk.ListBoxRow, string> page_of
@@ -67,6 +68,16 @@ namespace Opensprogskole {
             overview.report_absence_requested.connect (open_absence_dialog);
             overview.open_schedule.connect (() => navigate ("schedule"));
             overview.open_grades.connect (() => navigate ("grades"));
+            profile.edit_requested.connect (open_profile_edit);
+
+            // "profile.edit" backs the profile popover's "Edit information" item;
+            // it stays disabled until we learn the school allows editing.
+            var group = new GLib.SimpleActionGroup ();
+            edit_action = new GLib.SimpleAction ("edit", null);
+            edit_action.set_enabled (false);
+            edit_action.activate.connect (() => open_profile_edit ());
+            group.add_action (edit_action);
+            insert_action_group ("profile", group);
 
             content_nav.replace_with_tags ({ "overview" });
             content_nav.notify["visible-page"].connect (sync_to_visible_page);
@@ -77,19 +88,54 @@ namespace Opensprogskole {
             this.session = session;
             school_label.label = session.school.name;
             school_avatar.text = session.school.short_code;
-            profile_name.label = session.display_name;
-            profile_avatar.text = session.display_name;
 
             overview.bind (session);
             schedule.use_store (session.timetable);
             absence.bind (session);
             profile.bind (session);
 
-            // Keep the profile/footer label fresh once user info arrives.
-            session.updated.connect (() => {
-                profile_name.label = session.display_name;
-                profile_avatar.text = session.display_name;
-            });
+            // Sync the footer chrome now (the session's initial updated() fires
+            // during refresh(), before this bind connects — so we can't rely on
+            // the signal for the first paint) and again whenever data changes.
+            sync_footer ();
+            session.updated.connect (sync_footer);
+        }
+
+        /* Footer label + avatar + the "Edit information" action's enabled state,
+         * kept in step with the session (incl. after a picture upload). */
+        private void sync_footer () {
+            if (session == null) {
+                return;
+            }
+            profile_name.label = session.display_name;
+            profile_avatar.text = session.display_name;
+            load_profile_avatar.begin ();
+            edit_action.set_enabled (
+                session.user_settings != null && session.user_settings.any_editable);
+        }
+
+        /* Mirror the profile picture into the sidebar footer avatar; leaves the
+         * initials in place when there is none. */
+        private async void load_profile_avatar () {
+            if (session == null) {
+                return;
+            }
+            var paintable = yield session.load_avatar ();
+            profile_avatar.custom_image = paintable;
+        }
+
+        /* Push the editable profile page on top of the profile page; pops back
+         * to it on a successful save. */
+        private void open_profile_edit () {
+            if (session == null || session.user_info == null) {
+                return;
+            }
+            var page = new EditProfilePage (session);
+            page.done.connect (() => content_nav.pop ());
+            content_nav.push (page);
+            if (split.collapsed) {
+                split.show_content = true;
+            }
         }
 
         private void add_nav (Gtk.ListBox list, string icon, string label, string page) {
@@ -138,8 +184,10 @@ namespace Opensprogskole {
             if (page == null) {
                 return;
             }
-            select_row_for_tag (nav_list, page.tag);
-            select_row_for_tag (more_list, page.tag);
+            // The edit sub-page lives "under" profile — keep that row highlighted.
+            string tag = page.tag == "profile-edit" ? "profile" : page.tag;
+            select_row_for_tag (nav_list, tag);
+            select_row_for_tag (more_list, tag);
         }
 
         private void select_row_for_tag (Gtk.ListBox list, string tag) {

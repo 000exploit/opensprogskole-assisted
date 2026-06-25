@@ -1,0 +1,134 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OpensprogskoleEditProfilePage: Adw.NavigationPage {
+  title: _("Edit information");
+  tag: "profile-edit";
+
+  child: Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
+
+    content: ScrolledWindow {
+      hscrollbar-policy: never;
+
+      Adw.Clamp {
+        maximum-size: 540;
+        margin-top: 18;
+        margin-bottom: 24;
+        margin-start: 12;
+        margin-end: 12;
+
+        Box {
+          orientation: vertical;
+          spacing: 18;
+
+          Adw.Banner error_banner {
+            revealed: false;
+          }
+
+          // Only fields the school permits are editable here; everything else is
+          // read-only and handled by the school's reception.
+          Box {
+            spacing: 12;
+
+            styles [
+              "card",
+            ]
+
+            Image {
+              icon-name: "info-outline-symbolic";
+              pixel-size: 28;
+              valign: center;
+              margin-top: 12;
+              margin-bottom: 12;
+              margin-start: 12;
+            }
+
+            Label {
+              label: _("Only the fields your school lets you change are shown here. If you need to change anything else, contact the language school reception.");
+              wrap: true;
+              xalign: 0;
+              hexpand: true;
+              margin-top: 12;
+              margin-bottom: 12;
+              margin-end: 12;
+            }
+          }
+
+          // Each row is shown only when GetUserInfoSettings permits editing it.
+          Adw.PreferencesGroup {
+            title: _("Contact");
+
+            Adw.EntryRow phone_row {
+              title: _("Phone");
+              visible: false;
+              input-purpose: phone;
+            }
+
+            Adw.EntryRow private_mobile_row {
+              title: _("Mobile");
+              visible: false;
+              input-purpose: phone;
+            }
+
+            Adw.EntryRow work_phone_row {
+              title: _("Work phone");
+              visible: false;
+              input-purpose: phone;
+            }
+
+            Adw.EntryRow work_mobile_row {
+              title: _("Work mobile");
+              visible: false;
+              input-purpose: phone;
+            }
+
+            Adw.EntryRow private_mail_row {
+              title: _("Email");
+              visible: false;
+              input-purpose: email;
+            }
+
+            Adw.EntryRow work_mail_row {
+              title: _("Work email");
+              visible: false;
+              input-purpose: email;
+            }
+          }
+
+          Adw.PreferencesGroup other_group {
+            visible: false;
+
+            Adw.EntryRow other_info_row {
+              title: _("Other information");
+            }
+          }
+
+          Box {
+            halign: center;
+            valign: center;
+            spacing: 8;
+            margin-top: 6;
+
+            Button save_button {
+              label: _("Save");
+
+              styles [
+                "suggested-action",
+                "pill",
+              ]
+            }
+
+            Adw.Spinner spinner {
+              visible: false;
+              width-request: 18;
+              height-request: 18;
+              valign: center;
+            }
+          }
+        }
+      }
+    };
+  };
+}

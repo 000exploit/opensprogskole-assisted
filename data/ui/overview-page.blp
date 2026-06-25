@@ -123,28 +123,9 @@ template $OpensprogskoleOverviewPage: Adw.Bin {
                 StackPage {
                   name: "loading";
 
-                  child: Box {
-                    orientation: vertical;
-                    spacing: 8;
+                  child: $OpensprogskoleLoadingState {
+                    label: _("Loading lessons…");
                     height-request: 120;
-
-                    Adw.Spinner {
-                      width-request: 28;
-                      height-request: 28;
-                      halign: center;
-                      valign: center;
-                      vexpand: true;
-                    }
-
-                    Label {
-                      label: _("Loading lessons…");
-                      margin-bottom: 12;
-
-                      styles [
-                        "dim-label",
-                        "caption",
-                      ]
-                    }
                   };
                 }
 
@@ -200,28 +181,9 @@ template $OpensprogskoleOverviewPage: Adw.Bin {
                 StackPage {
                   name: "loading";
 
-                  child: Box {
-                    orientation: vertical;
-                    spacing: 8;
+                  child: $OpensprogskoleLoadingState {
+                    label: _("Loading attendance…");
                     height-request: 160;
-
-                    Adw.Spinner {
-                      width-request: 28;
-                      height-request: 28;
-                      halign: center;
-                      valign: center;
-                      vexpand: true;
-                    }
-
-                    Label {
-                      label: _("Loading attendance…");
-                      margin-bottom: 12;
-
-                      styles [
-                        "dim-label",
-                        "caption",
-                      ]
-                    }
                   };
                 }
 

@@ -40,6 +40,7 @@ blueprints = custom_target('blueprints',
   input: files(
     'ui/window.blp',
     'ui/shortcuts-dialog.blp',
+    'ui/loading-state.blp',
     'ui/chart.blp',
     'ui/calendar.blp',
     'ui/calendar-day.blp',

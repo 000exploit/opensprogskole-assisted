@@ -28,6 +28,7 @@ opensprogskole_vala_sources = [
   'views/edit-profile-page.vala',
   'widgets/window.vala',
   'widgets/styles.vala',
+  'widgets/loading-state.vala',
   'widgets/chart.vala',
   'widgets/calendar.vala',
   'widgets/calendar-day.vala',

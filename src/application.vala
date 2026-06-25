@@ -46,6 +46,10 @@ public class Opensprogskole.Application : Adw.Application {
     public override void activate () {
         base.activate ();
         if (this.active_window == null) {
+            // LoadingState is referenced only from .ui templates, so nothing
+            // else pulls in its GType; register it before any template that
+            // embeds it is built, or GtkBuilder can't resolve it by name.
+            typeof (LoadingState).name ();
             new Opensprogskole.Window (this, controller).present ();
             controller.start ();   // drive the initial screen once the window listens
         } else {

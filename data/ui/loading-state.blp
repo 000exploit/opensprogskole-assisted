@@ -1,0 +1,28 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OpensprogskoleLoadingState: Adw.Bin {
+  child: Box {
+    orientation: vertical;
+    spacing: 8;
+    halign: center;
+    valign: center;
+    vexpand: true;
+
+    Adw.Spinner {
+      width-request: 28;
+      height-request: 28;
+      halign: center;
+    }
+
+    Label caption {
+      wrap: true;
+      justify: center;
+
+      styles [
+        "dim-label",
+        "caption",
+      ]
+    }
+  };
+}

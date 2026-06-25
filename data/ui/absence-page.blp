@@ -16,24 +16,8 @@ template $OpensprogskoleAbsencePage: Adw.Bin {
         StackPage {
           name: "loading";
 
-          child: Box {
-            orientation: vertical;
-            spacing: 8;
-            valign: center;
-
-            Adw.Spinner {
-              width-request: 32;
-              height-request: 32;
-              halign: center;
-            }
-
-            Label {
-              label: _("Loading absences…");
-
-              styles [
-                "dim-label",
-              ]
-            }
+          child: $OpensprogskoleLoadingState {
+            label: _("Loading absences…");
           };
         }
 

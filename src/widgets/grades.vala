@@ -62,7 +62,7 @@ namespace Opensprogskole {
             chip.add_css_class ("grade-chip");
             chip.add_css_class (grade.tone.css_class ());
 
-            var date = new Gtk.Label (grade.due_date) {
+            var date = new Gtk.Label (grade.due_date_label) {
                 valign = Gtk.Align.CENTER
             };
             date.add_css_class ("dim-label");

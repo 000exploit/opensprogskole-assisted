@@ -70,6 +70,25 @@ namespace Opensprogskole {
         public string display_label { get; set; default = ""; }
         public GradeTone tone { get; set; default = GradeTone.NEUTRAL; }
 
+        /* due_date for display: date only, since the API always sends a
+         * 00:00:00 time. Prettified to the app's "%-d %b %Y" style (e.g.
+         * "8 Jan 2026"); falls back to the date part of the raw string, then to
+         * the raw string, if it can't be parsed. due_date itself stays raw ISO
+         * so it still sorts correctly. */
+        public string due_date_label {
+            owned get {
+                if (due_date == "") {
+                    return "";
+                }
+                var dt = new DateTime.from_iso8601 (due_date, new TimeZone.local ());
+                if (dt != null) {
+                    return dt.format ("%-d %b %Y");
+                }
+                int t = due_date.index_of ("T");
+                return t > 0 ? due_date.substring (0, t) : due_date;
+            }
+        }
+
         public GradeItem (string course, string grade_scale, string display_label,
                       GradeTone tone, string due_date) {
             Object (

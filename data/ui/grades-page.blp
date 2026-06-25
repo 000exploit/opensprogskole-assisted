@@ -1,0 +1,54 @@
+using Gtk 4.0;
+using Adw 1;
+
+// A single boxed list of all grades — mirrors AbsencePage: a Stack that swaps
+// between a loading spinner, the list, and an empty state, driven entirely by
+// the session's grades store + updated() signal.
+//
+// TODO (multiple grade types): when the backend distinguishes grade categories
+// (e.g. exam marks vs. term assessments), promote this content into an
+// Adw.ViewStack — one Adw.ViewStackPage per type — with an Adw.ViewSwitcher in
+// this page's header. The page is deliberately a thin Adw.Bin around one Stack
+// so that change stays localized here; the per-type lists would each reuse the
+// $OpensprogskoleGrades widget exactly as the single list does below.
+template $OpensprogskoleGradesPage: Adw.Bin {
+  child: ScrolledWindow {
+    hscrollbar-policy: never;
+
+    Adw.Clamp {
+      maximum-size: 680;
+      margin-top: 18;
+      margin-bottom: 24;
+      margin-start: 12;
+      margin-end: 12;
+
+      Stack stack {
+        StackPage {
+          name: "loading";
+
+          child: $OpensprogskoleLoadingState {
+            label: _("Loading grades…");
+          };
+        }
+
+        StackPage {
+          name: "list";
+
+          child: $OpensprogskoleGrades grades_list {
+            valign: start;
+          };
+        }
+
+        StackPage {
+          name: "empty";
+
+          child: Adw.StatusPage {
+            icon-name: "starred-symbolic";
+            title: _("No grades");
+            description: _("Grades will appear here once your school registers them.");
+          };
+        }
+      }
+    }
+  };
+}

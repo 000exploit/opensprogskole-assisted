@@ -41,6 +41,7 @@ namespace Opensprogskole {
         [GtkChild] private unowned OverviewPage overview;
         [GtkChild] private unowned ScheduleView schedule;
         [GtkChild] private unowned AbsencePage absence;
+        [GtkChild] private unowned GradesPage grades_page;
         [GtkChild] private unowned ProfilePage profile;
 
         private Session? session = null;
@@ -92,6 +93,7 @@ namespace Opensprogskole {
             overview.bind (session);
             schedule.use_store (session.timetable);
             absence.bind (session);
+            grades_page.bind (session);
             profile.bind (session);
 
             // Sync the footer chrome now (the session's initial updated() fires

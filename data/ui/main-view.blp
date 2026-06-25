@@ -238,11 +238,7 @@ template $OpensprogskoleMainView: Adw.Bin {
               [top]
               Adw.HeaderBar {}
 
-              content: Adw.StatusPage {
-                icon-name: "starred-symbolic";
-                title: _("Grades");
-                description: _("Coming soon.");
-              };
+              content: $OpensprogskoleGradesPage grades_page {};
             };
           }
 

@@ -24,6 +24,7 @@ opensprogskole_vala_sources = [
   'views/main-view.vala',
   'views/overview-page.vala',
   'views/absence-page.vala',
+  'views/grades-page.vala',
   'views/profile-page.vala',
   'views/edit-profile-page.vala',
   'widgets/window.vala',

@@ -53,6 +53,10 @@ namespace Opensprogskole {
         public bool timetable_loaded { get; private set; default = false; }
         /* Likewise for absence: distinguishes "still loading" from "no absences". */
         public bool absence_loaded { get; private set; default = false; }
+        /* And for grades: distinguishes "still loading" from "no grades". Grades
+         * are part of the fast refresh(), so this flips before the shell paints —
+         * but the Grades page treats it the same way for consistency. */
+        public bool grades_loaded { get; private set; default = false; }
 
         public Session (School school, SchoolProvider provider, string username) {
             Object (school: school, provider: provider, username: username);
@@ -128,6 +132,7 @@ namespace Opensprogskole {
             } catch (GLib.Error e) {
                 warning ("grades fetch failed: %s", e.message);
             }
+            grades_loaded = true;
             debug ("refresh: grades in %lld ms", (get_monotonic_time () - t) / 1000);
         }
 

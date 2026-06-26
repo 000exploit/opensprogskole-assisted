@@ -5,9 +5,9 @@
 <h1 align="center">OpenSprogskole</h1>
 <h3 align="center">Your language school life</h3>
 
----
+<p align="center"><i>Learning Danish at language school? This app is for you.</i></p>
 
-_Learning Danish at language school? OpenSprogskole is for you._
+---
 
 ![](data/screenshots/greetings.png)
 
@@ -23,6 +23,7 @@ Currently, the application supports the following language schools:
 
 <details>
 <summary>Dependencies</summary>
+
 - `gio-2.0` >= 2.86
 - `glib-2.0` >= 2.86
 - `gtk-4` >= 4.22

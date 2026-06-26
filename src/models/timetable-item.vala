@@ -77,6 +77,9 @@ namespace Opensprogskole {
         // The student's reason for an absence, when one has been given. Carried by
         // the timetable JSON itself (also in the absence record's StudentReason).
         public string absence_reason { get; set; default = ""; }  // AbsenceReason
+        // Whether absence can be reported for this lesson at all. False means it
+        // can't be skipped in any way, so there's no attendance to show.
+        public bool allow_absence { get; set; default = true; }   // AllowAbsence
 
         // Parsed by Entity from ISO 8601 (e.g. "2026-05-20T08:15:00") into real
         // GLib.DateTime values; null when the JSON omits them.
@@ -97,7 +100,9 @@ namespace Opensprogskole {
          * the lesson happens, and a reported future absence must not show. */
         public AttendanceStatus attendance {
             get {
-                if (is_upcoming) {
+                // No attendance to show for upcoming lessons, or for lessons that
+                // can't be skipped at all.
+                if (is_upcoming || !allow_absence) {
                     return AttendanceStatus.UNKNOWN;
                 }
                 switch (absence_status) {

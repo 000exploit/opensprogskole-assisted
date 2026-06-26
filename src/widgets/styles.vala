@@ -91,6 +91,7 @@ namespace Opensprogskole {
     .lesson-dot-present  { background-color: @success_bg_color; }
     .lesson-dot-late     { background-color: @accent_bg_color; }
     .lesson-dot-absent   { background-color: @error_bg_color; }
+    .lesson-dot-warning  { background-color: @warning_bg_color; }
     .lesson-dot-upcoming { background-color: transparent; }
 
     /* Absence dialog — large vertical time steppers (GNOME Settings style). */
@@ -134,11 +135,12 @@ namespace Opensprogskole {
         dot.add_css_class (attendance_dot_class (lesson));
     }
 
-    /* The dot class for a lesson: nothing (transparent) for an upcoming lesson —
-     * it hasn't happened, so there's no attendance — else the attendance colour. */
+    /* The dot class for a lesson. Upcoming lessons have no attendance yet, so no
+     * dot — except an upcoming lesson you can't be absent from, which is flagged
+     * (warning) since attendance is mandatory. Past lessons show their attendance. */
     internal string attendance_dot_class (TimetableItem lesson) {
         if (lesson.is_upcoming) {
-            return "lesson-dot-upcoming";
+            return lesson.allow_absence ? "lesson-dot-upcoming" : "lesson-dot-warning";
         }
         switch (lesson.attendance) {
             case AttendanceStatus.PRESENT: return "lesson-dot-present";

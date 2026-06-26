@@ -51,6 +51,43 @@ template $OpensprogskoleLessonDialog: Adw.Dialog {
             }
           }
 
+          // Shown for an upcoming lesson that can't be skipped (AllowAbsence
+          // false) — attendance is effectively mandatory.
+          Box warning_box {
+            spacing: 12;
+            visible: false;
+
+            styles [
+              "card",
+            ]
+
+            Image {
+              icon-name: "dialog-warning-symbolic";
+              valign: center;
+              margin-top: 12;
+              margin-bottom: 12;
+              margin-start: 12;
+
+              styles [
+                "warning",
+              ]
+            }
+
+            Label {
+              label: _("It's not recommended to skip this lesson.");
+              wrap: true;
+              xalign: 0;
+              hexpand: true;
+              margin-top: 12;
+              margin-bottom: 12;
+              margin-end: 12;
+
+              styles [
+                "warning",
+              ]
+            }
+          }
+
           Adw.PreferencesGroup {
             Adw.ActionRow time_row {
               [prefix]

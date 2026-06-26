@@ -35,6 +35,8 @@ namespace Opensprogskole {
         [GtkChild]
         private unowned Gtk.Label activity_label;
         [GtkChild]
+        private unowned Gtk.Box warning_box;
+        [GtkChild]
         private unowned Adw.ActionRow time_row;
         [GtkChild]
         private unowned Adw.PreferencesGroup absence_group;
@@ -61,6 +63,9 @@ namespace Opensprogskole {
                 activity_label.label = item.activity_code;
                 activity_label.visible = true;
             }
+            // Warn about an upcoming lesson that can't be skipped.
+            warning_box.visible = item.is_upcoming && !item.allow_absence;
+
             time_row.title = format_date (item);
             time_row.subtitle = item.time_range;
 

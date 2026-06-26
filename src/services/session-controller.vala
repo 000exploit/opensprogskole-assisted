@@ -209,9 +209,7 @@ namespace Opensprogskole {
             authenticated (s);
             // Slow endpoints stream into their own cards (spinners) afterwards,
             // so a sluggish GetTimetable/GetUserAbsence never holds up startup.
-            s.refresh_timetable.begin ();
-            s.refresh_absence.begin ();
-            s.refresh_future_absence.begin ();
+            s.refresh_streamed ();
         }
 
         /* Invalidate the token server-side (best effort), forget the account, and

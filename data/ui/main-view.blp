@@ -16,7 +16,13 @@ template $OpensprogskoleMainView: Adw.Bin {
 
         child: Adw.ToolbarView {
           [top]
-          Adw.HeaderBar {}
+          Adw.HeaderBar {
+            [start]
+            Button refresh_button {
+              icon-name: "view-refresh-symbolic";
+              tooltip-text: _("Refresh");
+            }
+          }
 
           content: Box {
             orientation: vertical;

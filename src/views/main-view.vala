@@ -35,6 +35,7 @@ namespace Opensprogskole {
         [GtkChild] private unowned Label connection_label;
         [GtkChild] private unowned Gtk.ListBox nav_list;
         [GtkChild] private unowned Gtk.ListBox more_list;
+        [GtkChild] private unowned Button refresh_button;
         [GtkChild] private unowned Adw.NavigationView content_nav;
         [GtkChild] private unowned Button profile_button;
         [GtkChild] private unowned Adw.Avatar profile_avatar;
@@ -66,6 +67,11 @@ namespace Opensprogskole {
             nav_list.row_activated.connect ((row) => navigate (page_of[row]));
             more_list.row_activated.connect ((row) => navigate (page_of[row]));
             profile_button.clicked.connect (() => navigate ("profile"));
+            refresh_button.clicked.connect (() => {
+                if (session != null) {
+                    session.refresh_all ();
+                }
+            });
             overview.report_absence_requested.connect (open_absence_dialog);
             absence.report_absence_requested.connect (open_absence_dialog);
             overview.open_schedule.connect (() => navigate ("schedule"));

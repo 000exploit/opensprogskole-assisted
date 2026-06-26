@@ -140,6 +140,23 @@ namespace Opensprogskole {
             updated ();
         }
 
+        /* The slow, streamed-in resources (each paints its own card). Kicked off
+         * after the critical data on login, and re-run on their own when the user
+         * asks for a manual refresh. */
+        public void refresh_streamed () {
+            refresh_timetable.begin ();
+            refresh_absence.begin ();
+            refresh_future_absence.begin ();
+        }
+
+        /* A full manual refresh: the critical data plus every streamed card.
+         * Used by the sidebar refresh button (enter_session does the equivalent,
+         * but yields on the critical part first to gate the shell's first paint). */
+        public void refresh_all () {
+            refresh.begin ();
+            refresh_streamed ();
+        }
+
         /* The timetable, fetched on its own so a slow GetTimetable doesn't block
          * the first paint. The "Up next" card shows a spinner until this fires. */
         public async void refresh_timetable () {

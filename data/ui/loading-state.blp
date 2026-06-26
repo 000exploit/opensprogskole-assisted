@@ -2,27 +2,65 @@ using Gtk 4.0;
 using Adw 1;
 
 template $OpensprogskoleLoadingState: Adw.Bin {
-  child: Box {
-    orientation: vertical;
-    spacing: 8;
-    halign: center;
-    valign: center;
-    vexpand: true;
+  child: Stack stack {
+    StackPage {
+      name: "loading";
 
-    Adw.Spinner {
-      width-request: 28;
-      height-request: 28;
-      halign: center;
+      child: Box {
+        orientation: vertical;
+        spacing: 8;
+        halign: center;
+        valign: center;
+        vexpand: true;
+
+        Adw.Spinner {
+          width-request: 28;
+          height-request: 28;
+          halign: center;
+        }
+
+        Label caption {
+          wrap: true;
+          justify: center;
+
+          styles [
+            "dim-label",
+            "caption",
+          ]
+        }
+      };
     }
 
-    Label caption {
-      wrap: true;
-      justify: center;
+    StackPage {
+      name: "error";
 
-      styles [
-        "dim-label",
-        "caption",
-      ]
+      child: Box {
+        orientation: vertical;
+        spacing: 8;
+        halign: center;
+        valign: center;
+        vexpand: true;
+
+        Image {
+          icon-name: "network-offline-symbolic";
+          pixel-size: 28;
+          halign: center;
+
+          styles [
+            "dim-label",
+          ]
+        }
+
+        Label error_caption {
+          wrap: true;
+          justify: center;
+
+          styles [
+            "dim-label",
+            "caption",
+          ]
+        }
+      };
     }
   };
 }

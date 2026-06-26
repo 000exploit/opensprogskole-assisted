@@ -50,6 +50,22 @@ namespace Opensprogskole {
             settings = new GLib.Settings ("moe.ekusu.sprogskole");
             device_name = "OpenSprogskole on %s".printf (Environment.get_host_name ());
             device_id = ensure_device_id ();
+
+            // React to connectivity changes. On loss, abort in-flight requests so
+            // they fail now (a per-request cancel can't unstick a shared HTTP/2
+            // connection — tearing it down does). On return, retry what failed.
+            // Lives here (not in Session) so the long-lived controller owns the
+            // subscription — no leak when the per-account Session is replaced.
+            Connectivity.get_default ().notify["online"].connect (() => {
+                if (session == null) {
+                    return;
+                }
+                if (Connectivity.get_default ().online) {
+                    session.retry_failed_loads ();
+                } else {
+                    session.abort_requests ();
+                }
+            });
         }
 
         private string ensure_device_id () {

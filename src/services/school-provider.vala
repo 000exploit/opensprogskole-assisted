@@ -77,6 +77,10 @@ namespace Opensprogskole {
         public abstract async GLib.Bytes? fetch_picture (string url)
             throws GLib.Error;
 
+        /* Abort all in-flight requests immediately (e.g. connectivity lost), so
+         * they fail now instead of stalling until their timeout. */
+        public abstract void abort_requests ();
+
         /* Report a future absence; returns the new absence id. ISO datetimes are
          * "yyyy-MM-ddTHH:mm:ss". */
         public abstract async int create_future_absence (string reason,

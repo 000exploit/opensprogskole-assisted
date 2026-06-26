@@ -47,10 +47,21 @@ namespace Opensprogskole {
          * what every bound control and listener reacts to. */
         public bool online { get; private set; default = true; }
 
+        /* Cancelled the instant the connection drops, so in-flight libsoup
+         * requests abort immediately instead of hanging until their timeout. A
+         * fresh one is swapped in after each cancellation; pass it to every
+         * request (see UmsClient). */
+        public GLib.Cancellable cancellable { get; private set; }
+
         private Connectivity () {
             monitor = GLib.NetworkMonitor.get_default ();
             online = monitor.network_available;
+            cancellable = new GLib.Cancellable ();
             monitor.network_changed.connect ((available) => {
+                if (!available) {
+                    cancellable.cancel ();                  // abort in-flight now
+                    cancellable = new GLib.Cancellable ();  // fresh for later
+                }
                 online = available;
             });
         }

@@ -36,7 +36,15 @@ namespace Opensprogskole {
         // send 1. It's a plain request field, not a binding concern.
         private const int PHONE_TYPE = 0;
 
-        private Soup.Session session = new Soup.Session ();
+        // Cap how long a request may stall before failing — the backstop when a
+        // connection dies mid-flight and the OS doesn't report it (so our
+        // connectivity cancel can't fire). Generous, since the backend itself is
+        // slow (~8s is a normal call). libsoup's own default would be 60s.
+        private const uint REQUEST_TIMEOUT_SECONDS = 25;
+
+        private Soup.Session session = new Soup.Session () {
+            timeout = REQUEST_TIMEOUT_SECONDS
+        };
 
         public string base_url { get; construct; }   // ".../api"
         public string token { get; set; default = ""; }
@@ -45,6 +53,24 @@ namespace Opensprogskole {
 
         public UmsClient (string base_url) {
             Object (base_url: base_url);
+        }
+
+        /* Best-effort cancel of every in-flight request when connectivity is lost.
+         *
+         * NOTE: this does NOT actually unstick a request blocked on a dead HTTP/2
+         * socket. Measured: neither the per-request GCancellable nor this
+         * session.abort() interrupts the read — the connection sits in a kernel
+         * ESTABLISHED state (the peer sent no FIN/RST, the network simply vanished),
+         * and libsoup only gives up when its own socket I/O timeout fires (our
+         * REQUEST_TIMEOUT_SECONDS). It still helps on reconnect (drops the dead
+         * pooled connection so a retry opens a fresh one).
+         *
+         * The real fix belongs in libsoup/GLib: honour the GCancellable on a
+         * blocked HTTP/2 connection read, or expose TCP_USER_TIMEOUT (or a
+         * keepalive PING deadline) so a dead peer is detected in seconds instead of
+         * waiting out the full I/O timeout. Until then the timeout is our only bound. */
+        public void abort () {
+            session.abort ();
         }
 
         /* Log in and keep the Bearer token. Throws UmsError.UNAUTHORIZED on bad
@@ -62,7 +88,7 @@ namespace Opensprogskole {
             string body = login_body (username, password, device_name, device_id);
             msg.set_request_body_from_bytes ("application/json", new Bytes (body.data));
 
-            var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, null);
+            var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
 
             if (msg.status_code == 400 || msg.status_code == 401) {
                 throw new UmsError.UNAUTHORIZED ("Invalid username or password");
@@ -129,7 +155,7 @@ namespace Opensprogskole {
         public async Json.Node get_json (string path, string version = "2")
             throws GLib.Error {
             var msg = authed ("GET", path, version);
-            var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, null);
+            var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
             if (msg.status_code != 200) {
                 throw new UmsError.HTTP ("HTTP %u for %s".printf (msg.status_code, path));
             }
@@ -144,7 +170,7 @@ namespace Opensprogskole {
          * fire-and-forget endpoints like DeleteToken. */
         public async void post (string path, string version = "2") throws GLib.Error {
             var msg = authed ("POST", path, version);
-            yield session.send_and_read_async (msg, Priority.DEFAULT, null);
+            yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
         }
 
         /* Authenticated POST with no body whose status is checked (the response
@@ -153,7 +179,7 @@ namespace Opensprogskole {
         public async void post_action (string path, string version = "2")
             throws GLib.Error {
             var msg = authed ("POST", path, version);
-            yield session.send_and_read_async (msg, Priority.DEFAULT, null);
+            yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
             check_post_status (msg.status_code, path);
         }
 
@@ -174,7 +200,7 @@ namespace Opensprogskole {
                 msg.request_headers.append ("Authorization", "Bearer " + token);
             }
 
-            yield session.send_and_read_async (msg, Priority.DEFAULT, null);
+            yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
             check_post_status (msg.status_code, path);
         }
 
@@ -185,7 +211,7 @@ namespace Opensprogskole {
             var msg = authed ("POST", path, version);
             msg.set_request_body_from_bytes ("application/json", new Bytes (body.data));
 
-            var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, null);
+            var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
             check_post_status (msg.status_code, path);
             var root = parse (bytes);
             if (root == null) {
@@ -200,7 +226,7 @@ namespace Opensprogskole {
             throws GLib.Error {
             var msg = authed ("POST", path, version);
             msg.set_request_body_from_bytes ("application/json", new Bytes (body.data));
-            yield session.send_and_read_async (msg, Priority.DEFAULT, null);
+            yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
             check_post_status (msg.status_code, path);
         }
 
@@ -213,7 +239,7 @@ namespace Opensprogskole {
                 msg.request_headers.append ("Authorization", "Bearer " + token);
             }
             try {
-                var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, null);
+                var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
                 return msg.status_code == 200 ? bytes : null;
             } catch (GLib.Error e) {
                 warning ("picture fetch failed: %s", e.message);

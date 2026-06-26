@@ -33,6 +33,7 @@ namespace Opensprogskole {
 
         [GtkChild] private unowned Grades grades_list;
         [GtkChild] private unowned Gtk.Stack stack;
+        [GtkChild] private unowned LoadingState grades_loading;
 
         private Session? session = null;
 
@@ -52,7 +53,9 @@ namespace Opensprogskole {
             if (session == null) {
                 return;
             }
-            if (!session.grades_loaded) {
+            if (session.grades_state != LoadState.LOADED) {
+                grades_loading.error = session.grades_state == LoadState.FAILED
+                    ? _("Couldn't load grades.") : "";
                 stack.visible_child_name = "loading";
                 return;
             }

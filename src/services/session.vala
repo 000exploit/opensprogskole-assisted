@@ -20,6 +20,11 @@
 
 namespace Opensprogskole {
 
+    /* How a single fetched resource is doing: still in flight, done (possibly
+     * with empty data), or failed. Lets a card distinguish "loading" from
+     * "loaded but empty" from "error". */
+    public enum LoadState { LOADING, LOADED, FAILED }
+
     /* The authenticated app state for one account: the school, its provider and
      * the in-memory stores the views read from.
      *
@@ -48,15 +53,21 @@ namespace Opensprogskole {
         /* After the absence summary + events. */
         public signal void absence_updated ();
 
-        /* False until the first timetable fetch settles, so widgets can show a
-         * spinner instead of an empty "no lessons" state while it loads. */
-        public bool timetable_loaded { get; private set; default = false; }
-        /* Likewise for absence: distinguishes "still loading" from "no absences". */
-        public bool absence_loaded { get; private set; default = false; }
-        /* And for grades: distinguishes "still loading" from "no grades". Grades
-         * are part of the fast refresh(), so this flips before the shell paints —
-         * but the Grades page treats it the same way for consistency. */
-        public bool grades_loaded { get; private set; default = false; }
+        /* Per-resource load state, so each card can show a spinner, its content,
+         * or an error. FAILED loads are retried when connectivity returns (see
+         * retry_failed_loads). Each flips back to LOADING on a (re)fetch and its
+         * matching *_updated()/updated() signal fires so the card re-renders. */
+        public LoadState timetable_state { get; private set; default = LoadState.LOADING; }
+        public LoadState absence_state { get; private set; default = LoadState.LOADING; }
+        public LoadState grades_state { get; private set; default = LoadState.LOADING; }
+
+        // Per-resource load generation. A loader captures it at the start and only
+        // applies its result if it still matches; abort_requests bumps it so a
+        // request left stalling on a dead socket can't clobber a later retry when
+        // it finally times out.
+        private uint timetable_gen = 0;
+        private uint absence_gen = 0;
+        private uint grades_gen = 0;
 
         public Session (School school, SchoolProvider provider, string username) {
             Object (school: school, provider: provider, username: username);
@@ -83,6 +94,11 @@ namespace Opensprogskole {
          * without holding up the first paint. */
         public async void refresh () {
             int64 t0 = get_monotonic_time ();
+
+            // Show the grades spinner during a retry. On the first load this fires
+            // before the shell is bound, so it's a harmless no-op there.
+            grades_state = LoadState.LOADING;
+            updated ();
 
             SourceFunc resume = refresh.callback;
             int remaining = 3;
@@ -111,28 +127,46 @@ namespace Opensprogskole {
          * the first paint. The "Up next" card shows a spinner until this fires. */
         public async void refresh_timetable () {
             int64 t = get_monotonic_time ();
+            uint gen = ++timetable_gen;
+            timetable_state = LoadState.LOADING;
+            timetable_updated ();   // spinner (back) on, incl. on a retry
             try {
                 var node = yield provider.fetch_timetable ();
+                if (gen != timetable_gen) {
+                    return;   // superseded (dropped + retried) — leave the result
+                }
                 if (node != null && node.get_node_type () == Json.NodeType.ARRAY) {
                     timetable.load (node.get_array ());
                 }
+                timetable_state = LoadState.LOADED;
             } catch (GLib.Error e) {
+                if (gen != timetable_gen) {
+                    return;
+                }
                 warning ("timetable fetch failed: %s", e.message);
+                timetable_state = LoadState.FAILED;
             }
-            timetable_loaded = true;
             debug ("refresh: timetable in %lld ms", (get_monotonic_time () - t) / 1000);
             timetable_updated ();
         }
 
         private async void load_grades_data () {
             int64 t = get_monotonic_time ();
+            uint gen = ++grades_gen;
             try {
                 var node = yield provider.fetch_grades ();
+                if (gen != grades_gen) {
+                    return;
+                }
                 load_grades (node);
+                grades_state = LoadState.LOADED;
             } catch (GLib.Error e) {
+                if (gen != grades_gen) {
+                    return;
+                }
                 warning ("grades fetch failed: %s", e.message);
+                grades_state = LoadState.FAILED;
             }
-            grades_loaded = true;
             debug ("refresh: grades in %lld ms", (get_monotonic_time () - t) / 1000);
         }
 
@@ -237,15 +271,66 @@ namespace Opensprogskole {
         /* Absence is fetched on its own so it doesn't slow the first paint. */
         public async void refresh_absence () {
             int64 t = get_monotonic_time ();
+            uint gen = ++absence_gen;
+            absence_state = LoadState.LOADING;
+            absence_updated ();   // spinner (back) on, incl. on a retry
             try {
                 var node = yield provider.fetch_absence ();
+                if (gen != absence_gen) {
+                    return;
+                }
                 parse_absence (node);
+                absence_state = LoadState.LOADED;
             } catch (GLib.Error e) {
+                if (gen != absence_gen) {
+                    return;
+                }
                 warning ("absence fetch failed: %s", e.message);
+                absence_state = LoadState.FAILED;
             }
-            absence_loaded = true;
             debug ("refresh: absence in %lld ms", (get_monotonic_time () - t) / 1000);
             absence_updated ();
+        }
+
+        /* Connectivity lost: tell the cards now instead of leaving them spinning
+         * until the doomed requests time out. We can't actually unstick a request
+         * blocked on a dead socket (see UmsClient.abort), so we flip each loading
+         * resource to FAILED here and bump its generation — the stalled request,
+         * whenever it finally returns, sees the newer generation and drops its
+         * result. retry_failed_loads picks these up on reconnect. */
+        public void abort_requests () {
+            provider.abort_requests ();
+
+            if (timetable_state == LoadState.LOADING) {
+                timetable_gen++;
+                timetable_state = LoadState.FAILED;
+                timetable_updated ();
+            }
+            if (absence_state == LoadState.LOADING) {
+                absence_gen++;
+                absence_state = LoadState.FAILED;
+                absence_updated ();
+            }
+            if (grades_state == LoadState.LOADING) {
+                grades_gen++;
+                grades_state = LoadState.FAILED;
+                updated ();
+            }
+        }
+
+        /* Re-attempt only the loads that failed — called when connectivity comes
+         * back (see SessionController). Each retried load flips its card to a
+         * spinner, then to content or back to an error. */
+        public void retry_failed_loads () {
+            if (grades_state == LoadState.FAILED) {
+                refresh.begin ();
+            }
+            if (timetable_state == LoadState.FAILED) {
+                refresh_timetable.begin ();
+            }
+            if (absence_state == LoadState.FAILED) {
+                refresh_absence.begin ();
+            }
         }
 
         private void parse_absence (Json.Node? node) {

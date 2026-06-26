@@ -33,8 +33,10 @@ namespace Opensprogskole {
         [GtkChild] private unowned Label subtitle;
         [GtkChild] private unowned Label lessons_subheading;
         [GtkChild] private unowned Gtk.Stack lessons_stack;
+        [GtkChild] private unowned LoadingState lessons_loading;
         [GtkChild] private unowned DayLessons today_lessons;
         [GtkChild] private unowned Gtk.Stack attendance_stack;
+        [GtkChild] private unowned LoadingState attendance_loading;
         [GtkChild] private unowned Chart chart;
         [GtkChild] private unowned Label attendance_caption;
         [GtkChild] private unowned Grades grades;
@@ -98,9 +100,11 @@ namespace Opensprogskole {
          * lesson to come, otherwise the closest future day. When nothing is
          * upcoming at all, swap in the "no more lessons" status page. */
         private void reload_lessons (DateTime now) {
-            // Timetable is fetched after the first paint; show a spinner until
-            // it settles rather than a premature "no lessons" state.
-            if (!session.timetable_loaded) {
+            // Timetable is fetched after the first paint; show a spinner (or an
+            // error if it failed) rather than a premature "no lessons" state.
+            if (session.timetable_state != LoadState.LOADED) {
+                lessons_loading.error = session.timetable_state == LoadState.FAILED
+                    ? _("Couldn't load lessons.") : "";
                 lessons_stack.visible_child_name = "loading";
                 return;
             }
@@ -131,7 +135,16 @@ namespace Opensprogskole {
         }
 
         private void update_attendance () {
-            var s = session != null ? session.absence_summary : null;
+            // Spinner while loading, error if the fetch failed; otherwise the chart.
+            if (session == null || session.absence_state != LoadState.LOADED) {
+                attendance_loading.error =
+                    session != null && session.absence_state == LoadState.FAILED
+                        ? _("Couldn't load attendance.") : "";
+                attendance_stack.visible_child_name = "loading";
+                return;
+            }
+
+            var s = session.absence_summary;
             if (s == null || s.total <= 0) {
                 chart.clear ();
                 chart.add_segment (1.0, rgba ("#deddda"));

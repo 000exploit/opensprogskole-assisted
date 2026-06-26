@@ -27,6 +27,7 @@ namespace Opensprogskole {
 
         [GtkChild] private unowned Gtk.ListBox list;
         [GtkChild] private unowned Gtk.Stack stack;
+        [GtkChild] private unowned LoadingState absence_loading;
         [GtkChild] private unowned Gtk.Button report_button;
 
         public signal void report_absence_requested ();
@@ -54,7 +55,9 @@ namespace Opensprogskole {
             if (session == null) {
                 return;
             }
-            if (!session.absence_loaded) {
+            if (session.absence_state != LoadState.LOADED) {
+                absence_loading.error = session.absence_state == LoadState.FAILED
+                    ? _("Couldn't load absences.") : "";
                 stack.visible_child_name = "loading";
                 return;
             }

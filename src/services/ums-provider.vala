@@ -123,6 +123,10 @@ namespace Opensprogskole {
             return true;
         }
 
+        public void abort_requests () {
+            client.abort ();
+        }
+
         public async GLib.Bytes? fetch_picture (string url) throws GLib.Error {
             if (url.has_prefix ("http")) {
                 return yield client.fetch_picture (url);

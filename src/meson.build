@@ -50,10 +50,10 @@ opensprogskole_sources = [
 
 opensprogskole_deps = [
   config_dep,
-  dependency('gtk4'),
-  dependency('libadwaita-1', version: '>= 1.4'),
-  dependency('json-glib-1.0'),
-  dependency('libsoup-3.0'),
+  dependency('gtk4', version: '>= 4.22'),
+  dependency('libadwaita-1', version: '>= 1.6'),
+  dependency('json-glib-1.0', version: '>= 1.10.0'),
+  dependency('libsoup-3.0', version: '>= 3.6.0'),
   dependency('libsecret-1'),
 ]
 

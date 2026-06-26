@@ -64,7 +64,7 @@ public class Opensprogskole.Application : Adw.Application {
             application_icon = "moe.ekusu.sprogskole",
             developer_name = "000exploit",
             translator_credits = _("translator-credits"),
-            version = "0.5.0",
+            version = "0.9.7",
             developers = developers,
             copyright = "© 2026 000exploit",
         };

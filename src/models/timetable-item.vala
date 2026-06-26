@@ -54,6 +54,9 @@ namespace Opensprogskole {
 
         // --- Raw fields, filled directly from JSON --------------------------
 
+        // Stable per-event id, e.g. "Web_690960". Matches an absence record's
+        // EventId, which is how attendance is linked onto a lesson.
+        public string timetable_id { get; set; default = ""; }
         public string subject { get; set; default = ""; }
         public string start_time { get; set; default = ""; }     // "08:15"
         public string end_time { get; set; default = ""; }       // "09:45"
@@ -63,8 +66,14 @@ namespace Opensprogskole {
         public string homework { get; set; default = ""; }
         public string comment { get; set; default = ""; }
         public string body { get; set; default = ""; }           // HTML blob
-        public string color { get; set; default = ""; }          // "Yellow", ...
         public string activity { get; set; default = ""; }       // "1BILABON2026F<br>"
+
+        // The backend's own attendance code for this lesson, straight from the
+        // timetable JSON (AbsenceCodes: 0 Attended, 1 TooLate, 2 ApprovedAbsence,
+        // 3 IllegalAbsence) plus a minutes-late hint — so a lesson knows its own
+        // attendance without waiting on the separate absence fetch.
+        public int absence_status { get; set; default = 0; }      // AbsenceStatus
+        public int absence_too_late { get; set; default = -1; }   // AbsenceTooLate
 
         // Parsed by Entity from ISO 8601 (e.g. "2026-05-20T08:15:00") into real
         // GLib.DateTime values; null when the JSON omits them.
@@ -73,10 +82,29 @@ namespace Opensprogskole {
         // Day stamp (midnight), e.g. "2026-05-20T00:00:00".
         public DateTime? time_table_real_date { get; set; }
 
-        // UI-facing attendance state for the lessons-list dot. Not from the
-        // timetable JSON — set later from the linked absence data. Notifying so
-        // the dots update live after the schedule is already built.
-        public AttendanceStatus attendance { get; set; default = AttendanceStatus.UNKNOWN; }
+        // The registered-absence record for this lesson, if any — linked by id
+        // once the absence list loads (see Session.link_absences). Carries the
+        // details the timetable doesn't, e.g. StudentReason. Null when there's no
+        // record or it isn't linked yet; the dot does NOT depend on it.
+        public AbsenceItem? absence { get; set; default = null; }
+
+        /* The lessons-list dot state, derived from the lesson's own AbsenceStatus
+         * — so it works straight from the timetable, even offline from cache.
+         * Upcoming lessons are UNKNOWN (no dot): attendance is meaningless before
+         * the lesson happens, and a reported future absence must not show. */
+        public AttendanceStatus attendance {
+            get {
+                if (is_upcoming) {
+                    return AttendanceStatus.UNKNOWN;
+                }
+                switch (absence_status) {
+                    case 1:  return AttendanceStatus.LATE;      // TooLate
+                    case 2:  return AttendanceStatus.ABSENT;    // ApprovedAbsence
+                    case 3:  return AttendanceStatus.ABSENT;    // IllegalAbsence
+                    default: return AttendanceStatus.PRESENT;   // 0 = Attended
+                }
+            }
+        }
 
         // --- Computed helpers (normalization) -------------------------------
 
@@ -95,6 +123,17 @@ namespace Opensprogskole {
 
         public DateTime? end_datetime {
             owned get { return time_table_real_end_date_time; }
+        }
+
+        /* True while the lesson hasn't finished yet (compared to now). Attendance
+         * is meaningless for it — a reported future absence must not colour a dot
+         * before the lesson has even happened — so the dot is suppressed for these
+         * (see attendance_dot_class). The attendance-mapping logic builds on this. */
+        public bool is_upcoming {
+            get {
+                return end_datetime != null
+                    && end_datetime.compare (new DateTime.now_local ()) > 0;
+            }
         }
 
         /* "08:15 – 09:45", falling back to whatever parts we have. */

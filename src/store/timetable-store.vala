@@ -71,6 +71,18 @@ namespace Opensprogskole {
             changed ();
         }
 
+        public delegate void LessonFunc (TimetableItem item);
+
+        /* Visit every lesson across all days. Lets a caller stamp per-lesson
+         * state (e.g. attendance) without reaching into the private day table. */
+        public void foreach_lesson (LessonFunc func) {
+            by_day.foreach ((key, day) => {
+                for (uint i = 0; i < day.get_n_items (); i++) {
+                    func ((TimetableItem) day.get_item (i));
+                }
+            });
+        }
+
         /* The lessons of a day as a list model, or null when there are none.
          * The same ListStore instance is returned for repeated calls. */
         public GLib.ListStore? get_day (int year, int month, int day) {

@@ -84,23 +84,14 @@ namespace Opensprogskole {
     }
     .lesson-label { font-size: 0.78em; opacity: 0.65; }
 
-    /* Lesson dot colour variants (defined after .lesson-dot so they win).
-     * Map the backend's category colour names to the Adwaita-ish palette. */
-    .lesson-dot-accent { background-color: @accent_bg_color; }
-    .lesson-dot-yellow { background-color: #f5c211; }
-    .lesson-dot-green  { background-color: #2ec27e; }
-    .lesson-dot-red    { background-color: #e01b24; }
-    .lesson-dot-blue   { background-color: #3584e4; }
-    .lesson-dot-orange { background-color: #ff7800; }
-    .lesson-dot-purple { background-color: #9141ac; }
-    .lesson-dot-teal   { background-color: #1a9ba4; }
-    .lesson-dot-pink   { background-color: #d56199; }
-
-    /* Attendance ("check-in") dot states — override the category colour once
-     * attendance is known. Lime = present, amber = late, dark = absent. */
-    .lesson-dot-present { background-color: #9bd236; }
-    .lesson-dot-late    { background-color: #e5a50a; }
-    .lesson-dot-absent  { background-color: #3d3846; }
+    /* Attendance ("check-in") dot states (defined after .lesson-dot so they win).
+     * Adwaita semantic colours so they track the theme: present = success (green),
+     * late = accent (blue), absent = error (red). Upcoming lessons show no dot
+     * (transparent, but keep the space so the rows stay aligned). */
+    .lesson-dot-present  { background-color: @success_bg_color; }
+    .lesson-dot-late     { background-color: @accent_bg_color; }
+    .lesson-dot-absent   { background-color: @error_bg_color; }
+    .lesson-dot-upcoming { background-color: transparent; }
 
     /* Absence dialog — large vertical time steppers (GNOME Settings style). */
     .time-field { font-size: 1.6em; }
@@ -135,54 +126,25 @@ namespace Opensprogskole {
         widget_styles_loaded = true;
     }
 
-    /* Turn an empty Box into a lesson dot whose colour tracks the lesson's
-     * attendance: it shows the attendance colour once known, else the category
-     * colour, and updates live if the attendance changes after the row is built
-     * (the absence data arrives after the schedule). The notify handler is
-     * disconnected when the dot is destroyed. */
+    /* Turn an empty Box into a lesson dot coloured by the lesson's attendance.
+     * The attendance is derived from the lesson's own AbsenceStatus, so it's
+     * already correct when the row is built (no live update needed). */
     internal void bind_lesson_dot (Gtk.Box dot, TimetableItem lesson) {
         dot.add_css_class ("lesson-dot");
-        apply_lesson_dot_class (dot, lesson);
-
-        ulong handler = lesson.notify["attendance"].connect (() => {
-            apply_lesson_dot_class (dot, lesson);
-        });
-        dot.destroy.connect (() => lesson.disconnect (handler));
-    }
-
-    private void apply_lesson_dot_class (Gtk.Box dot, TimetableItem lesson) {
-        foreach (string css in dot.get_css_classes ()) {
-            if (css.has_prefix ("lesson-dot-")) {
-                dot.remove_css_class (css);
-            }
-        }
         dot.add_css_class (attendance_dot_class (lesson));
     }
 
-    /* Attendance colour class if known, else the category colour class. */
+    /* The dot class for a lesson: nothing (transparent) for an upcoming lesson —
+     * it hasn't happened, so there's no attendance — else the attendance colour. */
     internal string attendance_dot_class (TimetableItem lesson) {
+        if (lesson.is_upcoming) {
+            return "lesson-dot-upcoming";
+        }
         switch (lesson.attendance) {
             case AttendanceStatus.PRESENT: return "lesson-dot-present";
             case AttendanceStatus.LATE:    return "lesson-dot-late";
             case AttendanceStatus.ABSENT:  return "lesson-dot-absent";
-            default:                       return lesson_dot_class (lesson.color);
-        }
-    }
-
-    /* Map a backend category colour name (e.g. "Yellow") to the CSS class that
-     * colours a lesson dot. Unknown names fall back to the accent colour. Used
-     * by the day-lessons and agenda rows. */
-    internal string lesson_dot_class (string color) {
-        switch (color.down ()) {
-            case "yellow": return "lesson-dot-yellow";
-            case "green":  return "lesson-dot-green";
-            case "red":    return "lesson-dot-red";
-            case "blue":   return "lesson-dot-blue";
-            case "orange": return "lesson-dot-orange";
-            case "purple": return "lesson-dot-purple";
-            case "teal":   return "lesson-dot-teal";
-            case "pink":   return "lesson-dot-pink";
-            default:       return "lesson-dot-accent";
+            default:                       return "lesson-dot-upcoming";
         }
     }
 }

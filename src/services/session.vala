@@ -73,6 +73,15 @@ namespace Opensprogskole {
             Object (school: school, provider: provider, username: username);
         }
 
+        /* Opaque per-account key for the on-disk JSON cache (see JsonCache), so a
+         * different account or school never reads another's cached data. */
+        public string cache_account {
+            owned get {
+                return Checksum.compute_for_string (
+                    ChecksumType.SHA256, "%s:%s".printf (school.id, username));
+            }
+        }
+
         /* Best-effort name for the sidebar/profile. */
         public string display_name {
             owned get {
@@ -130,22 +139,33 @@ namespace Opensprogskole {
             uint gen = ++timetable_gen;
             timetable_state = LoadState.LOADING;
             timetable_updated ();   // spinner (back) on, incl. on a retry
+
+            // Network-first; on failure fall back to the last cached copy so the
+            // schedule still shows offline (see JsonCache).
+            Json.Node? node = null;
             try {
-                var node = yield provider.fetch_timetable ();
+                node = yield provider.fetch_timetable ();
                 if (gen != timetable_gen) {
                     return;   // superseded (dropped + retried) — leave the result
                 }
-                if (node != null && node.get_node_type () == Json.NodeType.ARRAY) {
-                    timetable.load (node.get_array ());
+                if (node != null) {
+                    JsonCache.save (cache_account, "timetable", node);
                 }
-                timetable_state = LoadState.LOADED;
             } catch (GLib.Error e) {
                 if (gen != timetable_gen) {
                     return;
                 }
                 warning ("timetable fetch failed: %s", e.message);
-                timetable_state = LoadState.FAILED;
+                node = JsonCache.load (cache_account, "timetable");
             }
+
+            if (node != null && node.get_node_type () == Json.NodeType.ARRAY) {
+                timetable.load (node.get_array ());
+                timetable_state = LoadState.LOADED;   // network or cache
+            } else {
+                timetable_state = LoadState.FAILED;   // no network and no cache
+            }
+            link_absences ();
             debug ("refresh: timetable in %lld ms", (get_monotonic_time () - t) / 1000);
             timetable_updated ();
         }
@@ -189,14 +209,23 @@ namespace Opensprogskole {
          * initial refresh() and the picture-change helpers. */
         private async void load_user_info () {
             int64 t = get_monotonic_time ();
+
+            // Network-first; on failure use the last cached profile so the page
+            // still renders offline.
+            Json.Node? node = null;
             try {
-                var node = yield provider.fetch_user_info (username);
-                if (node != null && node.get_node_type () == Json.NodeType.OBJECT) {
-                    user_info = (UserInfoItem) Json.gobject_deserialize (
-                        typeof (UserInfoItem), node);
+                node = yield provider.fetch_user_info (username);
+                if (node != null) {
+                    JsonCache.save (cache_account, "user-info", node);
                 }
             } catch (GLib.Error e) {
                 warning ("user info fetch failed: %s", e.message);
+                node = JsonCache.load (cache_account, "user-info");
+            }
+
+            if (node != null && node.get_node_type () == Json.NodeType.OBJECT) {
+                user_info = (UserInfoItem) Json.gobject_deserialize (
+                    typeof (UserInfoItem), node);
             }
             debug ("refresh: user info in %lld ms", (get_monotonic_time () - t) / 1000);
         }
@@ -288,8 +317,41 @@ namespace Opensprogskole {
                 warning ("absence fetch failed: %s", e.message);
                 absence_state = LoadState.FAILED;
             }
+            link_absences ();
             debug ("refresh: absence in %lld ms", (get_monotonic_time () - t) / 1000);
             absence_updated ();
+        }
+
+        /* Stamp each lesson with its attendance by matching the absence records'
+         * EventId to the lesson's TimetableId. Runs after either the timetable or
+         * the absence loads; the notifying `attendance` property updates the dots
+         * live. Skipped until absence is genuinely loaded (e.g. offline, where it
+         * isn't cached) so dots stay at their category colour rather than guessing.
+         *
+         * Future lessons are always left UNKNOWN — a reported (future) absence
+         * must not paint a dot before the lesson has even happened. */
+        /* Link each lesson to its registered-absence record, matched by
+         * TimetableId <-> EventId, once the absence list is loaded. This gives a
+         * lesson the details the timetable omits (e.g. StudentReason) and is the
+         * groundwork for absence actions on a lesson. The dot colour does NOT
+         * depend on this — it's derived from the lesson's own AbsenceStatus — so
+         * offline (absence uncached) only loses the details, not the dots.
+         * Re-run after either list (re)loads. */
+        private void link_absences () {
+            if (absence_state != LoadState.LOADED) {
+                return;
+            }
+            var by_event = new GLib.HashTable<string, AbsenceItem> (str_hash, str_equal);
+            for (uint i = 0; i < absences.get_n_items (); i++) {
+                var a = (AbsenceItem) absences.get_item (i);
+                if (a.event_id != "") {
+                    by_event.set (a.event_id, a);
+                }
+            }
+
+            timetable.foreach_lesson ((item) => {
+                item.absence = by_event.lookup (item.timetable_id);
+            });
         }
 
         /* Connectivity lost: tell the cards now instead of leaving them spinning
@@ -321,16 +383,21 @@ namespace Opensprogskole {
         /* Re-attempt only the loads that failed — called when connectivity comes
          * back (see SessionController). Each retried load flips its card to a
          * spinner, then to content or back to an error. */
-        public void retry_failed_loads () {
+        public bool retry_failed_loads () {
+            bool any = false;
             if (grades_state == LoadState.FAILED) {
                 refresh.begin ();
+                any = true;
             }
             if (timetable_state == LoadState.FAILED) {
                 refresh_timetable.begin ();
+                any = true;
             }
             if (absence_state == LoadState.FAILED) {
                 refresh_absence.begin ();
+                any = true;
             }
+            return any;   // true while something still needs a (re)try
         }
 
         private void parse_absence (Json.Node? node) {

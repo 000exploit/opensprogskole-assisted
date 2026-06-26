@@ -12,6 +12,7 @@ opensprogskole_vala_sources = [
   'models/user-info-settings.vala',
   'store/timetable-store.vala',
   'services/connectivity.vala',
+  'services/json-cache.vala',
   'services/school-provider.vala',
   'services/schools.vala',
   'services/secret-store.vala',

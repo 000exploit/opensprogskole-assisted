@@ -28,11 +28,19 @@ namespace Opensprogskole {
 
         public Session? session { get; private set; default = null; }
 
+        // Reconnect retry backs off up to this many seconds: the link can come up
+        // before DNS/routing is ready, so the first attempt often fails with a
+        // name-resolution error — we keep trying, spaced out, until it sticks.
+        private const int RECONNECT_MAX_DELAY = 16;
+
         private GLib.Settings settings;
         private string device_name;
         private string device_id;
         // Logged in but waiting for the user to confirm the welcome page.
         private Session? pending = null;
+        // Pending reconnect-retry timer + its current backoff step.
+        private uint reconnect_source = 0;
+        private int reconnect_delay = 0;
 
         /* Show the loading splash (bootstrapping / fetching). */
         public signal void loading ();
@@ -57,15 +65,49 @@ namespace Opensprogskole {
             // Lives here (not in Session) so the long-lived controller owns the
             // subscription — no leak when the per-account Session is replaced.
             Connectivity.get_default ().notify["online"].connect (() => {
-                if (session == null) {
-                    return;
-                }
                 if (Connectivity.get_default ().online) {
-                    session.retry_failed_loads ();
+                    begin_reconnect_retry ();
                 } else {
-                    session.abort_requests ();
+                    cancel_reconnect_retry ();
+                    if (session != null) {
+                        session.abort_requests ();
+                    }
                 }
             });
+        }
+
+        /* Came back online: retry the failed loads, then keep retrying with an
+         * increasing delay until they stick or we hit the ceiling — the link is
+         * often up before DNS/routing is, so the first attempt(s) can fail. */
+        private void begin_reconnect_retry () {
+            cancel_reconnect_retry ();
+            reconnect_delay = 1;
+            attempt_reconnect_retry ();
+        }
+
+        private void attempt_reconnect_retry () {
+            if (session == null || !Connectivity.get_default ().online) {
+                return;
+            }
+            if (!session.retry_failed_loads ()) {
+                return;   // nothing left failing — recovered
+            }
+            if (reconnect_delay >= RECONNECT_MAX_DELAY) {
+                return;   // backed off as far as we will — give up until next change
+            }
+            reconnect_delay = int.min (reconnect_delay * 2, RECONNECT_MAX_DELAY);
+            reconnect_source = Timeout.add_seconds (reconnect_delay, () => {
+                reconnect_source = 0;
+                attempt_reconnect_retry ();
+                return Source.REMOVE;
+            });
+        }
+
+        private void cancel_reconnect_retry () {
+            if (reconnect_source != 0) {
+                Source.remove (reconnect_source);
+                reconnect_source = 0;
+            }
         }
 
         private string ensure_device_id () {
@@ -201,6 +243,10 @@ namespace Opensprogskole {
             }
             settings.set_string ("username", "");
             settings.set_int64 ("token-valid-until", 0);
+
+            // Wipe this account's cached profile/schedule along with its secrets.
+            JsonCache.clear (Checksum.compute_for_string (
+                ChecksumType.SHA256, "%s:%s".printf (school_id, username)));
 
             session = null;
             needs_login (null, null);

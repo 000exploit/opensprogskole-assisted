@@ -39,8 +39,6 @@ template $OpensprogskoleAbsenceDialog: Adw.Dialog {
             }
 
             Button today_button {
-              sensitive: false;
-
               child: Box {
                 orientation: vertical;
                 margin-top: 10;
@@ -72,8 +70,6 @@ template $OpensprogskoleAbsenceDialog: Adw.Dialog {
             }
 
             Button earlier_button {
-              sensitive: false;
-
               child: Box {
                 orientation: vertical;
                 margin-top: 10;
@@ -92,7 +88,7 @@ template $OpensprogskoleAbsenceDialog: Adw.Dialog {
                 }
 
                 Label {
-                  label: _("Give a reason for a past lesson.");
+                  label: _("Edit or remove a reported absence.");
                   halign: start;
                   wrap: true;
 
@@ -142,7 +138,7 @@ template $OpensprogskoleAbsenceDialog: Adw.Dialog {
       };
     }
 
-    Adw.NavigationPage {
+    Adw.NavigationPage form_page {
       tag: "form";
       title: _("Future absence");
 

@@ -192,7 +192,11 @@ namespace Opensprogskole {
 
         private void open_absence_dialog () {
             if (session != null) {
-                new AbsenceDialog (session).present (this);
+                var dialog = new AbsenceDialog (session);
+                // "Earlier" has no create flow — it sends the user to the Absence
+                // page, where existing absences can be edited or removed.
+                dialog.show_absences_requested.connect (() => navigate ("absence"));
+                dialog.present (this);
             }
         }
 

@@ -141,23 +141,61 @@ namespace Opensprogskole {
 
         public async int create_future_absence (string reason, string start_iso,
                                                 string end_iso) throws GLib.Error {
+            string body = future_absence_body (0, 0, reason, start_iso, end_iso, when_calculated ());
+            var result = yield client.post_json (
+                "/Absence/CreateFutureStudentAbsence", body, "2");
+            // 200 returns a bare number — the new absence id.
+            return (int) result.get_int ();
+        }
+
+        public async Json.Node? fetch_future_absence () throws GLib.Error {
+            return yield client.get_json ("/Absence/GetFutureStudentAbsence", "2");
+        }
+
+        public async void update_future_absence (int id, string reason,
+                                                 string start_iso, string end_iso)
+            throws GLib.Error {
+            // SLI_ID is ignored by the backend on update; only ID is honoured.
+            string body = future_absence_body (id, 0, reason, start_iso, end_iso, null);
+            yield client.put_void ("/Absence/UpdateFutureStudentAbsence", body, "2");
+        }
+
+        public async void delete_future_absence (int id) throws GLib.Error {
+            yield client.delete_void (
+                "/Absence/DeleteFutureStudentAbsence?ID=%d".printf (id), "2");
+        }
+
+        /* The shared CreateFutureStudentAbsence/UpdateFutureStudentAbsence body.
+         * when_calculated is the server's "computed at" stamp: a timestamp on
+         * create, null on update (matching the official client). */
+        private static string future_absence_body (int id, int sli_id, string reason,
+                                                   string start_iso, string end_iso,
+                                                   string? when_calculated) {
             var b = new Json.Builder ();
             b.begin_object ();
-            b.set_member_name ("ID"); b.add_int_value (0);
-            b.set_member_name ("SLI_ID"); b.add_int_value (0);
+            b.set_member_name ("ID"); b.add_int_value (id);
+            b.set_member_name ("SLI_ID"); b.add_int_value (sli_id);
             b.set_member_name ("Reason"); b.add_string_value (reason);
             b.set_member_name ("StartDateTime"); b.add_string_value (start_iso);
             b.set_member_name ("EndDateTime"); b.add_string_value (end_iso);
-            b.set_member_name ("WhenCalculated"); b.add_string_value ("");
+            b.set_member_name ("WhenCalculated");
+            if (when_calculated == null) {
+                b.add_null_value ();
+            } else {
+                b.add_string_value (when_calculated);
+            }
             b.end_object ();
 
             var gen = new Json.Generator ();
             gen.set_root (b.get_root ());
+            return gen.to_data (null);
+        }
 
-            var result = yield client.post_json (
-                "/Absence/CreateFutureStudentAbsence", gen.to_data (null), "2");
-            // 200 returns a bare number — the new absence id.
-            return (int) result.get_int ();
+        /* WhenCalculated for a freshly created absence: the current UTC time plus
+         * a minute, in the offset form the backend emits (".0000000+00:00"). */
+        private static string when_calculated () {
+            return new DateTime.now_utc ().add_minutes (1)
+                .format ("%Y-%m-%dT%H:%M:%S.0000000+00:00");
         }
     }
 }

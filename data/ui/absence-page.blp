@@ -2,61 +2,68 @@ using Gtk 4.0;
 using Adw 1;
 
 template $OpensprogskoleAbsencePage: Adw.Bin {
-  child: ScrolledWindow {
-    hscrollbar-policy: never;
+  child: Adw.ToastOverlay toast_overlay {
+    child: ScrolledWindow {
+      hscrollbar-policy: never;
 
-    Adw.Clamp {
-      maximum-size: 680;
-      margin-top: 18;
-      margin-bottom: 24;
-      margin-start: 12;
-      margin-end: 12;
-      tightening-threshold: 280;
+      Adw.Clamp {
+        maximum-size: 680;
+        margin-top: 18;
+        margin-bottom: 24;
+        margin-start: 12;
+        margin-end: 12;
+        tightening-threshold: 280;
 
-      Stack stack {
-        StackPage {
-          name: "loading";
+        Box {
+          orientation: vertical;
+          spacing: 18;
 
-          child: $OpensprogskoleLoadingState absence_loading {
-            label: _("Loading absences…");
-          };
-        }
+          Box {
+            orientation: horizontal;
+            homogeneous: false;
 
-        StackPage {
-          name: "list";
+            Label {
+              label: _("Absence");
+              halign: start;
+              hexpand: true;
 
-          child: Box {
-            orientation: vertical;
-            spacing: 16;
-
-            Box {
-              orientation: horizontal;
-              homogeneous: false;
-
-              Label {
-                label: _("Reported absences");
-                halign: start;
-                hexpand: true;
-
-                styles [
-                  "title-4",
-                ]
-              }
-
-              Button report_button {
-                icon-name: "list-add-symbolic";
-                accessibility {
-                	description: _("Report absence");
-                }
-                accessible-role: button;
-
-                styles [
-                  "pill",
-                  "warning",
-                ]
-              }
+              styles [
+                "title-2",
+              ]
             }
-            ListBox list {
+
+            Button report_button {
+              icon-name: "list-add-symbolic";
+              valign: center;
+              accessibility {
+                description: _("Report absence");
+              }
+              accessible-role: button;
+
+              styles [
+                "pill",
+                "warning",
+              ]
+            }
+          }
+
+          // Editable, student-reported absences (GetFutureStudentAbsence).
+          // Hidden until there is at least one.
+          Box planned_section {
+            orientation: vertical;
+            spacing: 8;
+            visible: false;
+
+            Label {
+              label: _("Planned");
+              halign: start;
+
+              styles [
+                "title-4",
+              ]
+            }
+
+            ListBox planned_list {
               selection-mode: none;
               valign: start;
 
@@ -64,19 +71,62 @@ template $OpensprogskoleAbsencePage: Adw.Bin {
                 "boxed-list",
               ]
             }
-          };
-        }
+          }
 
-        StackPage {
-          name: "empty";
+          // The read-only registered absences, with their own load state.
+          Box {
+            orientation: vertical;
+            spacing: 8;
 
-          child: Adw.StatusPage {
-            icon-name: "appointment-missed-symbolic";
-            title: _("No absences");
-            description: _("Reported absences will appear here.");
-          };
+            Label {
+              label: _("Reported");
+              halign: start;
+
+              styles [
+                "title-4",
+              ]
+            }
+
+            Stack stack {
+              StackPage {
+                name: "loading";
+
+                child: $OpensprogskoleLoadingState absence_loading {
+                  label: _("Loading absences…");
+                };
+              }
+
+              StackPage {
+                name: "list";
+
+                child: ListBox list {
+                  selection-mode: none;
+                  valign: start;
+
+                  styles [
+                    "boxed-list",
+                  ]
+                };
+              }
+
+              StackPage {
+                name: "empty";
+
+                child: Label {
+                  label: _("No reported absences yet.");
+                  halign: center;
+                  margin-top: 24;
+                  margin-bottom: 24;
+
+                  styles [
+                    "dim-label",
+                  ]
+                };
+              }
+            }
+          }
         }
       }
-    }
+    };
   };
 }

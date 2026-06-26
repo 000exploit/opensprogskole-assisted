@@ -9,6 +9,7 @@ opensprogskole_vala_sources = [
   'models/link-item.vala',
   'models/absence-item.vala',
   'models/absence-summary.vala',
+  'models/future-absence-item.vala',
   'models/user-info-settings.vala',
   'store/timetable-store.vala',
   'services/connectivity.vala',

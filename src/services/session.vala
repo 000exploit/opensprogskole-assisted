@@ -42,6 +42,10 @@ namespace Opensprogskole {
         public TimetableStore timetable { get; default = new TimetableStore (); }
         public GLib.ListStore grades { get; default = new GLib.ListStore (typeof (GradeItem)); }
         public GLib.ListStore absences { get; default = new GLib.ListStore (typeof (AbsenceItem)); }
+        // The student's own editable absences (GetFutureStudentAbsence). Shown on
+        // the Absence page with edit/delete actions; the registered ones above are
+        // read-only.
+        public GLib.ListStore future_absences { get; default = new GLib.ListStore (typeof (FutureAbsenceItem)); }
         public UserInfoItem? user_info { get; private set; default = null; }
         public UserInfoSettings? user_settings { get; private set; default = null; }
         public AbsenceSummary? absence_summary { get; private set; default = null; }
@@ -52,6 +56,8 @@ namespace Opensprogskole {
         public signal void timetable_updated ();
         /* After the absence summary + events. */
         public signal void absence_updated ();
+        /* After the (separately fetched) editable future absences. */
+        public signal void future_absence_updated ();
 
         /* Per-resource load state, so each card can show a spinner, its content,
          * or an error. FAILED loads are retried when connectivity returns (see
@@ -59,6 +65,7 @@ namespace Opensprogskole {
          * matching *_updated()/updated() signal fires so the card re-renders. */
         public LoadState timetable_state { get; private set; default = LoadState.LOADING; }
         public LoadState absence_state { get; private set; default = LoadState.LOADING; }
+        public LoadState future_absence_state { get; private set; default = LoadState.LOADING; }
         public LoadState grades_state { get; private set; default = LoadState.LOADING; }
 
         // Per-resource load generation. A loader captures it at the start and only
@@ -67,6 +74,7 @@ namespace Opensprogskole {
         // it finally times out.
         private uint timetable_gen = 0;
         private uint absence_gen = 0;
+        private uint future_absence_gen = 0;
         private uint grades_gen = 0;
 
         public Session (School school, SchoolProvider provider, string username) {
@@ -288,13 +296,99 @@ namespace Opensprogskole {
             return ok;
         }
 
-        /* Report a future absence; returns the new id. Refreshes the absence
-         * cache on success so the Overview attendance stays current. */
+        /* Report a future absence; returns the new id. Refreshes both absence
+         * lists on success so the page and Overview attendance stay current. */
         public async int report_future_absence (string reason, string start_iso,
                                                 string end_iso) throws GLib.Error {
             int id = yield provider.create_future_absence (reason, start_iso, end_iso);
-            refresh_absence.begin ();
+            refresh_after_absence_change ();
             return id;
+        }
+
+        /* Edit an existing future absence (the backend's way to change any
+         * absence). Refreshes both lists on success. */
+        public async void update_future_absence (int id, string reason,
+                                                 string start_iso, string end_iso)
+            throws GLib.Error {
+            yield provider.update_future_absence (id, reason, start_iso, end_iso);
+            refresh_after_absence_change ();
+        }
+
+        /* Remove a future absence. Refreshes both lists on success. */
+        public async void delete_future_absence (int id) throws GLib.Error {
+            yield provider.delete_future_absence (id);
+            refresh_after_absence_change ();
+        }
+
+        private void refresh_after_absence_change () {
+            refresh_future_absence.begin ();
+            refresh_absence.begin ();
+        }
+
+        /* The whole-day absence window for a "today" report, derived from that
+         * day's lessons: StartDateTime = first lesson start, EndDateTime = last
+         * lesson end (the backend only accepts the full lesson span). The school
+         * day ends at 20:30 local — past that the report rolls over to tomorrow.
+         * Returns false when the target day has no lessons, since the backend
+         * rejects a report with no lessons to attach it to. */
+        public bool today_absence_window (out string start_iso, out string end_iso,
+                                          out DateTime day) {
+            start_iso = "";
+            end_iso = "";
+            var now = new DateTime.now_local ();
+            // After 20:30 the day is done; report for tomorrow instead.
+            day = (now.get_hour () > 20 || (now.get_hour () == 20 && now.get_minute () >= 30))
+                ? now.add_days (1) : now;
+
+            var store = timetable.get_day_for_key (day.format ("%Y-%m-%d"));
+            if (store == null || store.get_n_items () == 0) {
+                return false;
+            }
+
+            DateTime? first = null;
+            DateTime? last = null;
+            for (uint i = 0; i < store.get_n_items (); i++) {
+                var item = (TimetableItem) store.get_item (i);
+                if (item.start_datetime != null
+                    && (first == null || item.start_datetime.compare (first) < 0)) {
+                    first = item.start_datetime;
+                }
+                if (item.end_datetime != null
+                    && (last == null || item.end_datetime.compare (last) > 0)) {
+                    last = item.end_datetime;
+                }
+            }
+            if (first == null || last == null) {
+                return false;
+            }
+            start_iso = first.format ("%Y-%m-%dT%H:%M:%S");
+            end_iso = last.format ("%Y-%m-%dT%H:%M:%S");
+            return true;
+        }
+
+        /* The editable future absences, fetched on their own (own card state) so
+         * a slow call doesn't hold up the page. */
+        public async void refresh_future_absence () {
+            int64 t = get_monotonic_time ();
+            uint gen = ++future_absence_gen;
+            future_absence_state = LoadState.LOADING;
+            future_absence_updated ();
+            try {
+                var node = yield provider.fetch_future_absence ();
+                if (gen != future_absence_gen) {
+                    return;
+                }
+                parse_future_absence (node);
+                future_absence_state = LoadState.LOADED;
+            } catch (GLib.Error e) {
+                if (gen != future_absence_gen) {
+                    return;
+                }
+                warning ("future absence fetch failed: %s", e.message);
+                future_absence_state = LoadState.FAILED;
+            }
+            debug ("refresh: future absence in %lld ms", (get_monotonic_time () - t) / 1000);
+            future_absence_updated ();
         }
 
         /* Absence is fetched on its own so it doesn't slow the first paint. */
@@ -373,6 +467,11 @@ namespace Opensprogskole {
                 absence_state = LoadState.FAILED;
                 absence_updated ();
             }
+            if (future_absence_state == LoadState.LOADING) {
+                future_absence_gen++;
+                future_absence_state = LoadState.FAILED;
+                future_absence_updated ();
+            }
             if (grades_state == LoadState.LOADING) {
                 grades_gen++;
                 grades_state = LoadState.FAILED;
@@ -395,6 +494,10 @@ namespace Opensprogskole {
             }
             if (absence_state == LoadState.FAILED) {
                 refresh_absence.begin ();
+                any = true;
+            }
+            if (future_absence_state == LoadState.FAILED) {
+                refresh_future_absence.begin ();
                 any = true;
             }
             return any;   // true while something still needs a (re)try
@@ -428,6 +531,27 @@ namespace Opensprogskole {
                 absence_summary = (AbsenceSummary) Json.gobject_deserialize (
                     typeof (AbsenceSummary), obj.get_member ("StudentAbsence"));
             }
+        }
+
+        private void parse_future_absence (Json.Node? node) {
+            future_absences.remove_all ();
+            if (node == null || node.get_node_type () != Json.NodeType.ARRAY) {
+                return;
+            }
+            node.get_array ().foreach_element ((arr, i, element) => {
+                var item = FutureAbsenceItem.from_json (element);
+                if (item != null) {
+                    future_absences.append (item);
+                }
+            });
+            future_absences.sort ((a, b) => {
+                var da = ((FutureAbsenceItem) a).start_date_time;
+                var db = ((FutureAbsenceItem) b).start_date_time;
+                if (da == null || db == null) {
+                    return 0;
+                }
+                return db.compare (da);   // newest first
+            });
         }
 
         private void load_grades (Json.Node? node) {

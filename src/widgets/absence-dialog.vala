@@ -22,15 +22,24 @@ using Gtk;
 
 namespace Opensprogskole {
 
-    /* Report-absence dialog. The first screen offers the three timing options
-     * from the mockup — Today and Earlier are disabled; only Future is wired up.
-     * Future leads to a small form that POSTs a future absence to the backend.
-     * On success the dialog closes; on failure an inline banner is shown. */
+    /* Report-absence dialog. The first screen offers three timing options:
+     *   - Today    — a whole-day absence for today (or tomorrow after 20:30),
+     *                spanning that day's lessons (CreateFutureStudentAbsence).
+     *   - Earlier  — there is no "create a past absence"; the backend edits an
+     *                absence by updating its future record, so this just routes
+     *                the user to the Absence page where those live.
+     *   - Future   — the date/time form, also CreateFutureStudentAbsence.
+     * Opened with .for_edit() it skips straight to the form, pre-filled, and
+     * PUTs an UpdateFutureStudentAbsence instead. On success it closes; on a
+     * failed submit a toast is shown. */
     [GtkTemplate (ui = "/moe/ekusu/sprogskole/ui/absence-dialog.ui")]
     public class AbsenceDialog : Adw.Dialog {
 
         [GtkChild] private unowned Adw.ToastOverlay toast_overlay;
         [GtkChild] private unowned Adw.NavigationView nav;
+        [GtkChild] private unowned Adw.NavigationPage form_page;
+        [GtkChild] private unowned Button today_button;
+        [GtkChild] private unowned Button earlier_button;
         [GtkChild] private unowned Button future_button;
         [GtkChild] private unowned Adw.Banner error_banner;
         [GtkChild] private unowned Adw.EntryRow reason_row;
@@ -44,24 +53,48 @@ namespace Opensprogskole {
         [GtkChild] private unowned Adw.Spinner spinner;
         [GtkChild] private unowned Button submit_button;
 
+        /* The user chose "Earlier" — they want the Absence page, not a new record.
+         * The caller (which owns navigation) handles this and the dialog closes. */
+        public signal void show_absences_requested ();
+
         private Session session;
+        // 0 when creating; the future-absence id when editing an existing one.
+        private int edit_id = 0;
 
         public AbsenceDialog (Session session) {
             Object ();
             this.session = session;
         }
 
+        /* Open straight on the form, pre-filled from an existing future absence;
+         * submitting updates it instead of creating a new one. */
+        public AbsenceDialog.for_edit (Session session, FutureAbsenceItem item) {
+            Object ();
+            this.session = session;
+            this.edit_id = item.id;
+
+            reason_row.text = item.reason;
+            var start = item.start_date_time ?? new DateTime.now_local ();
+            var end = item.end_date_time ?? start;
+            set_date (start);
+            set_time (start_hour, start_minute, start);
+            set_time (end_hour, end_minute, end);
+
+            form_page.title = _("Edit absence");
+            submit_button.label = _("Save changes");
+            // Replace the stack so Back/Escape leaves the dialog rather than
+            // dropping the user on the (irrelevant) "choose" page.
+            nav.replace_with_tags ({ "form" });
+        }
+
         construct {
             // Month dropdown (localized names) + sensible "today" defaults.
             var months = new Gtk.StringList (null);
-            var now = new DateTime.now_local ();
             for (int m = 1; m <= 12; m++) {
                 months.append (new DateTime.local (2000, m, 1, 0, 0, 0).format ("%B"));
             }
             month_row.model = months;
-            month_row.selected = now.get_month () - 1;
-            day_row.value = now.get_day_of_month ();
-            year_row.value = now.get_year ();
+            set_date (new DateTime.now_local ());
 
             // Two-digit display ("07", "05") for the time steppers.
             two_digits (start_hour);
@@ -69,8 +102,43 @@ namespace Opensprogskole {
             two_digits (end_hour);
             two_digits (end_minute);
 
+            today_button.clicked.connect (on_today);
+            earlier_button.clicked.connect (() => {
+                show_absences_requested ();
+                close ();
+            });
             future_button.clicked.connect (() => nav.push_by_tag ("form"));
             submit_button.clicked.connect (on_submit);
+        }
+
+        /* "Today": pre-fill the form with the day's lesson span and jump to it. */
+        private void on_today () {
+            string start_iso, end_iso;
+            DateTime day;
+            if (!session.today_absence_window (out start_iso, out end_iso, out day)) {
+                toast_overlay.add_toast (new Adw.Toast (
+                    _("No lessons to report absence for.")));
+                return;
+            }
+            var start = new DateTime.from_iso8601 (start_iso, new TimeZone.local ());
+            var end = new DateTime.from_iso8601 (end_iso, new TimeZone.local ());
+            if (start != null && end != null) {
+                set_date (start);
+                set_time (start_hour, start_minute, start);
+                set_time (end_hour, end_minute, end);
+            }
+            nav.push_by_tag ("form");
+        }
+
+        private void set_date (DateTime dt) {
+            month_row.selected = dt.get_month () - 1;
+            day_row.value = dt.get_day_of_month ();
+            year_row.value = dt.get_year ();
+        }
+
+        private void set_time (Gtk.SpinButton hour, Gtk.SpinButton minute, DateTime dt) {
+            hour.value = dt.get_hour ();
+            minute.value = dt.get_minute ();
         }
 
         private void two_digits (Gtk.SpinButton spin) {
@@ -94,13 +162,18 @@ namespace Opensprogskole {
         private async void submit (string reason) {
             set_busy (true);
             try {
-                yield session.report_future_absence (
-                    reason, iso (start_hour, start_minute), iso (end_hour, end_minute));
+                if (edit_id != 0) {
+                    yield session.update_future_absence (
+                        edit_id, reason, iso (start_hour, start_minute), iso (end_hour, end_minute));
+                } else {
+                    yield session.report_future_absence (
+                        reason, iso (start_hour, start_minute), iso (end_hour, end_minute));
+                }
                 close ();
             } catch (GLib.Error e) {
-                warning ("create absence failed: %s", e.message);
+                warning ("save absence failed: %s", e.message);
                 toast_overlay.add_toast (new Adw.Toast (
-                    _("Couldn't report absence — check your connection.")));
+                    _("Couldn't save absence — check your connection.")));
                 set_busy (false);
             }
         }

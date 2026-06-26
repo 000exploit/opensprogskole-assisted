@@ -87,5 +87,19 @@ namespace Opensprogskole {
                                                          string start_iso,
                                                          string end_iso)
             throws GLib.Error;
+
+        /* The student's own (editable) future absences as a JSON array. */
+        public abstract async Json.Node? fetch_future_absence () throws GLib.Error;
+
+        /* Update an existing future absence (identified by `id`). The backend's
+         * only way to edit any absence — even a past one — is to update its
+         * future record. ISO datetimes are "yyyy-MM-ddTHH:mm:ss". */
+        public abstract async void update_future_absence (int id, string reason,
+                                                          string start_iso,
+                                                          string end_iso)
+            throws GLib.Error;
+
+        /* Delete a future absence by id. */
+        public abstract async void delete_future_absence (int id) throws GLib.Error;
     }
 }

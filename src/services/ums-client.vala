@@ -230,6 +230,25 @@ namespace Opensprogskole {
             check_post_status (msg.status_code, path);
         }
 
+        /* Authenticated PUT with a JSON body whose response body is ignored; the
+         * status is checked. Used for UpdateFutureStudentAbsence. */
+        public async void put_void (string path, string body, string version = "2")
+            throws GLib.Error {
+            var msg = authed ("PUT", path, version);
+            msg.set_request_body_from_bytes ("application/json", new Bytes (body.data));
+            yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
+            check_post_status (msg.status_code, path);
+        }
+
+        /* Authenticated DELETE; the response body is ignored, the status checked.
+         * Used for DeleteFutureStudentAbsence (the id rides in the query string). */
+        public async void delete_void (string path, string version = "2")
+            throws GLib.Error {
+            var msg = authed ("DELETE", path, version);
+            yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
+            check_post_status (msg.status_code, path);
+        }
+
         /* GET raw bytes from an absolute URL (a profile picture), carrying the
          * Bearer token. Returns null on any non-200 instead of throwing — a
          * missing avatar is not an error worth propagating. */

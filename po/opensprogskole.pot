@@ -1,0 +1,631 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the opensprogskole package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opensprogskole\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-26 00:01+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: data/moe.ekusu.sprogskole.desktop.in:2
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:7 data/ui/main-view.blp:15
+#: data/ui/main-view.blp:174 data/ui/onboarding-view.blp:19
+#: data/ui/onboarding-view.blp:73 data/ui/window.blp:5
+msgid "OpenSprogskole"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.desktop.in:8
+msgid "GTK;"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.gschema.xml:6
+msgid "Stable per-install device identifier"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.gschema.xml:7
+msgid "Random id generated on first run and sent to UMS as DeviceId."
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.gschema.xml:11
+msgid "Id of the currently connected school"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.gschema.xml:15
+msgid "Username of the saved account (password lives in the keyring)"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.gschema.xml:19
+msgid "Unix time (seconds) the saved session token is valid until"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.gschema.xml:20
+msgid ""
+"From the JWT 'exp' claim. 0 means unknown (no expiry claim); the token is "
+"still tried."
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:8
+msgid "Keep the summary shorter, between 10 and 35 characters"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:10
+msgid "No description"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:52
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:56
+msgid "A caption"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:64
+msgid "Release description"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:66
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:67
+msgid "List of changes"
+msgstr ""
+
+#: data/ui/absence-dialog.blp:5 data/ui/absence-dialog.blp:12
+#: data/ui/absence-dialog.blp:366 data/ui/overview-page.blp:50
+#: data/ui/overview-page.blp:226 src/views/main-view.vala:59
+msgid "Report absence"
+msgstr ""
+
+#: data/ui/absence-dialog.blp:31
+msgid "When does the absence apply?"
+msgstr ""
+
+#: data/ui/absence-dialog.blp:52 src/views/overview-page.vala:113
+msgid "Today"
+msgstr ""
+
+#: data/ui/absence-dialog.blp:61
+msgid "Report absence for the whole of today."
+msgstr ""
+
+#: data/ui/absence-dialog.blp:85
+msgid "Earlier"
+msgstr ""
+
+#: data/ui/absence-dialog.blp:94
+msgid "Give a reason for a past lesson."
+msgstr ""
+
+#: data/ui/absence-dialog.blp:116
+msgid "Future"
+msgstr ""
+
+#: data/ui/absence-dialog.blp:125
+msgid "Plan an absence ahead of time."
+msgstr ""
+
+#: data/ui/absence-dialog.blp:146
+msgid "Future absence"
+msgstr ""
+
+#: data/ui/absence-dialog.blp:172
+msgid "Reason"
+msgstr ""
+
+#: data/ui/absence-dialog.blp:177
+msgid "Date"
+msgstr ""
+
+#: data/ui/absence-dialog.blp:180 data/ui/schedule-view.blp:45
+msgid "Month"
+msgstr ""
+
+#: data/ui/absence-dialog.blp:184
+msgid "Day"
+msgstr ""
+
+#: data/ui/absence-dialog.blp:195
+msgid "Year"
+msgstr ""
+
+#: data/ui/absence-dialog.blp:207
+msgid "Time"
+msgstr ""
+
+#: data/ui/absence-dialog.blp:224
+msgid "Start"
+msgstr ""
+
+#: data/ui/absence-dialog.blp:291
+msgid "End"
+msgstr ""
+
+#: data/ui/absence-page.blp:20
+msgid "Loading absences…"
+msgstr ""
+
+#: data/ui/absence-page.blp:42
+msgid "No absences"
+msgstr ""
+
+#: data/ui/absence-page.blp:43
+msgid "Reported absences will appear here."
+msgstr ""
+
+#: data/ui/calendar.blp:23
+msgid "Previous month"
+msgstr ""
+
+#: data/ui/calendar.blp:33
+msgid "Next month"
+msgstr ""
+
+#: data/ui/day-lessons.blp:14
+msgid "Selected day"
+msgstr ""
+
+#: data/ui/day-lessons.blp:68
+msgid "No lessons this day"
+msgstr ""
+
+#: data/ui/edit-profile-page.blp:5 data/ui/profile-page.blp:76
+msgid "Edit information"
+msgstr ""
+
+#: data/ui/edit-profile-page.blp:49
+msgid ""
+"Only the fields your school lets you change are shown here. If you need to "
+"change anything else, contact the language school reception."
+msgstr ""
+
+#: data/ui/edit-profile-page.blp:61 data/ui/profile-page.blp:101
+msgid "Contact"
+msgstr ""
+
+#: data/ui/edit-profile-page.blp:64 src/views/profile-page.vala:115
+msgid "Phone"
+msgstr ""
+
+#: data/ui/edit-profile-page.blp:70 src/views/profile-page.vala:116
+msgid "Mobile"
+msgstr ""
+
+#: data/ui/edit-profile-page.blp:76 src/views/profile-page.vala:117
+msgid "Work phone"
+msgstr ""
+
+#: data/ui/edit-profile-page.blp:82 src/views/profile-page.vala:118
+msgid "Work mobile"
+msgstr ""
+
+#: data/ui/edit-profile-page.blp:88 src/views/profile-page.vala:119
+msgid "Email"
+msgstr ""
+
+#: data/ui/edit-profile-page.blp:94 src/views/profile-page.vala:120
+msgid "Work email"
+msgstr ""
+
+#: data/ui/edit-profile-page.blp:104
+msgid "Other information"
+msgstr ""
+
+#: data/ui/edit-profile-page.blp:115
+msgid "Save"
+msgstr ""
+
+#: data/ui/grades-page.blp:30
+msgid "Loading grades…"
+msgstr ""
+
+#: data/ui/grades-page.blp:47
+msgid "No grades"
+msgstr ""
+
+#: data/ui/grades-page.blp:48
+msgid "Grades will appear here once your school registers them."
+msgstr ""
+
+#: data/ui/lesson-dialog.blp:5
+msgid "Lesson"
+msgstr ""
+
+#: data/ui/main-view.blp:51
+msgid "Connected"
+msgstr ""
+
+#: data/ui/main-view.blp:78
+msgid "More"
+msgstr ""
+
+#: data/ui/main-view.blp:141
+msgid "Student"
+msgstr ""
+
+#: data/ui/main-view.blp:157
+msgid "Account menu"
+msgstr ""
+
+#: data/ui/main-view.blp:179 src/views/main-view.vala:55
+msgid "Overview"
+msgstr ""
+
+#: data/ui/main-view.blp:188
+msgid "Main Menu"
+msgstr ""
+
+#: data/ui/main-view.blp:199 data/ui/schedule-view.blp:19
+#: src/views/main-view.vala:56
+msgid "Schedule"
+msgstr ""
+
+#: data/ui/main-view.blp:211 src/views/absence-page.vala:63
+#: src/views/main-view.vala:58
+msgid "Absence"
+msgstr ""
+
+#: data/ui/main-view.blp:223 src/views/main-view.vala:60
+msgid "Your information"
+msgstr ""
+
+#: data/ui/main-view.blp:235 src/views/main-view.vala:57
+msgid "Grades"
+msgstr ""
+
+#: data/ui/main-view.blp:247 data/ui/main-view.blp:255
+#: src/views/main-view.vala:62
+msgid "News"
+msgstr ""
+
+#: data/ui/main-view.blp:256 data/ui/overview-page.blp:276
+msgid "Your school hasn't published any news."
+msgstr ""
+
+#: data/ui/main-view.blp:263 data/ui/main-view.blp:271
+#: src/views/main-view.vala:63 src/widgets/lesson-dialog.vala:59
+msgid "Homework"
+msgstr ""
+
+#: data/ui/main-view.blp:272 data/ui/main-view.blp:288
+msgid "Coming soon."
+msgstr ""
+
+#: data/ui/main-view.blp:279 data/ui/main-view.blp:287
+#: src/views/main-view.vala:64
+msgid "Links"
+msgstr ""
+
+#: data/ui/main-view.blp:309 data/ui/main-view.blp:334
+msgid "_Log out"
+msgstr ""
+
+#: data/ui/main-view.blp:316
+msgid "_About OpenSprogskole"
+msgstr ""
+
+#: data/ui/main-view.blp:327
+msgid "_Edit information"
+msgstr ""
+
+#: data/ui/onboarding-view.blp:9 data/ui/onboarding-view.blp:158
+msgid "Welcome"
+msgstr ""
+
+#: data/ui/onboarding-view.blp:20
+msgid "Your language school — schedule, attendance and grades in one place."
+msgstr ""
+
+#: data/ui/onboarding-view.blp:23
+msgid "Get started"
+msgstr ""
+
+#: data/ui/onboarding-view.blp:37 data/ui/onboarding-view.blp:131
+msgid "Log in"
+msgstr ""
+
+#: data/ui/onboarding-view.blp:82
+msgid "Sign in to continue"
+msgstr ""
+
+#: data/ui/onboarding-view.blp:97
+msgid "School"
+msgstr ""
+
+#: data/ui/onboarding-view.blp:107
+msgid "Username"
+msgstr ""
+
+#: data/ui/onboarding-view.blp:111
+msgid "Password"
+msgstr ""
+
+#: data/ui/onboarding-view.blp:115
+msgid "Remember me"
+msgstr ""
+
+#: data/ui/onboarding-view.blp:169
+msgid "You're all set"
+msgstr ""
+
+#: data/ui/onboarding-view.blp:170
+msgid "Your account is connected and your details are saved."
+msgstr ""
+
+#: data/ui/onboarding-view.blp:173
+msgid "Continue"
+msgstr ""
+
+#: data/ui/overview-page.blp:85
+msgid "Up next"
+msgstr ""
+
+#: data/ui/overview-page.blp:107
+msgid "View schedule"
+msgstr ""
+
+#: data/ui/overview-page.blp:127
+msgid "Loading lessons…"
+msgstr ""
+
+#: data/ui/overview-page.blp:149
+msgid "No more lessons"
+msgstr ""
+
+#: data/ui/overview-page.blp:150
+msgid "You have no upcoming lessons scheduled."
+msgstr ""
+
+#: data/ui/overview-page.blp:170
+msgid "Attendance"
+msgstr ""
+
+#: data/ui/overview-page.blp:185
+msgid "Loading attendance…"
+msgstr ""
+
+#: data/ui/overview-page.blp:241
+msgid "Recent grades"
+msgstr ""
+
+#: data/ui/overview-page.blp:252
+msgid "All grades"
+msgstr ""
+
+#: data/ui/overview-page.blp:275
+msgid "No news right now"
+msgstr ""
+
+#: data/ui/profile-page.blp:38
+msgid "Change profile photo"
+msgstr ""
+
+#: data/ui/profile-page.blp:91
+msgid "Profile photo awaiting approval"
+msgstr ""
+
+#: data/ui/profile-page.blp:92
+msgid "Remove"
+msgstr ""
+
+#: data/ui/profile-page.blp:97
+msgid "About"
+msgstr ""
+
+#: data/ui/profile-page.blp:107
+msgid "Preferences"
+msgstr ""
+
+#: data/ui/profile-page.blp:111
+msgid "Receive SMS reminders"
+msgstr ""
+
+#: data/ui/profile-page.blp:112
+msgid "Texts about exams, appointments and schedule changes"
+msgstr ""
+
+#: data/ui/profile-page.blp:120
+msgid "Why this matters"
+msgstr ""
+
+#: data/ui/profile-page.blp:129
+msgid ""
+"SMS reminders are off. You could miss an exam or an important appointment."
+msgstr ""
+
+#: data/ui/profile-page.blp:142
+msgid "Picture visibility"
+msgstr ""
+
+#: data/ui/schedule-view.blp:101
+msgid "Agenda"
+msgstr ""
+
+#: data/ui/shortcuts-dialog.blp:6
+msgid "Shortcuts"
+msgstr ""
+
+#: data/ui/shortcuts-dialog.blp:9
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr ""
+
+#: data/ui/shortcuts-dialog.blp:14
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr ""
+
+#: data/ui/window.blp:21
+msgid "Updating information…"
+msgstr ""
+
+#: data/ui/window.blp:22
+msgid "Fetching your latest schedule, grades and absence."
+msgstr ""
+
+#: src/application.vala:66
+msgid "translator-credits"
+msgstr ""
+
+#: src/services/session-controller.vala:104
+msgid "Couldn't sign you in automatically. Please log in again."
+msgstr ""
+
+#: src/services/session-controller.vala:130
+msgid "Invalid username or password."
+msgstr ""
+
+#: src/services/session-controller.vala:131
+#: src/services/session-controller.vala:133
+#, c-format
+msgid "Login failed: %s"
+msgstr ""
+
+#: src/views/edit-profile-page.vala:101
+msgid "Couldn't save your changes. Please try again."
+msgstr ""
+
+#: src/views/onboarding-view.vala:62
+#, c-format
+msgid "Version %s"
+msgstr ""
+
+#. TODO: different time
+#: src/views/overview-page.vala:85
+#, c-format
+msgid "Good day, %s"
+msgstr ""
+
+#. Translators: a weekday + date, e.g. "Tuesday, 30 June".
+#. Reorder the %A/%-d/%B parts to suit your locale —
+#. see `man strftime` for what each one means.
+#: src/views/overview-page.vala:122
+msgid "%A, %-d %B"
+msgstr ""
+
+#: src/views/overview-page.vala:136
+msgid "no data"
+msgstr ""
+
+#: src/views/overview-page.vala:137
+msgid "No attendance data"
+msgstr ""
+
+#: src/views/overview-page.vala:151
+msgid "present"
+msgstr ""
+
+#: src/views/overview-page.vala:152
+#, c-format
+msgid "Present %.1f%% · Not approved %.1f%% · Late %.1f%%"
+msgstr ""
+
+#: src/views/profile-page.vala:64
+msgid "Everyone"
+msgstr ""
+
+#: src/views/profile-page.vala:64
+msgid "School only"
+msgstr ""
+
+#: src/views/profile-page.vala:64
+msgid "Nobody"
+msgstr ""
+
+#: src/views/profile-page.vala:104
+msgid "Name"
+msgstr ""
+
+#: src/views/profile-page.vala:105
+msgid "Date of birth"
+msgstr ""
+
+#: src/views/profile-page.vala:106
+msgid "Address"
+msgstr ""
+
+#: src/views/profile-page.vala:108
+msgid "Department"
+msgstr ""
+
+#: src/views/profile-page.vala:109
+msgid "Course length"
+msgstr ""
+
+#: src/views/profile-page.vala:111
+msgid "Card number"
+msgstr ""
+
+#: src/views/profile-page.vala:140
+msgid "Copy"
+msgstr ""
+
+#: src/views/profile-page.vala:145
+msgid "Copied to clipboard"
+msgstr ""
+
+#: src/views/profile-page.vala:211
+msgid "SMS reminders are off — you may miss reminders."
+msgstr ""
+
+#: src/views/profile-page.vala:241
+msgid "Couldn't save your change. Please try again."
+msgstr ""
+
+#: src/views/profile-page.vala:267
+msgid "Choose a profile photo"
+msgstr ""
+
+#: src/views/profile-page.vala:269
+msgid "Images"
+msgstr ""
+
+#: src/views/profile-page.vala:297
+msgid "Photo uploaded — awaiting approval"
+msgstr ""
+
+#: src/views/profile-page.vala:300
+msgid "Couldn't upload the photo. Please try again."
+msgstr ""
+
+#: src/views/profile-page.vala:311
+msgid "Pending photo removed"
+msgstr ""
+
+#: src/views/profile-page.vala:314
+msgid "Couldn't remove the photo. Please try again."
+msgstr ""
+
+#: src/widgets/absence-dialog.vala:86
+msgid "Please enter a reason."
+msgstr ""
+
+#: src/widgets/absence-dialog.vala:101
+msgid "Couldn't report absence. Please try again."
+msgstr ""
+
+#: src/widgets/agenda.vala:100
+msgid "No lessons"
+msgstr ""
+
+#: src/widgets/agenda.vala:163 src/widgets/day-lessons.vala:128
+#, c-format
+msgid "Room %s"
+msgstr ""
+
+#: src/widgets/lesson-dialog.vala:55
+msgid "Teachers"
+msgstr ""
+
+#: src/widgets/lesson-dialog.vala:62
+msgid "Comment"
+msgstr ""
+
+#: src/widgets/lesson-dialog.vala:106
+msgid "Rooms"
+msgstr ""

@@ -21,6 +21,68 @@ template $OpensprogskoleLessonDialog: Adw.Dialog {
         Box content_box {
           orientation: vertical;
           spacing: 18;
+
+          // --- Static front-matter; the code only fills text + visibility.
+          // Dynamic groups (rooms, teachers, homework, comment) are appended
+          // after these in code, so the order stays correct.
+
+          Box {
+            orientation: vertical;
+            spacing: 4;
+
+            Label subject_label {
+              halign: start;
+              xalign: 0;
+              wrap: true;
+
+              styles [
+                "title-2",
+              ]
+            }
+
+            Label activity_label {
+              halign: start;
+              visible: false;
+
+              styles [
+                "monospace",
+                "dim-label",
+              ]
+            }
+          }
+
+          Adw.PreferencesGroup {
+            Adw.ActionRow time_row {
+              [prefix]
+              Image {
+                icon-name: "x-office-calendar-symbolic";
+              }
+            }
+          }
+
+          // Shown only when the lesson has a registered absence reason.
+          Adw.PreferencesGroup absence_group {
+            title: _("Absence");
+            visible: false;
+
+            // Groundwork for adding a reason via /api/Absence/CreateNote; hidden
+            // and inactive until that has a UI.
+            [header-suffix]
+            Button report_button {
+              label: _("Report reason");
+              visible: false;
+              sensitive: false;
+              valign: center;
+
+              styles [
+                "flat",
+              ]
+            }
+
+            Adw.ActionRow reason_row {
+              title-lines: 0;
+            }
+          }
         }
       }
     };

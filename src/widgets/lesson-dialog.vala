@@ -30,6 +30,19 @@ namespace Opensprogskole {
 
         [GtkChild]
         private unowned Gtk.Box content_box;
+        [GtkChild]
+        private unowned Gtk.Label subject_label;
+        [GtkChild]
+        private unowned Gtk.Label activity_label;
+        [GtkChild]
+        private unowned Adw.ActionRow time_row;
+        [GtkChild]
+        private unowned Adw.PreferencesGroup absence_group;
+        [GtkChild]
+        private unowned Adw.ActionRow reason_row;
+        // Declared (hidden) in the template for the upcoming CreateNote wiring.
+        [GtkChild]
+        private unowned Gtk.Button report_button;
 
         public LessonDialog (TimetableItem item) {
             Object ();
@@ -42,9 +55,21 @@ namespace Opensprogskole {
                 title = item.subject;
             }
 
-            content_box.append (build_header (item));
-            content_box.append (build_time_group (item));
+            // Fill the static front-matter declared in the .ui.
+            subject_label.label = item.subject;
+            if (item.activity_code != "") {
+                activity_label.label = item.activity_code;
+                activity_label.visible = true;
+            }
+            time_row.title = format_date (item);
+            time_row.subtitle = item.time_range;
 
+            if (item.absence_reason.strip () != "") {
+                reason_row.title = item.absence_reason.strip ();
+                absence_group.visible = true;
+            }
+
+            // Dynamic / repeated groups are appended after the static ones.
             var rooms = item.rooms;
             if (rooms.length > 0) {
                 content_box.append (build_rooms (rooms));
@@ -52,7 +77,7 @@ namespace Opensprogskole {
 
             var teachers = item.teachers;
             if (teachers.length > 0) {
-                content_box.append (build_list_group (_("Teachers"), teachers));
+                content_box.append (build_teachers (teachers));
             }
 
             if (item.homework.strip () != "") {
@@ -61,43 +86,6 @@ namespace Opensprogskole {
             if (item.comment.strip () != "") {
                 content_box.append (build_text_group (_("Comment"), item.comment));
             }
-        }
-
-        private Gtk.Widget build_header (TimetableItem item) {
-            var box = new Gtk.Box (Gtk.Orientation.VERTICAL, 4);
-
-            var subject = new Gtk.Label (item.subject) {
-                halign = Gtk.Align.START,
-                xalign = 0,
-                wrap = true
-            };
-            subject.add_css_class ("title-2");
-            box.append (subject);
-
-            if (item.activity_code != "") {
-                var code = new Gtk.Label (item.activity_code) {
-                    halign = Gtk.Align.START
-                };
-                code.add_css_class ("monospace");
-                code.add_css_class ("dim-label");
-                box.append (code);
-            }
-
-            return box;
-        }
-
-        private Gtk.Widget build_time_group (TimetableItem item) {
-            var group = new Adw.PreferencesGroup ();
-
-            var row = new Adw.ActionRow () {
-                title = format_date (item),
-                subtitle = item.time_range
-            };
-            var icon = new Gtk.Image.from_icon_name ("x-office-calendar-symbolic");
-            row.add_prefix (icon);
-            group.add (row);
-
-            return group;
         }
 
         private Gtk.Widget build_rooms (string[] rooms) {
@@ -130,13 +118,20 @@ namespace Opensprogskole {
             return box;
         }
 
-        private Gtk.Widget build_list_group (string title, string[] entries) {
-            var group = new Adw.PreferencesGroup () {
-                title = title
+        /* Teachers as a single collapsible row: the codes preview in the subtitle,
+         * one row each when expanded — tidy whether it's one teacher or several. */
+        private Gtk.Widget build_teachers (string[] teachers) {
+            var group = new Adw.PreferencesGroup ();
+
+            var expander = new Adw.ExpanderRow () {
+                title = _("Teachers"),
+                subtitle = string.joinv (", ", teachers)
             };
-            foreach (string entry in entries) {
-                group.add (new Adw.ActionRow () { title = entry });
+            foreach (string teacher in teachers) {
+                expander.add_row (new Adw.ActionRow () { title = teacher });
             }
+            group.add (expander);
+
             return group;
         }
 

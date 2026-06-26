@@ -74,6 +74,9 @@ namespace Opensprogskole {
         // attendance without waiting on the separate absence fetch.
         public int absence_status { get; set; default = 0; }      // AbsenceStatus
         public int absence_too_late { get; set; default = -1; }   // AbsenceTooLate
+        // The student's reason for an absence, when one has been given. Carried by
+        // the timetable JSON itself (also in the absence record's StudentReason).
+        public string absence_reason { get; set; default = ""; }  // AbsenceReason
 
         // Parsed by Entity from ISO 8601 (e.g. "2026-05-20T08:15:00") into real
         // GLib.DateTime values; null when the JSON omits them.

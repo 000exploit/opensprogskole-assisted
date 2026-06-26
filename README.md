@@ -9,6 +9,8 @@
 
 _Learning Danish at language school? OpenSprogskole is for you._
 
+![](data/screenshots/greetings.png)
+
 OpenSprogskole is an application for Danish language schools, written in Vala and using GTK4 and libadwaita for its modern UI. It allows you to view your schedule, grades, homework and report when you are sick or unavailable.
 
 Currently, the application supports the following language schools:

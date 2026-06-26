@@ -52,6 +52,9 @@ namespace Opensprogskole {
         construct {
             report_button.clicked.connect (() => report_absence_requested ());
             report_button_mobile.clicked.connect (() => report_absence_requested ());
+            // Reporting absence is a write — no point offering it while offline.
+            Connectivity.get_default ().bind_writable (report_button);
+            Connectivity.get_default ().bind_writable (report_button_mobile);
             view_schedule_button.clicked.connect (() => open_schedule ());
             all_grades_button.clicked.connect (() => open_grades ());
             today_lessons.lesson_activated.connect ((item) => {

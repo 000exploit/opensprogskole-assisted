@@ -6,7 +6,8 @@ template $OpensprogskoleAbsenceDialog: Adw.Dialog {
   content-width: 420;
   content-height: 600;
 
-  child: Adw.NavigationView nav {
+  child: Adw.ToastOverlay toast_overlay {
+    child: Adw.NavigationView nav {
     Adw.NavigationPage {
       tag: "choose";
       title: _("Report absence");
@@ -376,5 +377,6 @@ template $OpensprogskoleAbsenceDialog: Adw.Dialog {
         };
       };
     }
+    };
   };
 }

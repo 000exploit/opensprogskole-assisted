@@ -32,6 +32,7 @@ namespace Opensprogskole {
         [GtkChild] private unowned Adw.NavigationSplitView split;
         [GtkChild] private unowned Adw.Avatar school_avatar;
         [GtkChild] private unowned Label school_label;
+        [GtkChild] private unowned Label connection_label;
         [GtkChild] private unowned Gtk.ListBox nav_list;
         [GtkChild] private unowned Gtk.ListBox more_list;
         [GtkChild] private unowned Adw.NavigationView content_nav;
@@ -80,6 +81,14 @@ namespace Opensprogskole {
             group.add_action (edit_action);
             insert_action_group ("profile", group);
 
+            // Connectivity drives the sidebar status line and (via sync_footer)
+            // the edit action's enabled state.
+            Connectivity.get_default ().notify["online"].connect (() => {
+                update_connection_status ();
+                sync_footer ();
+            });
+            update_connection_status ();
+
             content_nav.replace_with_tags ({ "overview" });
             content_nav.notify["visible-page"].connect (sync_to_visible_page);
             sync_to_visible_page ();
@@ -103,8 +112,20 @@ namespace Opensprogskole {
             session.updated.connect (sync_footer);
         }
 
+        /* Reflect connectivity in the sidebar status line under the school name. */
+        private void update_connection_status () {
+            bool online = Connectivity.get_default ().online;
+            connection_label.label = online ? _("Connected") : _("Offline");
+            if (online) {
+                connection_label.remove_css_class ("warning");
+            } else {
+                connection_label.add_css_class ("warning");
+            }
+        }
+
         /* Footer label + avatar + the "Edit information" action's enabled state,
-         * kept in step with the session (incl. after a picture upload). */
+         * kept in step with the session (incl. after a picture upload). Editing is
+         * a write, so it also needs a connection. */
         private void sync_footer () {
             if (session == null) {
                 return;
@@ -113,7 +134,8 @@ namespace Opensprogskole {
             profile_avatar.text = session.display_name;
             load_profile_avatar.begin ();
             edit_action.set_enabled (
-                session.user_settings != null && session.user_settings.any_editable);
+                session.user_settings != null && session.user_settings.any_editable
+                && Connectivity.get_default ().online);
         }
 
         /* Mirror the profile picture into the sidebar footer avatar; leaves the

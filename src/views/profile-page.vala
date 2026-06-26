@@ -35,7 +35,6 @@ namespace Opensprogskole {
         [GtkChild] private unowned Button avatar_edit_button;
         [GtkChild] private unowned Label name_label;
         [GtkChild] private unowned Label sub_label;
-        [GtkChild] private unowned Adw.Banner error_banner;
         [GtkChild] private unowned Adw.Banner pending_banner;
         [GtkChild] private unowned Adw.PreferencesGroup about_group;
         [GtkChild] private unowned Adw.PreferencesGroup contact_group;
@@ -52,6 +51,8 @@ namespace Opensprogskole {
         // True while reload() pushes server state into the rows, so the row
         // change handlers don't mistake it for a user edit and save it back.
         private bool syncing = false;
+        // True while a picture upload is in flight (keeps the avatar button off).
+        private bool uploading = false;
         // Rows currently shown in the dynamic groups, with their owning group, so
         // they can be removed on reload.
         private GLib.GenericArray<Adw.PreferencesRow> dynamic_rows
@@ -68,6 +69,22 @@ namespace Opensprogskole {
             pending_banner.button_clicked.connect (() => remove_pending.begin ());
             sms_row.notify["active"].connect (on_sms_toggled);
             privacy_row.notify["selected"].connect (on_privacy_changed);
+
+            // These are all writes: disable them while offline. The avatar button
+            // also toggles its own sensitivity during an upload, so it folds
+            // `online` in by hand instead of a plain bind (see update_avatar_button).
+            var conn = Connectivity.get_default ();
+            conn.bind_writable (edit_button);
+            conn.bind_writable (sms_row);
+            conn.bind_writable (privacy_row);
+            conn.bind_writable (pending_banner);
+            conn.notify["online"].connect (update_avatar_button);
+            update_avatar_button ();
+        }
+
+        private void update_avatar_button () {
+            avatar_edit_button.sensitive =
+                !uploading && Connectivity.get_default ().online;
         }
 
         public void bind (Session session) {
@@ -228,9 +245,8 @@ namespace Opensprogskole {
         }
 
         /* Save the (already mutated) user_info; on failure run `revert` to undo
-         * the in-memory change, re-sync the rows and surface the error. */
+         * the in-memory change, re-sync the rows and toast the error. */
         private void persist (owned RevertAction revert) {
-            error_banner.revealed = false;
             session.save_user_info.begin ((obj, res) => {
                 try {
                     session.save_user_info.end (res);
@@ -238,8 +254,7 @@ namespace Opensprogskole {
                     warning ("save user info failed: %s", e.message);
                     revert ();
                     sync_settings ();
-                    error_banner.title = _("Couldn't save your change. Please try again.");
-                    error_banner.revealed = true;
+                    toast (_("Couldn't save your change — check your connection."));
                 }
             });
         }
@@ -289,7 +304,8 @@ namespace Opensprogskole {
             if (session == null) {
                 return;
             }
-            avatar_edit_button.sensitive = false;
+            uploading = true;
+            update_avatar_button ();
             try {
                 string etag;
                 var bytes = yield file.load_bytes_async (null, out etag);
@@ -297,9 +313,10 @@ namespace Opensprogskole {
                 toast (_("Photo uploaded — awaiting approval"));
             } catch (GLib.Error e) {
                 warning ("avatar upload failed: %s", e.message);
-                toast (_("Couldn't upload the photo. Please try again."));
+                toast (_("Couldn't upload the photo — check your connection."));
             }
-            avatar_edit_button.sensitive = true;
+            uploading = false;
+            update_avatar_button ();
         }
 
         private async void remove_pending () {

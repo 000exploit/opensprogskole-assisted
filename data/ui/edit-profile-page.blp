@@ -9,7 +9,8 @@ template $OpensprogskoleEditProfilePage: Adw.NavigationPage {
     [top]
     Adw.HeaderBar {}
 
-    content: ScrolledWindow {
+    content: Adw.ToastOverlay toast_overlay {
+      child: ScrolledWindow {
       hscrollbar-policy: never;
 
       Adw.Clamp {
@@ -22,10 +23,6 @@ template $OpensprogskoleEditProfilePage: Adw.NavigationPage {
         Box {
           orientation: vertical;
           spacing: 18;
-
-          Adw.Banner error_banner {
-            revealed: false;
-          }
 
           // Only fields the school permits are editable here; everything else is
           // read-only and handled by the school's reception.
@@ -129,6 +126,7 @@ template $OpensprogskoleEditProfilePage: Adw.NavigationPage {
           }
         }
       }
+      };
     };
   };
 }

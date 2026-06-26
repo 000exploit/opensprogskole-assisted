@@ -29,9 +29,9 @@ namespace Opensprogskole {
     [GtkTemplate (ui = "/moe/ekusu/sprogskole/ui/edit-profile-page.ui")]
     public class EditProfilePage : Adw.NavigationPage {
 
+        [GtkChild] private unowned Adw.ToastOverlay toast_overlay;
         [GtkChild] private unowned Button save_button;
         [GtkChild] private unowned Adw.Spinner spinner;
-        [GtkChild] private unowned Adw.Banner error_banner;
         [GtkChild] private unowned Adw.EntryRow phone_row;
         [GtkChild] private unowned Adw.EntryRow private_mobile_row;
         [GtkChild] private unowned Adw.EntryRow work_phone_row;
@@ -90,7 +90,6 @@ namespace Opensprogskole {
             if (other_info_row.visible) info.other_info = other_info_row.text;
 
             set_busy (true);
-            error_banner.revealed = false;
             session.save_user_info.begin ((obj, res) => {
                 try {
                     session.save_user_info.end (res);
@@ -98,8 +97,8 @@ namespace Opensprogskole {
                 } catch (GLib.Error e) {
                     warning ("profile save failed: %s", e.message);
                     set_busy (false);
-                    error_banner.title = _("Couldn't save your changes. Please try again.");
-                    error_banner.revealed = true;
+                    toast_overlay.add_toast (new Adw.Toast (
+                        _("Couldn't save your changes — check your connection.")));
                 }
             });
         }

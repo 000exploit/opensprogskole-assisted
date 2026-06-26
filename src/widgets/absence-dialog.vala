@@ -29,6 +29,7 @@ namespace Opensprogskole {
     [GtkTemplate (ui = "/moe/ekusu/sprogskole/ui/absence-dialog.ui")]
     public class AbsenceDialog : Adw.Dialog {
 
+        [GtkChild] private unowned Adw.ToastOverlay toast_overlay;
         [GtkChild] private unowned Adw.NavigationView nav;
         [GtkChild] private unowned Button future_button;
         [GtkChild] private unowned Adw.Banner error_banner;
@@ -98,8 +99,8 @@ namespace Opensprogskole {
                 close ();
             } catch (GLib.Error e) {
                 warning ("create absence failed: %s", e.message);
-                error_banner.title = _("Couldn't report absence. Please try again.");
-                error_banner.revealed = true;
+                toast_overlay.add_toast (new Adw.Toast (
+                    _("Couldn't report absence — check your connection.")));
                 set_busy (false);
             }
         }

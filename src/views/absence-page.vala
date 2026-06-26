@@ -33,6 +33,7 @@ namespace Opensprogskole {
 
         construct {
             report_button.clicked.connect (() => report_absence_requested ());
+            Connectivity.get_default ().bind_writable (report_button);
         }
 
         private Session? session = null;

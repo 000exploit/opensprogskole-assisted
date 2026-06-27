@@ -45,6 +45,7 @@ namespace Opensprogskole {
         [GtkChild] private unowned AbsencePage absence;
         [GtkChild] private unowned GradesPage grades_page;
         [GtkChild] private unowned ProfilePage profile;
+        [GtkChild] private unowned LinksPage links_page;
 
         private Session? session = null;
         private GLib.SimpleAction edit_action;
@@ -111,6 +112,7 @@ namespace Opensprogskole {
             absence.bind (session);
             grades_page.bind (session);
             profile.bind (session);
+            links_page.bind (session);
 
             // Sync the footer chrome now (the session's initial updated() fires
             // during refresh(), before this bind connects — so we can't rely on

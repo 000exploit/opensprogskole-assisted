@@ -46,6 +46,8 @@ namespace Opensprogskole {
         // the Absence page with edit/delete actions; the registered ones above are
         // read-only.
         public GLib.ListStore future_absences { get; default = new GLib.ListStore (typeof (FutureAbsenceItem)); }
+        // The school's external links, from the cached login AppSettings.
+        public GLib.ListStore links { get; default = new GLib.ListStore (typeof (LinkItem)); }
         public UserInfoItem? user_info { get; private set; default = null; }
         public UserInfoSettings? user_settings { get; private set; default = null; }
         public AbsenceSummary? absence_summary { get; private set; default = null; }
@@ -55,6 +57,10 @@ namespace Opensprogskole {
         // Whether the school shows absence reasons to students (gates the reason
         // row in the lesson dialog). Loaded with the absence settings.
         public bool show_absence_reason { get; private set; default = false; }
+        // The school's call-in-sick policy, from the cached login AppSettings.
+        private CallInSickSettings? call_in_sick_settings = null;
+        // Fallback cutoff (minutes since midnight) when the school sends none.
+        private const int DEFAULT_CALL_IN_SICK_CUTOFF = 20 * 60 + 30;   // 20:30
 
         /* After the fast general data (grades/profile/settings). */
         public signal void updated ();
@@ -117,6 +123,10 @@ namespace Opensprogskole {
          * without holding up the first paint. */
         public async void refresh () {
             int64 t0 = get_monotonic_time ();
+
+            // Links + call-in-sick policy come from the cached login AppSettings —
+            // a fast local read, loaded before the shell binds the Links page.
+            load_app_settings ();
 
             // Show the grades spinner during a retry. On the first load this fires
             // before the shell is bound, so it's a harmless no-op there.
@@ -368,11 +378,41 @@ namespace Opensprogskole {
         }
 
         /* Whether "call in sick" is still available: the backend only accepts it
-         * up to 20:30 local. */
+         * up to a daily cutoff (AbsenceCallInSickSettings.IgnoreMessageStart, e.g.
+         * 20:30), falling back to a default when the school sends none. */
         public bool can_call_in_sick () {
+            int cutoff = call_in_sick_settings != null
+                && call_in_sick_settings.cutoff_minutes >= 0
+                    ? call_in_sick_settings.cutoff_minutes
+                    : DEFAULT_CALL_IN_SICK_CUTOFF;
             var now = new DateTime.now_local ();
-            return now.get_hour () < 20
-                || (now.get_hour () == 20 && now.get_minute () < 30);
+            return now.get_hour () * 60 + now.get_minute () < cutoff;
+        }
+
+        /* Load the school's links + call-in-sick policy from the cached login
+         * AppSettings (written by SessionController.cache_app_settings). Local,
+         * fast, best-effort — absent cache just leaves links empty + default cutoff. */
+        private void load_app_settings () {
+            links.remove_all ();
+            call_in_sick_settings = null;
+
+            var node = JsonCache.load (cache_account, "app-settings");
+            if (node == null || node.get_node_type () != Json.NodeType.OBJECT) {
+                return;
+            }
+            var obj = node.get_object ();
+
+            if (obj.has_member ("Links")
+                && obj.get_member ("Links").get_node_type () == Json.NodeType.ARRAY) {
+                obj.get_array_member ("Links").foreach_element ((arr, i, element) => {
+                    links.append (Json.gobject_deserialize (typeof (LinkItem), element));
+                });
+            }
+            if (obj.has_member ("AbsenceCallInSickSettings")
+                && obj.get_member ("AbsenceCallInSickSettings").get_node_type () == Json.NodeType.OBJECT) {
+                call_in_sick_settings = (CallInSickSettings) Json.gobject_deserialize (
+                    typeof (CallInSickSettings), obj.get_member ("AbsenceCallInSickSettings"));
+            }
         }
 
         /* Describe (create or edit) the reason for a single past absent lesson. */

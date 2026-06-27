@@ -1,0 +1,42 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OpensprogskoleLinksPage: Adw.Bin {
+  child: ScrolledWindow {
+    hscrollbar-policy: never;
+
+    Adw.Clamp {
+      maximum-size: 680;
+      margin-top: 18;
+      margin-bottom: 24;
+      margin-start: 12;
+      margin-end: 12;
+      tightening-threshold: 280;
+
+      Stack stack {
+        StackPage {
+          name: "list";
+
+          child: ListBox list {
+            selection-mode: none;
+            valign: start;
+
+            styles [
+              "boxed-list",
+            ]
+          };
+        }
+
+        StackPage {
+          name: "empty";
+
+          child: Adw.StatusPage {
+            icon-name: "web-browser-symbolic";
+            title: _("No links");
+            description: _("Your school hasn't shared any links.");
+          };
+        }
+      }
+    }
+  };
+}

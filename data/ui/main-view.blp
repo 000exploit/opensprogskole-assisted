@@ -288,11 +288,7 @@ template $OpensprogskoleMainView: Adw.Bin {
               [top]
               Adw.HeaderBar {}
 
-              content: Adw.StatusPage {
-                icon-name: "web-browser-symbolic";
-                title: _("Links");
-                description: _("Coming soon.");
-              };
+              content: $OpensprogskoleLinksPage links_page {};
             };
           }
         };

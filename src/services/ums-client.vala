@@ -50,6 +50,10 @@ namespace Opensprogskole {
         public string token { get; set; default = ""; }
         // Unix seconds the token expires (from the JWT 'exp' claim); 0 = unknown.
         public int64 token_expires_at { get; set; default = 0; }
+        // The AppSettings subtree of the last Authenticate response (Links,
+        // AbsenceCallInSickSettings, ...). A sibling of Token, so it carries no
+        // credential. Null until a fresh login happens (token-resume skips auth).
+        public Json.Node? app_settings { get; private set; default = null; }
 
         public UmsClient (string base_url) {
             Object (base_url: base_url);
@@ -106,6 +110,9 @@ namespace Opensprogskole {
                 throw new UmsError.MALFORMED ("No token in login response");
             }
             token_expires_at = decode_jwt_exp (token);
+            // Keep the (token-free) AppSettings subtree for the caller to cache.
+            app_settings = root.get_object ().has_member ("AppSettings")
+                ? root.get_object ().get_member ("AppSettings") : null;
         }
 
         /* Read the 'exp' (unix seconds) claim from a JWT, or 0 if absent/

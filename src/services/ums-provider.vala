@@ -44,6 +44,10 @@ namespace Opensprogskole {
         /* The current Bearer token (after login or resume). */
         public string token { owned get { return client.token; } }
 
+        /* The AppSettings subtree from the last fresh login (null after a
+         * token-resume). The caller curates + caches the safe parts. */
+        public Json.Node? app_settings { owned get { return client.app_settings; } }
+
         /* When the token expires (unix seconds), or 0 if unknown. Set by login. */
         public int64 token_expires_at { get { return client.token_expires_at; } }
 

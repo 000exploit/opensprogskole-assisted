@@ -1,6 +1,7 @@
 opensprogskole_vala_sources = [
   'main.vala',
   'application.vala',
+  'util.vala',
   'models/entity.vala',
   'models/timetable-item.vala',
   'models/grade.vala',

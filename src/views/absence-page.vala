@@ -124,6 +124,13 @@ namespace Opensprogskole {
             var dialog = new ReasonDialog (
                 has_reason ? _("Edit reason") : _("Describe absence"),
                 item.subject, item.student_reason, _("Save"));
+
+            // Offer to cover the whole day when more than one lesson was missed.
+            var day = item.start_time ?? item.start_date;
+            if (day != null && session.describable_count_on (day) > 1) {
+                dialog.show_whole_day (
+                    _("Apply to all absent lessons this day"));
+            }
             dialog.submitted.connect ((reason) => describe.begin (dialog, item, reason));
             dialog.present (this);
         }
@@ -134,7 +141,12 @@ namespace Opensprogskole {
             }
             dialog.set_busy (true);
             try {
-                yield session.describe_absence (item.server_id, item.event_id, reason);
+                var day = item.start_time ?? item.start_date;
+                if (dialog.whole_day && day != null) {
+                    yield session.describe_absence_day (day, reason);
+                } else {
+                    yield session.describe_absence (item.server_id, item.event_id, reason);
+                }
                 dialog.close ();
             } catch (GLib.Error e) {
                 warning ("describe absence failed: %s", e.message);

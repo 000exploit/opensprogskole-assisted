@@ -106,10 +106,11 @@ namespace Opensprogskole {
          * may still be described. */
         public abstract async Json.Node? fetch_absence_settings () throws GLib.Error;
 
-        /* Describe (create or edit) the reason for a past absent lesson, keyed by
-         * its server + timetable ids (ServerId/EventId in the absence response). */
-        public abstract async void create_absence_reason (int server_id,
-                                                          string timetable_id,
+        /* Describe (create or edit) the reason for one or more past absent lessons
+         * at once, each keyed by its server + timetable ids (ServerId/EventId in
+         * the absence response). The two arrays are parallel. */
+        public abstract async void create_absence_reason (int[] server_ids,
+                                                          string[] timetable_ids,
                                                           string reason)
             throws GLib.Error;
 

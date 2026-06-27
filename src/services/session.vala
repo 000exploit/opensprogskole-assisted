@@ -379,11 +379,53 @@ namespace Opensprogskole {
                 || (now.get_hour () == 20 && now.get_minute () < 30);
         }
 
-        /* Describe (create or edit) the reason for a past absent lesson. Refreshes
-         * the absence list and timetable so the reason (and dots) update. */
+        /* Describe (create or edit) the reason for a single past absent lesson. */
         public async void describe_absence (int server_id, string timetable_id,
                                             string reason) throws GLib.Error {
-            yield provider.create_absence_reason (server_id, timetable_id, reason);
+            yield apply_absence_reason ({ server_id }, { timetable_id }, reason);
+        }
+
+        /* How many describable absent lessons share `day` — lets a caller decide
+         * whether to offer the "whole day" option. */
+        public uint describable_count_on (DateTime day) {
+            return describable_on (day).length;
+        }
+
+        /* Describe every describable absent lesson on `day` with one reason — the
+         * "whole day" case, sent as a single multi-entry CreateAbsenceReason. */
+        public async void describe_absence_day (DateTime day, string reason)
+            throws GLib.Error {
+            var targets = describable_on (day);
+            if (targets.length == 0) {
+                return;
+            }
+            int[] server_ids = new int[targets.length];
+            string[] timetable_ids = new string[targets.length];
+            for (uint i = 0; i < targets.length; i++) {
+                server_ids[i] = targets[i].admin_server_id;
+                timetable_ids[i] = targets[i].timetable_id;
+            }
+            yield apply_absence_reason (server_ids, timetable_ids, reason);
+        }
+
+        /* The describable absent lessons on `day` (the shared predicate behind both
+         * the count and the whole-day describe). */
+        private GLib.GenericArray<TimetableItem> describable_on (DateTime day) {
+            string key = day.format ("%Y-%m-%d");
+            var found = new GLib.GenericArray<TimetableItem> ();
+            timetable.foreach_lesson ((item) => {
+                if (item.date_key == key && item.timetable_id != ""
+                    && can_describe (item.end_datetime, item.absence_status)) {
+                    found.add (item);
+                }
+            });
+            return found;
+        }
+
+        /* POST the reason(s) then refresh the lists so the reason (and dots) update. */
+        private async void apply_absence_reason (int[] server_ids, string[] timetable_ids,
+                                                 string reason) throws GLib.Error {
+            yield provider.create_absence_reason (server_ids, timetable_ids, reason);
             refresh_absence.begin ();
             refresh_timetable.begin ();
         }

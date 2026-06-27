@@ -171,16 +171,19 @@ namespace Opensprogskole {
         }
 
         /* CreateAbsenceReason wants a base64-encoded JSON *array* of lesson-shaped
-         * objects, but only these three members matter; the server fills the rest. */
-        public async void create_absence_reason (int server_id, string timetable_id,
+         * objects, but only these three members matter per entry; the server fills
+         * the rest. One entry per lesson lets a single reason cover a whole day. */
+        public async void create_absence_reason (int[] server_ids, string[] timetable_ids,
                                                  string reason) throws GLib.Error {
             var b = new Json.Builder ();
             b.begin_array ();
-            b.begin_object ();
-            b.set_member_name ("AdminServerId"); b.add_int_value (server_id);
-            b.set_member_name ("TimetableId"); b.add_string_value (timetable_id);
-            b.set_member_name ("AbsenceReason"); b.add_string_value (reason);
-            b.end_object ();
+            for (int i = 0; i < timetable_ids.length; i++) {
+                b.begin_object ();
+                b.set_member_name ("AdminServerId"); b.add_int_value (server_ids[i]);
+                b.set_member_name ("TimetableId"); b.add_string_value (timetable_ids[i]);
+                b.set_member_name ("AbsenceReason"); b.add_string_value (reason);
+                b.end_object ();
+            }
             b.end_array ();
 
             var gen = new Json.Generator ();

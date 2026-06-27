@@ -36,6 +36,14 @@ template $OpensprogskoleReasonDialog: Adw.Dialog {
             Adw.EntryRow reason_row {
               title: _("Reason");
             }
+
+            // Optional: apply the reason to every absent lesson that day. Shown
+            // by the caller only when the day has more than one.
+            Adw.SwitchRow whole_day_row {
+              title: _("Whole day");
+              active: true;
+              visible: false;
+            }
           }
 
           Box {

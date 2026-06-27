@@ -32,11 +32,17 @@ namespace Opensprogskole {
         [GtkChild] private unowned Adw.ToastOverlay toast_overlay;
         [GtkChild] private unowned Label hint_label;
         [GtkChild] private unowned Adw.EntryRow reason_row;
+        [GtkChild] private unowned Adw.SwitchRow whole_day_row;
         [GtkChild] private unowned Adw.Spinner spinner;
         [GtkChild] private unowned Button submit_button;
 
         /* The user confirmed a non-empty reason. */
         public signal void submitted (string reason);
+
+        /* Whether the (optional) "whole day" toggle is offered and switched on. */
+        public bool whole_day {
+            get { return whole_day_row.visible && whole_day_row.active; }
+        }
 
         public ReasonDialog (string title, string hint, string initial,
                              string submit_label) {
@@ -62,11 +68,19 @@ namespace Opensprogskole {
             reason_row.entry_activated.connect (() => submit_button.activate ());
         }
 
+        /* Offer the "whole day" toggle (default on), with a subtitle describing
+         * how many lessons it covers. */
+        public void show_whole_day (string subtitle) {
+            whole_day_row.subtitle = subtitle;
+            whole_day_row.visible = true;
+        }
+
         /* Toggle the in-flight state while the caller does its network call. */
         public void set_busy (bool busy) {
             spinner.visible = busy;
             submit_button.sensitive = !busy;
             reason_row.sensitive = !busy;
+            whole_day_row.sensitive = !busy;
         }
 
         public void toast (string text) {

@@ -170,6 +170,19 @@ template $OpensprogskoleAbsenceDialog: Adw.Dialog {
                 }
               }
 
+              // Only shown when editing — when the record was last calculated.
+              Label last_updated_label {
+                halign: start;
+                xalign: 0;
+                wrap: true;
+                visible: false;
+
+                styles [
+                  "caption",
+                  "dim-label",
+                ]
+              }
+
               Adw.PreferencesGroup {
                 title: _("Date");
 

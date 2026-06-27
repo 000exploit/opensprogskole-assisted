@@ -154,6 +154,12 @@ namespace Opensprogskole {
                 subtitle_lines = 0
             };
 
+            // A passed (or backend-locked) planned absence can't be changed —
+            // show it read-only, without the edit/delete actions.
+            if (!item.editable) {
+                return row;
+            }
+
             var edit = new Gtk.Button () {
                 icon_name = "document-edit-symbolic",
                 valign = Gtk.Align.CENTER,

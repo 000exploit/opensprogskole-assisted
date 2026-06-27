@@ -43,6 +43,7 @@ namespace Opensprogskole {
         [GtkChild] private unowned Button future_button;
         [GtkChild] private unowned Adw.Banner error_banner;
         [GtkChild] private unowned Adw.EntryRow reason_row;
+        [GtkChild] private unowned Gtk.Label last_updated_label;
         [GtkChild] private unowned Adw.ComboRow month_row;
         [GtkChild] private unowned Adw.SpinRow day_row;
         [GtkChild] private unowned Adw.SpinRow year_row;
@@ -85,6 +86,10 @@ namespace Opensprogskole {
 
             form_page.title = _("Edit absence");
             submit_button.label = _("Save changes");
+            if (item.last_updated_label != "") {
+                last_updated_label.label = _("Last updated %s").printf (item.last_updated_label);
+                last_updated_label.visible = true;
+            }
             // Replace the stack so Back/Escape leaves the dialog rather than
             // dropping the user on the (irrelevant) "choose" page.
             nav.replace_with_tags ({ "form" });

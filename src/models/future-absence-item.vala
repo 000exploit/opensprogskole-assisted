@@ -42,6 +42,28 @@ namespace Opensprogskole {
         // Server's "computed at" stamp; opaque to us, kept only to round-trip.
         public string when_calculated { get; set; default = ""; }
 
+        /* Whether this planned absence can still be edited or deleted. The backend
+         * refuses to change one that has already passed, so only an absence that
+         * hasn't ended yet is editable. */
+        public bool editable {
+            get {
+                return end_date_time != null
+                    && end_date_time.compare (new DateTime.now_local ()) > 0;
+            }
+        }
+
+        /* WhenCalculated rendered as a "last updated" hint, in local time; empty
+         * when the record carries none or it can't be parsed. */
+        public string last_updated_label {
+            owned get {
+                if (when_calculated.strip () == "") {
+                    return "";
+                }
+                var dt = new DateTime.from_iso8601 (when_calculated, null);
+                return dt != null ? dt.to_local ().format ("%-d %b %Y, %H:%M") : "";
+            }
+        }
+
         /* "Wed, 1 Jul 2026 · 08:30 – 14:45" style summary for a list row. */
         public string when_label {
             owned get {

@@ -47,30 +47,13 @@ template $OpensprogskoleAbsencePage: Adw.Bin {
             }
           }
 
-          // Editable, student-reported absences (GetFutureStudentAbsence).
-          // Hidden until there is at least one.
-          Box planned_section {
-            orientation: vertical;
-            spacing: 8;
+          // Editable, student-reported absences (GetFutureStudentAbsence). The
+          // first few show directly; any extras tuck behind a "Show more" row so
+          // they don't crowd out the reported list. Hidden until there is at
+          // least one; all rows are filled in code.
+          Adw.PreferencesGroup planned_group {
+            title: _("Planned");
             visible: false;
-
-            Label {
-              label: _("Planned");
-              halign: start;
-
-              styles [
-                "title-4",
-              ]
-            }
-
-            ListBox planned_list {
-              selection-mode: none;
-              valign: start;
-
-              styles [
-                "boxed-list",
-              ]
-            }
           }
 
           // The read-only registered absences, with their own load state.

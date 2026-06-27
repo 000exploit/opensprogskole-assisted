@@ -319,33 +319,29 @@ namespace Opensprogskole {
             return ok;
         }
 
-        /* Report a future absence; returns the new id. Refreshes both absence
-         * lists on success so the page and Overview attendance stay current. */
+        /* Report a future absence; returns the new id. Only the future-absence
+         * list changes — a planned absence isn't a registered one — so the
+         * (slower) registered-absence list is left alone. */
         public async int report_future_absence (string reason, string start_iso,
                                                 string end_iso) throws GLib.Error {
             int id = yield provider.create_future_absence (reason, start_iso, end_iso);
-            refresh_after_absence_change ();
+            refresh_future_absence.begin ();
             return id;
         }
 
         /* Edit an existing future absence (the backend's way to change any
-         * absence). Refreshes both lists on success. */
+         * absence). Refreshes the future list only. */
         public async void update_future_absence (int id, string reason,
                                                  string start_iso, string end_iso)
             throws GLib.Error {
             yield provider.update_future_absence (id, reason, start_iso, end_iso);
-            refresh_after_absence_change ();
+            refresh_future_absence.begin ();
         }
 
-        /* Remove a future absence. Refreshes both lists on success. */
+        /* Remove a future absence. Refreshes the future list only. */
         public async void delete_future_absence (int id) throws GLib.Error {
             yield provider.delete_future_absence (id);
-            refresh_after_absence_change ();
-        }
-
-        private void refresh_after_absence_change () {
             refresh_future_absence.begin ();
-            refresh_absence.begin ();
         }
 
         /* Whether a past absent lesson can still have its reason described: the

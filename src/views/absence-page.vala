@@ -31,8 +31,17 @@ namespace Opensprogskole {
         [GtkChild] private unowned Gtk.Stack stack;
         [GtkChild] private unowned LoadingState absence_loading;
         [GtkChild] private unowned Gtk.Button report_button;
-        [GtkChild] private unowned Gtk.Box planned_section;
-        [GtkChild] private unowned Gtk.ListBox planned_list;
+        [GtkChild] private unowned Adw.PreferencesGroup planned_group;
+
+        // How many planned absences show directly before the rest fold behind a
+        // "Show more" row.
+        private const uint PLANNED_PEEK = 2;
+
+        // The widgets currently added to planned_group (the peek rows plus the
+        // optional "Show more" expander), tracked so they can be cleared on a
+        // rebuild — Adw.PreferencesGroup has no bind_model.
+        private GLib.GenericArray<Gtk.Widget> planned_rows
+            = new GLib.GenericArray<Gtk.Widget> ();
 
         public signal void report_absence_requested ();
 
@@ -54,7 +63,6 @@ namespace Opensprogskole {
             session.absences.items_changed.connect (sync_stack);
             session.absence_updated.connect (sync_stack);
 
-            planned_list.bind_model (session.future_absences, create_planned_row);
             session.future_absences.items_changed.connect (sync_planned);
             session.future_absence_updated.connect (sync_planned);
 
@@ -76,15 +84,49 @@ namespace Opensprogskole {
                 session.absences.get_n_items () > 0 ? "list" : "empty";
         }
 
-        /* The planned section only exists when the student has reported one — an
-         * empty or still-loading list just stays hidden (the reported section
-         * already carries the page's loading/empty state). */
+        /* Rebuild the planned group from the store: the first PLANNED_PEEK rows
+         * show directly, any extras go inside a "Show N more" expander. It only
+         * appears once the student has a planned absence — an empty or still-
+         * loading list stays hidden (the reported section carries the page's
+         * loading/empty state). Rebuilt by hand (no bind_model on a group); the
+         * list is short and only changes on an explicit add/edit/delete. */
         private void sync_planned () {
             if (session == null) {
                 return;
             }
-            planned_section.visible = session.future_absence_state == LoadState.LOADED
-                && session.future_absences.get_n_items () > 0;
+            for (uint i = 0; i < planned_rows.length; i++) {
+                planned_group.remove (planned_rows[i]);
+            }
+            planned_rows.remove_range (0, planned_rows.length);
+
+            uint n = session.future_absences.get_n_items ();
+
+            for (uint i = 0; i < n && i < PLANNED_PEEK; i++) {
+                add_planned (planned_group, planned_item (i));
+            }
+            if (n > PLANNED_PEEK) {
+                var more = new Adw.ExpanderRow () {
+                    title = _("Show %u more").printf (n - PLANNED_PEEK)
+                };
+                for (uint i = PLANNED_PEEK; i < n; i++) {
+                    more.add_row (create_planned_row (planned_item (i)));
+                }
+                planned_group.add (more);
+                planned_rows.add (more);
+            }
+
+            planned_group.visible =
+                session.future_absence_state == LoadState.LOADED && n > 0;
+        }
+
+        private FutureAbsenceItem planned_item (uint index) {
+            return (FutureAbsenceItem) session.future_absences.get_item (index);
+        }
+
+        private void add_planned (Adw.PreferencesGroup group, FutureAbsenceItem item) {
+            var row = create_planned_row (item);
+            group.add (row);
+            planned_rows.add (row);
         }
 
         private Gtk.Widget create_row (GLib.Object object) {
@@ -157,8 +199,7 @@ namespace Opensprogskole {
 
         /* A planned-absence row: the reason, its window, and edit/delete buttons.
          * Both buttons follow connectivity (disabled offline) since they write. */
-        private Gtk.Widget create_planned_row (GLib.Object object) {
-            var item = (FutureAbsenceItem) object;
+        private Gtk.Widget create_planned_row (FutureAbsenceItem item) {
             var row = new Adw.ActionRow () {
                 title = item.reason != "" ? item.reason : _("Absence"),
                 subtitle = item.when_label,

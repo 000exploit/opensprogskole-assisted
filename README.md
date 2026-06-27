@@ -5,6 +5,9 @@
 <h1 align="center">OpenSprogskole</h1>
 <h3 align="center">Your language school life</h3>
 
+<p align="center">![](https://img.shields.io/github/license/000exploit/opensprogskole-assisted) ![](https://img.shields.io/github/v/tag/000exploit/opensprogskole-assisted)
+</p>
+
 <p align="center"><i>Learning Danish at language school? This app is for you.</i></p>
 
 ---

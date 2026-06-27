@@ -60,7 +60,9 @@ namespace Opensprogskole {
             view_schedule_button.clicked.connect (() => open_schedule ());
             all_grades_button.clicked.connect (() => open_grades ());
             today_lessons.lesson_activated.connect ((item) => {
-                new LessonDialog (item).present (this);
+                if (session != null) {
+                    new LessonDialog (item, session).present (this);
+                }
             });
         }
 

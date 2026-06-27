@@ -9,6 +9,7 @@ opensprogskole_vala_sources = [
   'models/link-item.vala',
   'models/absence-item.vala',
   'models/absence-summary.vala',
+  'models/absence-settings.vala',
   'models/future-absence-item.vala',
   'models/user-info-settings.vala',
   'store/timetable-store.vala',
@@ -41,6 +42,7 @@ opensprogskole_vala_sources = [
   'widgets/agenda.vala',
   'widgets/lesson-dialog.vala',
   'widgets/absence-dialog.vala',
+  'widgets/reason-dialog.vala',
 ]
 
 opensprogskole_sources = [

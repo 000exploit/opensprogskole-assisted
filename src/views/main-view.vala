@@ -107,6 +107,7 @@ namespace Opensprogskole {
 
             overview.bind (session);
             schedule.use_store (session.timetable);
+            schedule.session = session;
             absence.bind (session);
             grades_page.bind (session);
             profile.bind (session);

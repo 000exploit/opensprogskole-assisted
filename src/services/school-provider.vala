@@ -101,5 +101,23 @@ namespace Opensprogskole {
 
         /* Delete a future absence by id. */
         public abstract async void delete_future_absence (int id) throws GLib.Error;
+
+        /* The school's absence policy (JSON object), e.g. how far back a reason
+         * may still be described. */
+        public abstract async Json.Node? fetch_absence_settings () throws GLib.Error;
+
+        /* Describe (create or edit) the reason for a past absent lesson, keyed by
+         * its server + timetable ids (ServerId/EventId in the absence response). */
+        public abstract async void create_absence_reason (int server_id,
+                                                          string timetable_id,
+                                                          string reason)
+            throws GLib.Error;
+
+        /* Report today's absence ("call in sick"). Returns the backend's
+         * (code, message) so the caller can surface the message. */
+        public abstract async void student_call_in_sick (string reason, int type,
+                                                         out int code,
+                                                         out string message)
+            throws GLib.Error;
     }
 }

@@ -39,15 +39,21 @@ namespace Opensprogskole {
         [GtkChild]
         private unowned Adw.ActionRow time_row;
         [GtkChild]
+        private unowned Adw.ToastOverlay toast_overlay;
+        [GtkChild]
         private unowned Adw.PreferencesGroup absence_group;
+        // The reason display *and* editor: an editable EntryRow with an apply
+        // button when the absence can still be described.
         [GtkChild]
-        private unowned Adw.ActionRow reason_row;
-        // Declared (hidden) in the template for the upcoming CreateNote wiring.
-        [GtkChild]
-        private unowned Gtk.Button report_button;
+        private unowned Adw.EntryRow reason_row;
 
-        public LessonDialog (TimetableItem item) {
+        private TimetableItem item;
+        private Session session;
+
+        public LessonDialog (TimetableItem item, Session session) {
             Object ();
+            this.item = item;
+            this.session = session;
             ensure_widget_styles (this);
             build (item);
         }
@@ -69,9 +75,22 @@ namespace Opensprogskole {
             time_row.title = format_date (item);
             time_row.subtitle = item.time_range;
 
-            if (item.absence_reason.strip () != "") {
-                reason_row.title = item.absence_reason.strip ();
+            // Only when the school surfaces absence reasons to students: show the
+            // group when there's a reason to display or one can still be described.
+            // When describable the row edits in place (apply button); otherwise
+            // it's a read-only display of the existing reason.
+            bool has_reason = item.absence_reason.strip () != "";
+            bool describable = session.can_describe (item.end_datetime, item.absence_status);
+            if (session.show_absence_reason && (has_reason || describable)) {
+                reason_row.text = has_reason ? item.absence_reason.strip () : "";
+                reason_row.editable = describable;
+                reason_row.show_apply_button = describable;
                 absence_group.visible = true;
+
+                if (describable) {
+                    reason_row.apply.connect (on_apply);
+                    Connectivity.get_default ().bind_writable (reason_row);
+                }
             }
 
             // Dynamic / repeated groups are appended after the static ones.
@@ -91,6 +110,29 @@ namespace Opensprogskole {
             if (item.comment.strip () != "") {
                 content_box.append (build_text_group (_("Comment"), item.comment));
             }
+        }
+
+        /* Apply button on the reason row: save the edited/added reason in place. */
+        private void on_apply () {
+            string reason = reason_row.text.strip ();
+            if (reason == "") {
+                return;   // nothing to save
+            }
+            save_reason.begin (reason);
+        }
+
+        private async void save_reason (string reason) {
+            reason_row.sensitive = false;
+            try {
+                yield session.describe_absence (
+                    item.admin_server_id, item.timetable_id, reason);
+                toast_overlay.add_toast (new Adw.Toast (_("Reason saved.")));
+            } catch (GLib.Error e) {
+                warning ("describe absence failed: %s", e.message);
+                toast_overlay.add_toast (new Adw.Toast (
+                    _("Couldn't save reason — check your connection.")));
+            }
+            reason_row.sensitive = true;
         }
 
         private Gtk.Widget build_rooms (string[] rooms) {

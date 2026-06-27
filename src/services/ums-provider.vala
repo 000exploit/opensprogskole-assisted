@@ -165,6 +165,57 @@ namespace Opensprogskole {
                 "/Absence/DeleteFutureStudentAbsence?ID=%d".printf (id), "2");
         }
 
+        public async Json.Node? fetch_absence_settings () throws GLib.Error {
+            return yield client.get_json (
+                "/Absence/GetAbsenceSettings?language=" + school.language, "2");
+        }
+
+        /* CreateAbsenceReason wants a base64-encoded JSON *array* of lesson-shaped
+         * objects, but only these three members matter; the server fills the rest. */
+        public async void create_absence_reason (int server_id, string timetable_id,
+                                                 string reason) throws GLib.Error {
+            var b = new Json.Builder ();
+            b.begin_array ();
+            b.begin_object ();
+            b.set_member_name ("AdminServerId"); b.add_int_value (server_id);
+            b.set_member_name ("TimetableId"); b.add_string_value (timetable_id);
+            b.set_member_name ("AbsenceReason"); b.add_string_value (reason);
+            b.end_object ();
+            b.end_array ();
+
+            var gen = new Json.Generator ();
+            gen.set_root (b.get_root ());
+
+            // The endpoint reads the JSON from a base64 text body (content-type
+            // still application/json). Response is the JSON string confirmation.
+            string b64 = GLib.Base64.encode (gen.to_data (null).data);
+            yield client.post_json ("/Absence/CreateAbsenceReason", b64, "2");
+        }
+
+        public async void student_call_in_sick (string reason, int type,
+                                                out int code, out string message)
+            throws GLib.Error {
+            var b = new Json.Builder ();
+            b.begin_object ();
+            b.set_member_name ("AbsenceReason"); b.add_string_value (reason);
+            b.set_member_name ("AbsenceType"); b.add_int_value (type);
+            b.end_object ();
+
+            var gen = new Json.Generator ();
+            gen.set_root (b.get_root ());
+
+            string b64 = GLib.Base64.encode (gen.to_data (null).data);
+            var result = yield client.post_json ("/Absence/StudentCallInSick", b64, "2");
+
+            code = 0;
+            message = "";
+            if (result.get_node_type () == Json.NodeType.OBJECT) {
+                var obj = result.get_object ();
+                code = (int) obj.get_int_member_with_default ("Code", 0);
+                message = obj.get_string_member_with_default ("Message", "");
+            }
+        }
+
         /* The shared CreateFutureStudentAbsence/UpdateFutureStudentAbsence body.
          * when_calculated is the server's "computed at" stamp: a timestamp on
          * create, null on update (matching the official client). */

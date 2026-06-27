@@ -10,7 +10,8 @@ template $OpensprogskoleLessonDialog: Adw.Dialog {
     [top]
     Adw.HeaderBar {}
 
-    content: ScrolledWindow {
+    content: Adw.ToastOverlay toast_overlay {
+      child: ScrolledWindow {
       Adw.Clamp {
         maximum-size: 460;
         margin-top: 8;
@@ -97,31 +98,20 @@ template $OpensprogskoleLessonDialog: Adw.Dialog {
             }
           }
 
-          // Shown only when the lesson has a registered absence reason.
+          // Shown when the lesson has a registered absence reason or one can
+          // still be described. The reason row is the editor itself: when
+          // describable it's an editable EntryRow with an apply button.
           Adw.PreferencesGroup absence_group {
             title: _("Absence");
             visible: false;
 
-            // Groundwork for adding a reason via /api/Absence/CreateNote; hidden
-            // and inactive until that has a UI.
-            [header-suffix]
-            Button report_button {
-              label: _("Report reason");
-              visible: false;
-              sensitive: false;
-              valign: center;
-
-              styles [
-                "flat",
-              ]
-            }
-
-            Adw.ActionRow reason_row {
-              title-lines: 0;
+            Adw.EntryRow reason_row {
+              title: _("Reason");
             }
           }
         }
       }
+      };
     };
   };
 }

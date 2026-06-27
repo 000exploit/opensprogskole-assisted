@@ -49,6 +49,12 @@ namespace Opensprogskole {
         public UserInfoItem? user_info { get; private set; default = null; }
         public UserInfoSettings? user_settings { get; private set; default = null; }
         public AbsenceSummary? absence_summary { get; private set; default = null; }
+        // How many days back the school still lets a student describe an absence
+        // reason (0 ⇒ disabled). Loaded with the absence list; gates can_describe.
+        public int student_reason_days_back { get; private set; default = 0; }
+        // Whether the school shows absence reasons to students (gates the reason
+        // row in the lesson dialog). Loaded with the absence settings.
+        public bool show_absence_reason { get; private set; default = false; }
 
         /* After the fast general data (grades/profile/settings). */
         public signal void updated ();
@@ -342,45 +348,54 @@ namespace Opensprogskole {
             refresh_absence.begin ();
         }
 
-        /* The whole-day absence window for a "today" report, derived from that
-         * day's lessons: StartDateTime = first lesson start, EndDateTime = last
-         * lesson end (the backend only accepts the full lesson span). The school
-         * day ends at 20:30 local — past that the report rolls over to tomorrow.
-         * Returns false when the target day has no lessons, since the backend
-         * rejects a report with no lessons to attach it to. */
-        public bool today_absence_window (out string start_iso, out string end_iso,
-                                          out DateTime day) {
-            start_iso = "";
-            end_iso = "";
+        /* Whether a past absent lesson can still have its reason described: the
+         * school allows it (window > 0), the lesson was marked absent (status 3 —
+         * 'late' is excluded), it already ended, and it falls inside the
+         * StudentReasonDaysBack window. Today/future lessons are call-in-sick
+         * territory, not this. Shared by the Absence page and the lesson dialog. */
+        public bool can_describe (DateTime? end_dt, int status) {
+            if (student_reason_days_back <= 0 || status != 3 || end_dt == null) {
+                return false;
+            }
             var now = new DateTime.now_local ();
-            // After 20:30 the day is done; report for tomorrow instead.
-            day = (now.get_hour () > 20 || (now.get_hour () == 20 && now.get_minute () >= 30))
-                ? now.add_days (1) : now;
+            if (end_dt.compare (now) >= 0) {
+                return false;   // hasn't ended yet
+            }
+            // Inclusive, calendar-day window: from the start (midnight) of the
+            // StudentReasonDaysBack-th day ago up to now. A precise N×24h cutoff
+            // would drop part of the oldest day depending on the time of day, so
+            // a note from exactly N days ago could no longer be edited.
+            var earliest = new DateTime.local (
+                now.get_year (), now.get_month (), now.get_day_of_month (), 0, 0, 0)
+                .add_days (-student_reason_days_back);
+            return end_dt.compare (earliest) >= 0;
+        }
 
-            var store = timetable.get_day_for_key (day.format ("%Y-%m-%d"));
-            if (store == null || store.get_n_items () == 0) {
-                return false;
-            }
+        /* Whether "call in sick" is still available: the backend only accepts it
+         * up to 20:30 local. */
+        public bool can_call_in_sick () {
+            var now = new DateTime.now_local ();
+            return now.get_hour () < 20
+                || (now.get_hour () == 20 && now.get_minute () < 30);
+        }
 
-            DateTime? first = null;
-            DateTime? last = null;
-            for (uint i = 0; i < store.get_n_items (); i++) {
-                var item = (TimetableItem) store.get_item (i);
-                if (item.start_datetime != null
-                    && (first == null || item.start_datetime.compare (first) < 0)) {
-                    first = item.start_datetime;
-                }
-                if (item.end_datetime != null
-                    && (last == null || item.end_datetime.compare (last) > 0)) {
-                    last = item.end_datetime;
-                }
-            }
-            if (first == null || last == null) {
-                return false;
-            }
-            start_iso = first.format ("%Y-%m-%dT%H:%M:%S");
-            end_iso = last.format ("%Y-%m-%dT%H:%M:%S");
-            return true;
+        /* Describe (create or edit) the reason for a past absent lesson. Refreshes
+         * the absence list and timetable so the reason (and dots) update. */
+        public async void describe_absence (int server_id, string timetable_id,
+                                            string reason) throws GLib.Error {
+            yield provider.create_absence_reason (server_id, timetable_id, reason);
+            refresh_absence.begin ();
+            refresh_timetable.begin ();
+        }
+
+        /* Report today's absence ("call in sick"). Returns the backend's message
+         * (which may be an informational rejection) for the caller to surface. */
+        public async string call_in_sick (string reason) throws GLib.Error {
+            int code;
+            string message;
+            yield provider.student_call_in_sick (reason, 1, out code, out message);
+            refresh_absence.begin ();
+            return message;
         }
 
         /* The editable future absences, fetched on their own (own card state) so
@@ -414,6 +429,24 @@ namespace Opensprogskole {
             uint gen = ++absence_gen;
             absence_state = LoadState.LOADING;
             absence_updated ();   // spinner (back) on, incl. on a retry
+
+            // The policy that gates "describe reason"; best effort, so a failure
+            // just leaves the window at 0 (feature hidden) without failing the list.
+            try {
+                var settings_node = yield provider.fetch_absence_settings ();
+                if (gen == absence_gen && settings_node != null
+                    && settings_node.get_node_type () == Json.NodeType.OBJECT) {
+                    var settings = (AbsenceSettings) Json.gobject_deserialize (
+                        typeof (AbsenceSettings), settings_node);
+                    student_reason_days_back = settings.student_reason_days_back;
+                    show_absence_reason = settings.show_absence_reason;
+                    debug ("absence: student_reason_days_back=%d show_absence_reason=%s",
+                           student_reason_days_back, show_absence_reason.to_string ());
+                }
+            } catch (GLib.Error e) {
+                warning ("absence settings fetch failed: %s", e.message);
+            }
+
             try {
                 var node = yield provider.fetch_absence ();
                 if (gen != absence_gen) {

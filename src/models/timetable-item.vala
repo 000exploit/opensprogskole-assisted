@@ -57,6 +57,9 @@ namespace Opensprogskole {
         // Stable per-event id, e.g. "Web_690960". Matches an absence record's
         // EventId, which is how attendance is linked onto a lesson.
         public string timetable_id { get; set; default = ""; }
+        // Backend instance id (UMS "AdminServerId"); paired with timetable_id to
+        // address this lesson when describing an absence reason.
+        public int admin_server_id { get; set; default = 0; }
         public string subject { get; set; default = ""; }
         public string start_time { get; set; default = ""; }     // "08:15"
         public string end_time { get; set; default = ""; }       // "09:45"

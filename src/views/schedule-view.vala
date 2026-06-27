@@ -43,6 +43,8 @@ namespace Opensprogskole {
 
         // Set via use_store (); starts empty so the widget is usable standalone.
         private TimetableStore store = new TimetableStore ();
+        // Set by MainView; lets the lesson dialog describe an absence reason.
+        public Session? session { get; set; default = null; }
         // The calendar's selected day (yyyy-MM-dd); the agenda scrolls here when
         // it's switched to. Set by on_day_selected.
         private string selected_key = "";
@@ -167,7 +169,10 @@ namespace Opensprogskole {
         }
 
         private void open_lesson (TimetableItem item) {
-            var dialog = new LessonDialog (item);
+            if (session == null) {
+                return;
+            }
+            var dialog = new LessonDialog (item, session);
             dialog.present (this);
         }
 

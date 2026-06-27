@@ -92,12 +92,55 @@ namespace Opensprogskole {
             string subtitle = item.student_reason != ""
                 ? "%s · %s".printf (item.when_label, item.student_reason)
                 : item.when_label;
-            return new Adw.ActionRow () {
+            var row = new Adw.ActionRow () {
                 title = item.subject != "" ? item.subject : _("Absence"),
                 subtitle = subtitle,
                 title_lines = 0,
                 subtitle_lines = 0
             };
+
+            // A past absent lesson still inside the school's window can have its
+            // reason described/edited (connectivity-gated, since it writes).
+            if (session != null && session.can_describe (item.end_time, item.status)) {
+                bool has_reason = item.student_reason.strip () != "";
+                var describe = new Gtk.Button () {
+                    icon_name = "document-edit-symbolic",
+                    valign = Gtk.Align.CENTER,
+                    tooltip_text = has_reason ? _("Edit reason") : _("Describe absence")
+                };
+                describe.add_css_class ("flat");
+                describe.clicked.connect (() => open_describe (item));
+                Connectivity.get_default ().bind_writable (describe);
+                row.add_suffix (describe);
+            }
+            return row;
+        }
+
+        private void open_describe (AbsenceItem item) {
+            if (session == null) {
+                return;
+            }
+            bool has_reason = item.student_reason.strip () != "";
+            var dialog = new ReasonDialog (
+                has_reason ? _("Edit reason") : _("Describe absence"),
+                item.subject, item.student_reason, _("Save"));
+            dialog.submitted.connect ((reason) => describe.begin (dialog, item, reason));
+            dialog.present (this);
+        }
+
+        private async void describe (ReasonDialog dialog, AbsenceItem item, string reason) {
+            if (session == null) {
+                return;
+            }
+            dialog.set_busy (true);
+            try {
+                yield session.describe_absence (item.server_id, item.event_id, reason);
+                dialog.close ();
+            } catch (GLib.Error e) {
+                warning ("describe absence failed: %s", e.message);
+                dialog.toast (_("Couldn't save reason — check your connection."));
+                dialog.set_busy (false);
+            }
         }
 
         /* A planned-absence row: the reason, its window, and edit/delete buttons.

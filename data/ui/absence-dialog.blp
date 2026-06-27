@@ -373,6 +373,67 @@ template $OpensprogskoleAbsenceDialog: Adw.Dialog {
         };
       };
     }
+
+    Adw.NavigationPage {
+      tag: "sick";
+      title: _("Call in sick");
+
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {}
+
+        content: Adw.Clamp {
+          maximum-size: 400;
+          margin-top: 12;
+          margin-bottom: 18;
+          margin-start: 12;
+          margin-end: 12;
+
+          Box {
+            orientation: vertical;
+            spacing: 14;
+
+            Label {
+              label: _("Report that you're absent for the rest of today.");
+              halign: start;
+              wrap: true;
+              xalign: 0;
+
+              styles [
+                "dim-label",
+              ]
+            }
+
+            Adw.PreferencesGroup {
+              Adw.EntryRow sick_reason_row {
+                title: _("Reason");
+              }
+            }
+
+            Box {
+              halign: center;
+              spacing: 10;
+              margin-top: 6;
+
+              Adw.Spinner sick_spinner {
+                visible: false;
+                width-request: 24;
+                height-request: 24;
+              }
+
+              Button sick_submit_button {
+                label: _("Call in sick");
+
+                styles [
+                  "suggested-action",
+                  "pill",
+                ]
+              }
+            }
+          }
+        };
+      };
+    }
     };
   };
 }

@@ -25,6 +25,9 @@ namespace Opensprogskole {
      * PascalCase members and parses the ISO datetimes. */
     public class AbsenceItem : Entity {
         public string event_id { get; set; default = ""; }
+        // The backend instance id (UMS "ServerId"); paired with event_id to
+        // address this absence when describing a reason (CreateAbsenceReason).
+        public int server_id { get; set; default = 0; }
         public string activity_short_description { get; set; default = ""; }
         public string activity_description { get; set; default = ""; }
         public string student_reason { get; set; default = ""; }

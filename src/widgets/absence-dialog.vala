@@ -52,6 +52,9 @@ namespace Opensprogskole {
         [GtkChild] private unowned Gtk.SpinButton end_minute;
         [GtkChild] private unowned Adw.Spinner spinner;
         [GtkChild] private unowned Button submit_button;
+        [GtkChild] private unowned Adw.EntryRow sick_reason_row;
+        [GtkChild] private unowned Adw.Spinner sick_spinner;
+        [GtkChild] private unowned Button sick_submit_button;
 
         /* The user chose "Earlier" — they want the Absence page, not a new record.
          * The caller (which owns navigation) handles this and the dialog closes. */
@@ -109,25 +112,55 @@ namespace Opensprogskole {
             });
             future_button.clicked.connect (() => nav.push_by_tag ("form"));
             submit_button.clicked.connect (on_submit);
+            sick_submit_button.clicked.connect (on_sick_submit);
         }
 
-        /* "Today": pre-fill the form with the day's lesson span and jump to it. */
+        /* "Today" = call in sick, on its own page in the same navigation view.
+         * The backend only accepts this up to 20:30 local; past that we say so
+         * rather than letting it fail. */
         private void on_today () {
-            string start_iso, end_iso;
-            DateTime day;
-            if (!session.today_absence_window (out start_iso, out end_iso, out day)) {
+            if (!session.can_call_in_sick ()) {
                 toast_overlay.add_toast (new Adw.Toast (
-                    _("No lessons to report absence for.")));
+                    _("You can only call in sick before 20:30.")));
                 return;
             }
-            var start = new DateTime.from_iso8601 (start_iso, new TimeZone.local ());
-            var end = new DateTime.from_iso8601 (end_iso, new TimeZone.local ());
-            if (start != null && end != null) {
-                set_date (start);
-                set_time (start_hour, start_minute, start);
-                set_time (end_hour, end_minute, end);
+            nav.push_by_tag ("sick");
+        }
+
+        private void on_sick_submit () {
+            string reason = sick_reason_row.text.strip ();
+            if (reason == "") {
+                toast_overlay.add_toast (new Adw.Toast (_("Please enter a reason.")));
+                return;
             }
-            nav.push_by_tag ("form");
+            call_in_sick.begin (reason);
+        }
+
+        private async void call_in_sick (string reason) {
+            set_sick_busy (true);
+            try {
+                string message = yield session.call_in_sick (reason);
+                if (message != "") {
+                    // The backend replied with something to show — often a
+                    // rejection (e.g. "no more classes today"). Stay on the page
+                    // so the message is seen.
+                    toast_overlay.add_toast (new Adw.Toast (message));
+                    set_sick_busy (false);
+                } else {
+                    close ();
+                }
+            } catch (GLib.Error e) {
+                warning ("call in sick failed: %s", e.message);
+                toast_overlay.add_toast (new Adw.Toast (
+                    _("Couldn't call in sick — check your connection.")));
+                set_sick_busy (false);
+            }
+        }
+
+        private void set_sick_busy (bool busy) {
+            sick_spinner.visible = busy;
+            sick_submit_button.sensitive = !busy;
+            sick_reason_row.sensitive = !busy;
         }
 
         private void set_date (DateTime dt) {

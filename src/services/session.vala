@@ -227,20 +227,27 @@ namespace Opensprogskole {
         private async void load_grades_data () {
             int64 t = get_monotonic_time ();
             uint gen = ++grades_gen;
+
+            // Network-first; fall back to the cached copy so grades show offline.
+            Json.Node? node = null;
             try {
-                var node = yield provider.fetch_grades ();
+                node = yield provider.fetch_grades ();
                 if (gen != grades_gen) {
                     return;
                 }
-                load_grades (node);
-                grades_state = LoadState.LOADED;
+                if (node != null) {
+                    storage.set_json ("grades", node);
+                }
             } catch (GLib.Error e) {
                 if (gen != grades_gen) {
                     return;
                 }
                 warning ("grades fetch failed: %s", e.message);
-                grades_state = LoadState.FAILED;
+                node = storage.get_json ("grades");
             }
+            load_grades (node);
+            grades_state = node != null && node.get_node_type () == Json.NodeType.ARRAY
+                ? LoadState.LOADED : LoadState.FAILED;
             debug ("refresh: grades in %lld ms", (get_monotonic_time () - t) / 1000);
         }
 
@@ -569,20 +576,28 @@ namespace Opensprogskole {
                 warning ("absence settings fetch failed: %s", e.message);
             }
 
+            // Network-first; fall back to the cached GetUserAbsence so the absence
+            // page renders offline. (The settings above are intentionally not
+            // cached — describing a reason is a write anyway, gated when offline.)
+            Json.Node? node = null;
             try {
-                var node = yield provider.fetch_absence ();
+                node = yield provider.fetch_absence ();
                 if (gen != absence_gen) {
                     return;
                 }
-                parse_absence (node);
-                absence_state = LoadState.LOADED;
+                if (node != null) {
+                    storage.set_json ("absence", node);
+                }
             } catch (GLib.Error e) {
                 if (gen != absence_gen) {
                     return;
                 }
                 warning ("absence fetch failed: %s", e.message);
-                absence_state = LoadState.FAILED;
+                node = storage.get_json ("absence");
             }
+            parse_absence (node);
+            absence_state = node != null && node.get_node_type () == Json.NodeType.OBJECT
+                ? LoadState.LOADED : LoadState.FAILED;
             link_absences ();
             debug ("refresh: absence in %lld ms", (get_monotonic_time () - t) / 1000);
             absence_updated ();

@@ -28,11 +28,10 @@ namespace Opensprogskole {
     /* The authenticated app state for one account: the school, its provider and
      * the in-memory stores the views read from.
      *
-     * Loading is split so the window can appear quickly: refresh() pulls the
-     * "general" data (timetable, grades, profile) and emits updated();
-     * refresh_absence() pulls the heavier absence summary + events separately and
-     * emits absence_updated(). Both are best effort — a failed endpoint is
-     * logged, not fatal. */
+     * Session only *orchestrates*: it holds the stores, the per-resource load
+     * state and the signals, and asks the provider for ready models. The provider
+     * owns the transport, the parsing and the offline cache (see SchoolProvider),
+     * so Session never touches a school's wire format. */
     public class Session : GLib.Object {
 
         public School school { get; construct; }
@@ -46,34 +45,21 @@ namespace Opensprogskole {
         // the Absence page with edit/delete actions; the registered ones above are
         // read-only.
         public GLib.ListStore future_absences { get; default = new GLib.ListStore (typeof (FutureAbsenceItem)); }
-        // The school's external links, from the cached login AppSettings.
+        // The school's external links, from the provider's cached login config.
         public GLib.ListStore links { get; default = new GLib.ListStore (typeof (LinkItem)); }
         public UserInfoItem? user_info { get; private set; default = null; }
         public UserInfoSettings? user_settings { get; private set; default = null; }
         public AbsenceSummary? absence_summary { get; private set; default = null; }
         // How many days back the school still lets a student describe an absence
-        // reason (0 ⇒ disabled). Loaded with the absence list; gates can_describe.
+        // reason (0 ⇒ disabled). Gates can_describe.
         public int student_reason_days_back { get; private set; default = 0; }
         // Whether the school shows absence reasons to students (gates the reason
-        // row in the lesson dialog). Loaded with the absence settings.
+        // row in the lesson dialog).
         public bool show_absence_reason { get; private set; default = false; }
-        // Daily call-in-sick cutoff (minutes since midnight) from the cached login
-        // AppSettings; -1 until loaded, then DEFAULT_CALL_IN_SICK_CUTOFF if the
-        // school sends none.
+        // Daily call-in-sick cutoff (minutes since midnight) from the provider's
+        // login config; -1 until loaded, then DEFAULT_CALL_IN_SICK_CUTOFF if none.
         private int call_in_sick_cutoff = -1;
         private const int DEFAULT_CALL_IN_SICK_CUTOFF = 20 * 60 + 30;   // 20:30
-
-        // The per-account GVDB store backing every on-disk cache (lazy — built once
-        // school/username are set).
-        private Storage? _storage = null;
-        private Storage storage {
-            get {
-                if (_storage == null) {
-                    _storage = new Storage (cache_account);
-                }
-                return _storage;
-            }
-        }
 
         /* After the fast general data (grades/profile/settings). */
         public signal void updated ();
@@ -104,15 +90,8 @@ namespace Opensprogskole {
 
         public Session (School school, SchoolProvider provider, string username) {
             Object (school: school, provider: provider, username: username);
-        }
-
-        /* Opaque per-account key for the on-disk store (see Storage), so a
-         * different account or school never reads another's cached data. */
-        public string cache_account {
-            owned get {
-                return Checksum.compute_for_string (
-                    ChecksumType.SHA256, "%s:%s".printf (school.id, username));
-            }
+            // Let the provider build its per-account cache before any load.
+            provider.use_account (username);
         }
 
         /* Best-effort name for the sidebar/profile. */
@@ -125,21 +104,25 @@ namespace Opensprogskole {
             }
         }
 
-        /* The fast critical data the shell needs to paint: grades, profile and
-         * the edit settings. Never throws.
-         *
-         * These three are independent, so they're fetched concurrently over the
-         * shared Soup session (which the splash waits on): the user waits for
-         * the slowest single call, not the sum. The timetable and absence
-         * summary are far slower on some backends, so they load separately
-         * (refresh_timetable / refresh_absence) and stream into their cards
-         * without holding up the first paint. */
+        /* The fast critical data the shell needs to paint: app config (links +
+         * cutoff), grades, profile and the edit settings. Never throws. The
+         * three network loads run concurrently; the timetable and absence stream
+         * in separately (refresh_timetable / refresh_absence). */
         public async void refresh () {
             int64 t0 = get_monotonic_time ();
 
-            // Links + call-in-sick policy come from the cached login AppSettings —
-            // a fast local read, loaded before the shell binds the Links page.
-            load_app_settings ();
+            // Links + call-in-sick cutoff from the provider's cached login config
+            // (local + fast), loaded before the shell binds the Links page.
+            try {
+                var cfg = yield provider.load_app_config ();
+                links.remove_all ();
+                for (uint i = 0; i < cfg.links.length; i++) {
+                    links.append (cfg.links[i]);
+                }
+                call_in_sick_cutoff = cfg.call_in_sick_cutoff;
+            } catch (GLib.Error e) {
+                warning ("app config load failed: %s", e.message);
+            }
 
             // Show the grades spinner during a retry. On the first load this fires
             // before the shell is bound, so it's a harmless no-op there.
@@ -193,31 +176,19 @@ namespace Opensprogskole {
             uint gen = ++timetable_gen;
             timetable_state = LoadState.LOADING;
             timetable_updated ();   // spinner (back) on, incl. on a retry
-
-            // Network-first; on failure fall back to the last cached copy so the
-            // schedule still shows offline (see Storage).
-            Json.Node? node = null;
             try {
-                node = yield provider.fetch_timetable ();
+                var items = yield provider.load_timetable ();
                 if (gen != timetable_gen) {
                     return;   // superseded (dropped + retried) — leave the result
                 }
-                if (node != null) {
-                    storage.set_json ("timetable", node);
-                }
+                timetable.load_items (items);
+                timetable_state = LoadState.LOADED;
             } catch (GLib.Error e) {
                 if (gen != timetable_gen) {
                     return;
                 }
-                warning ("timetable fetch failed: %s", e.message);
-                node = storage.get_json ("timetable");
-            }
-
-            if (node != null && node.get_node_type () == Json.NodeType.ARRAY) {
-                timetable.load (node.get_array ());
-                timetable_state = LoadState.LOADED;   // network or cache
-            } else {
-                timetable_state = LoadState.FAILED;   // no network and no cache
+                warning ("timetable load failed: %s", e.message);
+                timetable_state = LoadState.FAILED;   // keep any previous content
             }
             link_absences ();
             debug ("refresh: timetable in %lld ms", (get_monotonic_time () - t) / 1000);
@@ -227,66 +198,52 @@ namespace Opensprogskole {
         private async void load_grades_data () {
             int64 t = get_monotonic_time ();
             uint gen = ++grades_gen;
-
-            // Network-first; fall back to the cached copy so grades show offline.
-            Json.Node? node = null;
             try {
-                node = yield provider.fetch_grades ();
+                var items = yield provider.load_grades ();
                 if (gen != grades_gen) {
                     return;
                 }
-                if (node != null) {
-                    storage.set_json ("grades", node);
+                grades.remove_all ();
+                for (uint i = 0; i < items.length; i++) {
+                    grades.append (items[i]);
                 }
+                grades_state = LoadState.LOADED;
             } catch (GLib.Error e) {
                 if (gen != grades_gen) {
                     return;
                 }
-                warning ("grades fetch failed: %s", e.message);
-                node = storage.get_json ("grades");
+                warning ("grades load failed: %s", e.message);
+                grades.remove_all ();
+                grades_state = LoadState.FAILED;
             }
-            load_grades (node);
-            grades_state = node != null && node.get_node_type () == Json.NodeType.ARRAY
-                ? LoadState.LOADED : LoadState.FAILED;
             debug ("refresh: grades in %lld ms", (get_monotonic_time () - t) / 1000);
         }
 
         private async void load_settings () {
             int64 t = get_monotonic_time ();
             try {
-                var node = yield provider.fetch_user_info_settings ();
-                if (node != null && node.get_node_type () == Json.NodeType.OBJECT) {
-                    user_settings = (UserInfoSettings) Json.gobject_deserialize (
-                        typeof (UserInfoSettings), node);
+                var s = yield provider.load_user_info_settings ();
+                if (s != null) {
+                    user_settings = s;
                 }
             } catch (GLib.Error e) {
-                warning ("user info settings fetch failed: %s", e.message);
+                warning ("user info settings load failed: %s", e.message);
             }
             debug ("refresh: settings in %lld ms", (get_monotonic_time () - t) / 1000);
         }
 
         /* Re-fetch just the profile (GetUserInfo) into user_info. Best effort —
-         * a failed fetch leaves the previous value in place. Shared by the
-         * initial refresh() and the picture-change helpers. */
+         * a failed load leaves the previous value in place. Shared by the initial
+         * refresh() and the picture-change helpers. */
         private async void load_user_info () {
             int64 t = get_monotonic_time ();
-
-            // Network-first; on failure use the last cached profile so the page
-            // still renders offline.
-            Json.Node? node = null;
             try {
-                node = yield provider.fetch_user_info (username);
-                if (node != null) {
-                    storage.set_json ("user-info", node);
+                var info = yield provider.load_user_info ();
+                if (info != null) {
+                    user_info = info;
                 }
             } catch (GLib.Error e) {
-                warning ("user info fetch failed: %s", e.message);
-                node = storage.get_json ("user-info");
-            }
-
-            if (node != null && node.get_node_type () == Json.NodeType.OBJECT) {
-                user_info = (UserInfoItem) Json.gobject_deserialize (
-                    typeof (UserInfoItem), node);
+                warning ("user info load failed: %s", e.message);
             }
             debug ("refresh: user info in %lld ms", (get_monotonic_time () - t) / 1000);
         }
@@ -315,22 +272,14 @@ namespace Opensprogskole {
         /* The profile picture as a paintable (downloaded + cached), or null when
          * there is none — the caller then shows initials. */
         public async Gdk.Paintable? load_avatar () {
-            if (user_info == null) {
-                return null;
-            }
-            debug ("avatar: pending='%s' approved='%s' picture='%s' -> '%s'",
-                   user_info.pending_picture_url, user_info.approved_picture_url,
-                   user_info.picture_url, user_info.best_picture_url);
-            if (user_info.best_picture_url == "") {
+            if (user_info == null || user_info.best_picture_url == "") {
                 return null;
             }
             return yield AvatarCache.load (provider, user_info.best_picture_url);
         }
 
         /* Upload a new profile picture; on success re-pull the profile so the
-         * pending picture/banner state updates. The avatar itself refreshes via
-         * load_avatar (network-first), so no cache eviction is needed. Returns
-         * true on success. */
+         * pending picture/banner state updates. Returns true on success. */
         public async bool upload_avatar (GLib.Bytes image) throws GLib.Error {
             bool ok = yield provider.update_user_image (image);
             if (ok) {
@@ -388,9 +337,7 @@ namespace Opensprogskole {
                 return false;   // hasn't ended yet
             }
             // Inclusive, calendar-day window: from the start (midnight) of the
-            // StudentReasonDaysBack-th day ago up to now. A precise N×24h cutoff
-            // would drop part of the oldest day depending on the time of day, so
-            // a note from exactly N days ago could no longer be edited.
+            // StudentReasonDaysBack-th day ago up to now.
             var earliest = new DateTime.local (
                 now.get_year (), now.get_month (), now.get_day_of_month (), 0, 0, 0)
                 .add_days (-student_reason_days_back);
@@ -405,65 +352,6 @@ namespace Opensprogskole {
                 ? call_in_sick_cutoff : DEFAULT_CALL_IN_SICK_CUTOFF;
             var now = new DateTime.now_local ();
             return now.get_hour () * 60 + now.get_minute () < cutoff;
-        }
-
-        /* Load the school's links + call-in-sick cutoff from the per-account store.
-         * On a fresh login the (token-free) AppSettings whitelist is captured first
-         * so it survives token-resume restarts. Best-effort: an absent store just
-         * leaves links empty + the default cutoff. */
-        private void load_app_settings () {
-            var fresh = provider.app_settings;
-            if (fresh != null) {
-                var curated = curate_app_settings (fresh);
-                if (curated != null) {
-                    storage.set_json ("app-settings", curated);
-                }
-            }
-
-            links.remove_all ();
-            call_in_sick_cutoff = -1;
-
-            var app = storage.get_node ("app-settings");
-            if (app == null) {
-                return;
-            }
-            foreach (var n in app.get_array ("Links")) {
-                links.append (LinkItem.from_node (n));
-            }
-            var cis = app.get_object ("AbsenceCallInSickSettings");
-            if (cis != null) {
-                call_in_sick_cutoff = hhmm_to_minutes (cis.get_string ("IgnoreMessageStart"));
-            }
-        }
-
-        /* The token-free slice of the login AppSettings we persist: Links (lifted
-         * out of UserVariables) + AbsenceCallInSickSettings, copied so neither the
-         * token (a sibling) nor the rest of UserVariables/PushSettings tags along. */
-        private static Json.Node? curate_app_settings (Json.Node app_settings) {
-            if (app_settings.get_node_type () != Json.NodeType.OBJECT) {
-                return null;
-            }
-            var src = app_settings.get_object ();
-            var dst = new Json.Object ();
-
-            if (src.has_member ("UserVariables")
-                && src.get_member ("UserVariables").get_node_type () == Json.NodeType.OBJECT) {
-                var uv = src.get_object_member ("UserVariables");
-                if (uv.has_member ("Links")) {
-                    dst.set_member ("Links", uv.get_member ("Links").copy ());
-                }
-            }
-            if (src.has_member ("AbsenceCallInSickSettings")) {
-                dst.set_member ("AbsenceCallInSickSettings",
-                                src.get_member ("AbsenceCallInSickSettings").copy ());
-            }
-
-            if (dst.get_size () == 0) {
-                return null;
-            }
-            var node = new Json.Node (Json.NodeType.OBJECT);
-            node.set_object (dst);
-            return node;
         }
 
         /* Describe (create or edit) the reason for a single past absent lesson. */
@@ -535,17 +423,20 @@ namespace Opensprogskole {
             future_absence_state = LoadState.LOADING;
             future_absence_updated ();
             try {
-                var node = yield provider.fetch_future_absence ();
+                var items = yield provider.load_future_absence ();
                 if (gen != future_absence_gen) {
                     return;
                 }
-                parse_future_absence (node);
+                future_absences.remove_all ();
+                for (uint i = 0; i < items.length; i++) {
+                    future_absences.append (items[i]);
+                }
                 future_absence_state = LoadState.LOADED;
             } catch (GLib.Error e) {
                 if (gen != future_absence_gen) {
                     return;
                 }
-                warning ("future absence fetch failed: %s", e.message);
+                warning ("future absence load failed: %s", e.message);
                 future_absence_state = LoadState.FAILED;
             }
             debug ("refresh: future absence in %lld ms", (get_monotonic_time () - t) / 1000);
@@ -560,64 +451,48 @@ namespace Opensprogskole {
             absence_updated ();   // spinner (back) on, incl. on a retry
 
             // The policy that gates "describe reason"; best effort, so a failure
-            // just leaves the window at 0 (feature hidden) without failing the list.
+            // just leaves the window unchanged without failing the list.
             try {
-                var settings_node = yield provider.fetch_absence_settings ();
-                if (gen == absence_gen && settings_node != null
-                    && settings_node.get_node_type () == Json.NodeType.OBJECT) {
-                    var settings = (AbsenceSettings) Json.gobject_deserialize (
-                        typeof (AbsenceSettings), settings_node);
+                var settings = yield provider.load_absence_settings ();
+                if (gen == absence_gen && settings != null) {
                     student_reason_days_back = settings.student_reason_days_back;
                     show_absence_reason = settings.show_absence_reason;
-                    debug ("absence: student_reason_days_back=%d show_absence_reason=%s",
-                           student_reason_days_back, show_absence_reason.to_string ());
                 }
             } catch (GLib.Error e) {
-                warning ("absence settings fetch failed: %s", e.message);
+                warning ("absence settings load failed: %s", e.message);
             }
 
-            // Network-first; fall back to the cached GetUserAbsence so the absence
-            // page renders offline. (The settings above are intentionally not
-            // cached — describing a reason is a write anyway, gated when offline.)
-            Json.Node? node = null;
             try {
-                node = yield provider.fetch_absence ();
+                var data = yield provider.load_absence ();
                 if (gen != absence_gen) {
                     return;
                 }
-                if (node != null) {
-                    storage.set_json ("absence", node);
+                absences.remove_all ();
+                for (uint i = 0; i < data.items.length; i++) {
+                    absences.append (data.items[i]);
                 }
+                absence_summary = data.summary;
+                absence_state = LoadState.LOADED;
             } catch (GLib.Error e) {
                 if (gen != absence_gen) {
                     return;
                 }
-                warning ("absence fetch failed: %s", e.message);
-                node = storage.get_json ("absence");
+                warning ("absence load failed: %s", e.message);
+                absences.remove_all ();
+                absence_summary = null;
+                absence_state = LoadState.FAILED;
             }
-            parse_absence (node);
-            absence_state = node != null && node.get_node_type () == Json.NodeType.OBJECT
-                ? LoadState.LOADED : LoadState.FAILED;
             link_absences ();
             debug ("refresh: absence in %lld ms", (get_monotonic_time () - t) / 1000);
             absence_updated ();
         }
 
-        /* Stamp each lesson with its attendance by matching the absence records'
-         * EventId to the lesson's TimetableId. Runs after either the timetable or
-         * the absence loads; the notifying `attendance` property updates the dots
-         * live. Skipped until absence is genuinely loaded (e.g. offline, where it
-         * isn't cached) so dots stay at their category colour rather than guessing.
-         *
-         * Future lessons are always left UNKNOWN — a reported (future) absence
-         * must not paint a dot before the lesson has even happened. */
         /* Link each lesson to its registered-absence record, matched by
          * TimetableId <-> EventId, once the absence list is loaded. This gives a
-         * lesson the details the timetable omits (e.g. StudentReason) and is the
-         * groundwork for absence actions on a lesson. The dot colour does NOT
-         * depend on this — it's derived from the lesson's own AbsenceStatus — so
-         * offline (absence uncached) only loses the details, not the dots.
-         * Re-run after either list (re)loads. */
+         * lesson the details the timetable omits (e.g. StudentReason). The dot
+         * colour does NOT depend on this — it's derived from the lesson's own
+         * AbsenceStatus — so offline (absence uncached → FAILED) only loses the
+         * details, not the dots. Re-run after either list (re)loads. */
         private void link_absences () {
             if (absence_state != LoadState.LOADED) {
                 return;
@@ -629,7 +504,6 @@ namespace Opensprogskole {
                     by_event.set (a.event_id, a);
                 }
             }
-
             timetable.foreach_lesson ((item) => {
                 item.absence = by_event.lookup (item.timetable_id);
             });
@@ -688,72 +562,6 @@ namespace Opensprogskole {
                 any = true;
             }
             return any;   // true while something still needs a (re)try
-        }
-
-        private void parse_absence (Json.Node? node) {
-            absences.remove_all ();
-            absence_summary = null;
-            if (node == null || node.get_node_type () != Json.NodeType.OBJECT) {
-                return;
-            }
-            var obj = node.get_object ();
-
-            if (obj.has_member ("StudentRegisteredAbsence")) {
-                var arr = obj.get_array_member ("StudentRegisteredAbsence");
-                arr.foreach_element ((a, i, element) => {
-                    absences.append (Json.gobject_deserialize (typeof (AbsenceItem), element));
-                });
-                absences.sort ((a, b) => {
-                    var da = ((AbsenceItem) a).start_time;
-                    var db = ((AbsenceItem) b).start_time;
-                    if (da == null || db == null) {
-                        return 0;
-                    }
-                    return db.compare (da);   // newest first
-                });
-            }
-
-            if (obj.has_member ("StudentAbsence")
-                && obj.get_member ("StudentAbsence").get_node_type () == Json.NodeType.OBJECT) {
-                absence_summary = (AbsenceSummary) Json.gobject_deserialize (
-                    typeof (AbsenceSummary), obj.get_member ("StudentAbsence"));
-            }
-        }
-
-        private void parse_future_absence (Json.Node? node) {
-            future_absences.remove_all ();
-            if (node == null || node.get_node_type () != Json.NodeType.ARRAY) {
-                return;
-            }
-            node.get_array ().foreach_element ((arr, i, element) => {
-                var item = FutureAbsenceItem.from_json (element);
-                if (item != null) {
-                    future_absences.append (item);
-                }
-            });
-            future_absences.sort ((a, b) => {
-                var da = ((FutureAbsenceItem) a).start_date_time;
-                var db = ((FutureAbsenceItem) b).start_date_time;
-                if (da == null || db == null) {
-                    return 0;
-                }
-                return db.compare (da);   // newest first
-            });
-        }
-
-        private void load_grades (Json.Node? node) {
-            grades.remove_all ();
-            if (node == null || node.get_node_type () != Json.NodeType.ARRAY) {
-                return;
-            }
-            node.get_array ().foreach_element ((arr, i, element) => {
-                var grade = (GradeItem) Json.gobject_deserialize (typeof (GradeItem), element);
-                grade.apply_danish_scale ();
-                grades.append (grade);
-            });
-            grades.sort ((a, b) => {
-                return strcmp (((GradeItem) b).due_date, ((GradeItem) a).due_date);
-            });
         }
     }
 }

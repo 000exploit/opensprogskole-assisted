@@ -222,11 +222,11 @@ namespace Opensprogskole {
             string school_id = settings.get_string ("active-school");
             string username = settings.get_string ("username");
 
-            if (session != null && session.provider is UmsProvider) {
+            if (session != null) {
                 try {
-                    yield ((UmsProvider) session.provider).logout ();
+                    yield session.provider.logout ();
                 } catch (GLib.Error e) {
-                    warning ("DeleteToken failed (logging out locally anyway): %s", e.message);
+                    warning ("provider logout failed (logging out locally anyway): %s", e.message);
                 }
             }
 

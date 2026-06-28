@@ -20,49 +20,69 @@
 
 namespace Opensprogskole {
 
+    /* Multiple results from one load call (plain fields — mutated directly). */
+    public class AbsenceData : GLib.Object {     // GetUserAbsence = list + summary
+        public GLib.GenericArray<AbsenceItem> items = new GLib.GenericArray<AbsenceItem> ();
+        public AbsenceSummary? summary = null;
+    }
+    public class AppConfig : GLib.Object {       // login AppSettings, token-free
+        public GLib.GenericArray<LinkItem> links = new GLib.GenericArray<LinkItem> ();
+        public int call_in_sick_cutoff = -1;     // minutes; -1 = none
+    }
+
     /* The contract every language school's backend must satisfy.
      *
      * This is the seam that lets the app talk to several different schools: the
-     * rest of the program depends only on this interface and on the normalized
-     * models (TimetableItem, Grade), never on a specific school's API. A
-     * concrete provider (added later, using libsoup) logs in, fetches the
-     * school-specific JSON and is responsible for handing back data the common
-     * models can consume.
-     *
-     * The fetch_* methods return raw JSON so a provider may massage a school's
-     * peculiar payload before it reaches TimetableStore; only the network/auth
-     * details differ per school. No implementation ships in this round — API
-     * logic is out of scope here. */
+     * rest of the program depends only on this interface and the normalized
+     * models, never on a specific school's API or wire format. A provider owns
+     * its transport, its parsing, AND its offline caching — `load_*` returns ready
+     * app models (or throws when it has neither network nor cache). Everything
+     * above (Session) only orchestrates: stores, load state, signals. */
     public interface SchoolProvider : GLib.Object {
 
         /* Which school this provider serves. */
         public abstract School school { get; }
 
-        /* The token-free AppSettings subtree from the last fresh login (links,
-         * call-in-sick policy, …), or null after a token-resume. */
-        public abstract Json.Node? app_settings { owned get; }
+        /* Bind the provider to an account so it can build its per-account cache.
+         * Called once before any load_*, after login/resume. */
+        public abstract void use_account (string username);
 
         /* Authenticate. Returns true on success; throws on bad credentials. */
         public abstract async bool login (string username, string password)
             throws GLib.Error;
 
-        /* The student's timetable as a JSON array suitable for
-         * TimetableStore.load(). */
-        public abstract async Json.Node? fetch_timetable () throws GLib.Error;
+        /* End the server-side session, each backend its own way (default no-op).
+         * Best effort — the caller logs out locally regardless. */
+        public virtual async void logout () throws GLib.Error {}
 
-        /* The student's reported absences (JSON array of events). */
-        public abstract async Json.Node? fetch_absence () throws GLib.Error;
-
-        /* The student's grades as a JSON array. */
-        public abstract async Json.Node? fetch_grades () throws GLib.Error;
-
-        /* The student's profile (JSON object). */
-        public abstract async Json.Node? fetch_user_info (string username)
+        /* The student's timetable. */
+        public abstract async GLib.GenericArray<TimetableItem> load_timetable ()
             throws GLib.Error;
 
-        /* Which profile fields the school lets the student edit (JSON object). */
-        public abstract async Json.Node? fetch_user_info_settings ()
+        /* The student's reported absences + attendance summary. */
+        public abstract async AbsenceData load_absence () throws GLib.Error;
+
+        /* The student's grades (sorted, scale applied). */
+        public abstract async GLib.GenericArray<GradeItem> load_grades ()
             throws GLib.Error;
+
+        /* The student's profile, or null when there's nothing to update. */
+        public abstract async UserInfoItem? load_user_info () throws GLib.Error;
+
+        /* Which profile fields the school lets the student edit, or null. */
+        public abstract async UserInfoSettings? load_user_info_settings ()
+            throws GLib.Error;
+
+        /* The student's own (editable) future absences (sorted). */
+        public abstract async GLib.GenericArray<FutureAbsenceItem> load_future_absence ()
+            throws GLib.Error;
+
+        /* The school's absence policy (reason window, etc.), or null. Not cached. */
+        public abstract async AbsenceSettings? load_absence_settings ()
+            throws GLib.Error;
+
+        /* Links + call-in-sick cutoff, from the (cached) login config. */
+        public abstract async AppConfig load_app_config () throws GLib.Error;
 
         /* Persist the editable profile fields of `info`. Returns true on success. */
         public abstract async bool update_user_info (UserInfoItem info)
@@ -92,9 +112,6 @@ namespace Opensprogskole {
                                                          string end_iso)
             throws GLib.Error;
 
-        /* The student's own (editable) future absences as a JSON array. */
-        public abstract async Json.Node? fetch_future_absence () throws GLib.Error;
-
         /* Update an existing future absence (identified by `id`). The backend's
          * only way to edit any absence — even a past one — is to update its
          * future record. ISO datetimes are "yyyy-MM-ddTHH:mm:ss". */
@@ -105,10 +122,6 @@ namespace Opensprogskole {
 
         /* Delete a future absence by id. */
         public abstract async void delete_future_absence (int id) throws GLib.Error;
-
-        /* The school's absence policy (JSON object), e.g. how far back a reason
-         * may still be described. */
-        public abstract async Json.Node? fetch_absence_settings () throws GLib.Error;
 
         /* Describe (create or edit) the reason for one or more past absent lessons
          * at once, each keyed by its server + timetable ids (ServerId/EventId in

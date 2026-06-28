@@ -41,10 +41,12 @@ namespace Opensprogskole {
 
         public signal void changed ();
 
-        public void load (Json.Array array) {
+        /* Replace the store's contents with `items`, bucketed by day and sorted.
+         * The provider has already parsed the wire format into models, so the
+         * store stays format-agnostic. */
+        public void load_items (GLib.GenericArray<TimetableItem> items) {
             by_day.remove_all ();
 
-            var items = TimetableItem.from_json_array (array);
             for (uint i = 0; i < items.length; i++) {
                 var item = items[i];
                 string key = item.date_key;

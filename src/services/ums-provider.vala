@@ -33,6 +33,10 @@ namespace Opensprogskole {
         private UmsClient client;
         private string device_name;
         private string device_id;
+        // Per-account GVDB cache, built in use_account; null until then.
+        private Storage? storage = null;
+        // The account username (for the GetUserInfo path).
+        private string account_username = "";
 
         public UmsProvider (School school, string device_name, string device_id) {
             this._school = school;
@@ -41,15 +45,38 @@ namespace Opensprogskole {
             this.device_id = device_id;
         }
 
+        public void use_account (string username) {
+            account_username = username;
+            storage = new Storage (Checksum.compute_for_string (
+                ChecksumType.SHA256, "%s:%s".printf (school.id, username)));
+        }
+
         /* The current Bearer token (after login or resume). */
         public string token { owned get { return client.token; } }
 
-        /* The AppSettings subtree from the last fresh login (null after a
-         * token-resume). The caller curates + caches the safe parts. */
-        public Json.Node? app_settings { owned get { return client.app_settings; } }
-
         /* When the token expires (unix seconds), or 0 if unknown. Set by login. */
         public int64 token_expires_at { get { return client.token_expires_at; } }
+
+        /* Network-first with offline fallback: GET `path`, cache it under `key`,
+         * and return the node; on a failed fetch return the cached copy, or
+         * rethrow if there's none. The single place the load_* methods get their
+         * raw JSON, so each stays a thin fetch + parse. */
+        private async Json.Node fetch_cached (string key, string path) throws GLib.Error {
+            try {
+                var node = yield client.get_json (path, "2");
+                if (storage != null) {
+                    storage.set_json (key, node);
+                }
+                return node;
+            } catch (GLib.Error e) {
+                var cached = storage != null ? storage.get_json (key) : null;
+                if (cached != null) {
+                    warning ("%s fetch failed, using cache: %s", key, e.message);
+                    return cached;
+                }
+                throw e;
+            }
+        }
 
         public async bool login (string username, string password) throws GLib.Error {
             yield client.authenticate (username, password,
@@ -69,27 +96,72 @@ namespace Opensprogskole {
             yield client.post ("/Login/DeleteToken");
         }
 
-        public async Json.Node? fetch_timetable () throws GLib.Error {
-            return yield client.get_json (
-                "/Timetable/GetTimetable?language=" + school.language, "2");
+        public async GLib.GenericArray<TimetableItem> load_timetable () throws GLib.Error {
+            var node = yield fetch_cached ("timetable",
+                "/Timetable/GetTimetable?language=" + school.language);
+            if (node.get_node_type () != Json.NodeType.ARRAY) {
+                throw new UmsError.MALFORMED ("timetable is not an array");
+            }
+            return TimetableItem.from_json_array (node.get_array ());
         }
 
-        public async Json.Node? fetch_absence () throws GLib.Error {
-            return yield client.get_json (
-                "/Absence/GetUserAbsence?language=" + school.language, "2");
+        public async GLib.GenericArray<GradeItem> load_grades () throws GLib.Error {
+            var node = yield fetch_cached ("grades", "/Grades/GetGrades");
+            if (node.get_node_type () != Json.NodeType.ARRAY) {
+                throw new UmsError.MALFORMED ("grades is not an array");
+            }
+            var items = new GLib.GenericArray<GradeItem> ();
+            node.get_array ().foreach_element ((arr, i, element) => {
+                var g = (GradeItem) Json.gobject_deserialize (typeof (GradeItem), element);
+                g.apply_danish_scale ();
+                items.add (g);
+            });
+            items.sort ((a, b) => strcmp (b.due_date, a.due_date));   // newest first
+            return items;
         }
 
-        public async Json.Node? fetch_grades () throws GLib.Error {
-            return yield client.get_json ("/Grades/GetGrades", "2");
+        public async AbsenceData load_absence () throws GLib.Error {
+            var node = yield fetch_cached ("absence",
+                "/Absence/GetUserAbsence?language=" + school.language);
+            if (node.get_node_type () != Json.NodeType.OBJECT) {
+                throw new UmsError.MALFORMED ("absence is not an object");
+            }
+            var obj = node.get_object ();
+            var data = new AbsenceData ();
+
+            if (obj.has_member ("StudentRegisteredAbsence")) {
+                obj.get_array_member ("StudentRegisteredAbsence").foreach_element ((arr, i, element) => {
+                    data.items.add ((AbsenceItem) Json.gobject_deserialize (
+                        typeof (AbsenceItem), element));
+                });
+                data.items.sort ((a, b) => {
+                    var da = a.start_time;
+                    var db = b.start_time;
+                    return (da == null || db == null) ? 0 : db.compare (da);   // newest first
+                });
+            }
+            if (obj.has_member ("StudentAbsence")
+                && obj.get_member ("StudentAbsence").get_node_type () == Json.NodeType.OBJECT) {
+                data.summary = (AbsenceSummary) Json.gobject_deserialize (
+                    typeof (AbsenceSummary), obj.get_member ("StudentAbsence"));
+            }
+            return data;
         }
 
-        public async Json.Node? fetch_user_info (string username) throws GLib.Error {
-            return yield client.get_json (
-                "/UserInfo/GetUserInfo/" + UmsClient.base64url (username), "2");
+        public async UserInfoItem? load_user_info () throws GLib.Error {
+            var node = yield fetch_cached ("user-info",
+                "/UserInfo/GetUserInfo/" + UmsClient.base64url (account_username));
+            return node.get_node_type () == Json.NodeType.OBJECT
+                ? (UserInfoItem) Json.gobject_deserialize (typeof (UserInfoItem), node)
+                : null;
         }
 
-        public async Json.Node? fetch_user_info_settings () throws GLib.Error {
-            return yield client.get_json ("/UserInfo/GetUserInfoSettings", "2");
+        public async UserInfoSettings? load_user_info_settings () throws GLib.Error {
+            // Not cached (matches prior behaviour — it gates edit-field visibility).
+            var node = yield client.get_json ("/UserInfo/GetUserInfoSettings", "2");
+            return node.get_node_type () == Json.NodeType.OBJECT
+                ? (UserInfoSettings) Json.gobject_deserialize (typeof (UserInfoSettings), node)
+                : null;
         }
 
         /* UpdateUserInfo accepts exactly the editable fields. We send the current
@@ -152,8 +224,25 @@ namespace Opensprogskole {
             return (int) result.get_int ();
         }
 
-        public async Json.Node? fetch_future_absence () throws GLib.Error {
-            return yield client.get_json ("/Absence/GetFutureStudentAbsence", "2");
+        public async GLib.GenericArray<FutureAbsenceItem> load_future_absence () throws GLib.Error {
+            // Not cached (matches prior behaviour); any successful fetch counts as
+            // loaded, even an empty/odd one — only a network failure throws.
+            var node = yield client.get_json ("/Absence/GetFutureStudentAbsence", "2");
+            var items = new GLib.GenericArray<FutureAbsenceItem> ();
+            if (node.get_node_type () == Json.NodeType.ARRAY) {
+                node.get_array ().foreach_element ((arr, i, element) => {
+                    var item = FutureAbsenceItem.from_json (element);
+                    if (item != null) {
+                        items.add (item);
+                    }
+                });
+                items.sort ((a, b) => {
+                    var da = a.start_date_time;
+                    var db = b.start_date_time;
+                    return (da == null || db == null) ? 0 : db.compare (da);   // newest first
+                });
+            }
+            return items;
         }
 
         public async void update_future_absence (int id, string reason,
@@ -169,9 +258,70 @@ namespace Opensprogskole {
                 "/Absence/DeleteFutureStudentAbsence?ID=%d".printf (id), "2");
         }
 
-        public async Json.Node? fetch_absence_settings () throws GLib.Error {
-            return yield client.get_json (
+        public async AbsenceSettings? load_absence_settings () throws GLib.Error {
+            // Not cached (it gates "describe reason", a write — irrelevant offline).
+            var node = yield client.get_json (
                 "/Absence/GetAbsenceSettings?language=" + school.language, "2");
+            return node.get_node_type () == Json.NodeType.OBJECT
+                ? (AbsenceSettings) Json.gobject_deserialize (typeof (AbsenceSettings), node)
+                : null;
+        }
+
+        /* Links + call-in-sick cutoff, from the login AppSettings. On a fresh login
+         * the token-free whitelist is captured into the cache so it survives a
+         * token-resume restart; the values are then read back from there. */
+        public async AppConfig load_app_config () throws GLib.Error {
+            var fresh = client.app_settings;
+            if (fresh != null && storage != null) {
+                var curated = curate_app_settings (fresh);
+                if (curated != null) {
+                    storage.set_json ("app-settings", curated);
+                }
+            }
+
+            var config = new AppConfig ();
+            var app = storage != null ? storage.get_node ("app-settings") : null;
+            if (app != null) {
+                foreach (var n in app.get_array ("Links")) {
+                    config.links.add (LinkItem.from_node (n));
+                }
+                var cis = app.get_object ("AbsenceCallInSickSettings");
+                if (cis != null) {
+                    config.call_in_sick_cutoff =
+                        hhmm_to_minutes (cis.get_string ("IgnoreMessageStart"));
+                }
+            }
+            return config;
+        }
+
+        /* The token-free slice of the login AppSettings we persist: Links (lifted
+         * out of UserVariables) + AbsenceCallInSickSettings, copied so neither the
+         * token (a sibling) nor the rest of UserVariables/PushSettings tags along. */
+        private static Json.Node? curate_app_settings (Json.Node app_settings) {
+            if (app_settings.get_node_type () != Json.NodeType.OBJECT) {
+                return null;
+            }
+            var src = app_settings.get_object ();
+            var dst = new Json.Object ();
+
+            if (src.has_member ("UserVariables")
+                && src.get_member ("UserVariables").get_node_type () == Json.NodeType.OBJECT) {
+                var uv = src.get_object_member ("UserVariables");
+                if (uv.has_member ("Links")) {
+                    dst.set_member ("Links", uv.get_member ("Links").copy ());
+                }
+            }
+            if (src.has_member ("AbsenceCallInSickSettings")) {
+                dst.set_member ("AbsenceCallInSickSettings",
+                                src.get_member ("AbsenceCallInSickSettings").copy ());
+            }
+
+            if (dst.get_size () == 0) {
+                return null;
+            }
+            var node = new Json.Node (Json.NodeType.OBJECT);
+            node.set_object (dst);
+            return node;
         }
 
         /* CreateAbsenceReason wants a base64-encoded JSON *array* of lesson-shaped

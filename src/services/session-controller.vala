@@ -132,27 +132,32 @@ namespace Opensprogskole {
 
         private async void silent_login (string username) {
             string school_id = settings.get_string ("active-school");
-            var school = Schools.by_id (school_id);
+            string method_id = settings.get_string ("login-method");
+            var school = resolve_saved_school (school_id);
+            var family = Families.by_id (school.family_id);
             try {
-                var provider = new UmsProvider (school, device_name, device_id);
+                var provider = family.create_provider (school, device_name, device_id);
+                var method = yield resolve_method (provider, method_id);
 
-                // Reuse a still-valid saved token without contacting the server.
-                // valid_until == 0 means the JWT had no expiry claim — still try it.
-                string? token = yield SecretStore.lookup_token (school_id, username);
-                int64 valid_until = settings.get_int64 ("token-valid-until");
-                int64 now = GLib.get_real_time () / 1000000;
+                if (method.kind != LoginKind.NONE) {
+                    // Reuse a still-valid saved secret without contacting the server.
+                    // valid_until == 0 means no expiry claim — still try it.
+                    string? secret = yield SecretStore.lookup_token (school_id, username);
+                    int64 valid_until = settings.get_int64 ("token-valid-until");
+                    int64 now = GLib.get_real_time () / 1000000;
 
-                if (token != null && (valid_until == 0 || valid_until > now + 60)) {
-                    provider.resume (token);
-                } else {
-                    warning ("token expired, requesting new.");
-                    string? password = yield SecretStore.lookup (school_id, username);
-                    if (password == null) {
-                        needs_login (username, null);
-                        return;
+                    if (secret != null && (valid_until == 0 || valid_until > now + 60)) {
+                        yield provider.resume (to_variant (secret));
+                    } else {
+                        warning ("saved session expired, re-authenticating.");
+                        string? creds = yield SecretStore.lookup (school_id, username);
+                        if (creds == null) {
+                            needs_login (username, null);
+                            return;
+                        }
+                        yield provider.authenticate (method, creds_to_variant (creds, username));
+                        yield store_secret (school, username, provider);
                     }
-                    yield provider.login (username, password);
-                    yield store_token (school, username, provider);
                 }
 
                 yield enter_session (new Session (school, provider, username));
@@ -163,25 +168,40 @@ namespace Opensprogskole {
             }
         }
 
-        /* Authenticate from the onboarding form. The token is always saved; the
-         * password only with consent (any previously saved one is cleared). */
-        public async void try_login (School school, string username, string password,
-                                     bool save_password) {
+        /* Authenticate from the onboarding form. The session secret is always
+         * saved; the credentials only with consent (a PASSWORD method). Demo
+         * (NONE) persists nothing secret. */
+        public async void try_login (School school, LoginMethod method,
+                                     GLib.Variant credentials, bool remember) {
+            var family = Families.by_id (school.family_id);
             try {
-                var provider = new UmsProvider (school, device_name, device_id);
-                yield provider.login (username, password);
+                var provider = family.create_provider (school, device_name, device_id);
+                yield provider.authenticate (method, credentials);
 
-                settings.set_string ("active-school", school.id);
-                settings.set_string ("username", username);
-                yield store_token (school, username, provider);
-
-                if (save_password) {
-                    yield SecretStore.store (school.id, username, password);
-                } else {
-                    yield SecretStore.clear (school.id, username);
+                string account = credential (credentials, "username");
+                if (account == "") {
+                    account = school.id;   // credential-free (Demo)
                 }
 
-                pending = new Session (school, provider, username);
+                settings.set_string ("active-school", school.id);
+                settings.set_string ("username", account);
+                settings.set_string ("login-method", method.id);
+                if (school.is_custom) {
+                    settings.set_string ("custom-name", school.name);
+                    settings.set_string ("custom-base-url", school.base_url);
+                    settings.set_string ("custom-family", school.family_id);
+                }
+
+                if (method.kind != LoginKind.NONE) {
+                    yield store_secret (school, account, provider);
+                    if (remember && method.kind == LoginKind.PASSWORD) {
+                        yield SecretStore.store (school.id, account, to_json (credentials));
+                    } else {
+                        yield SecretStore.clear (school.id, account);
+                    }
+                }
+
+                pending = new Session (school, provider, account);
                 login_succeeded ();
             } catch (UmsError e) {
                 login_failed (e.code == UmsError.UNAUTHORIZED
@@ -189,6 +209,68 @@ namespace Opensprogskole {
                     : _("Login failed: %s").printf (e.message));
             } catch (GLib.Error e) {
                 login_failed (_("Login failed: %s").printf (e.message));
+            }
+        }
+
+        /* The saved school: a registry entry, or a hand-entered (Custom) one
+         * rebuilt from settings. */
+        private School resolve_saved_school (string id) {
+            if (id == "custom") {
+                return OnboardingView.custom_ums_school (
+                    settings.get_string ("custom-name"),
+                    settings.get_string ("custom-base-url"));
+            }
+            return Schools.by_id (id);
+        }
+
+        /* The saved method by id, or the provider's first/default. */
+        private async LoginMethod resolve_method (SchoolProvider provider, string id)
+            throws GLib.Error {
+            var methods = yield provider.login_methods ();
+            for (uint i = 0; i < methods.length; i++) {
+                if (methods[i].id == id) {
+                    return methods[i];
+                }
+            }
+            return methods.length > 0 ? methods[0] : LoginMethod.password ();
+        }
+
+        private static string credential (GLib.Variant credentials, string key) {
+            var v = new GLib.VariantDict (credentials).lookup_value (key, GLib.VariantType.STRING);
+            return v != null ? v.get_string () : "";
+        }
+
+        /* Variant ⇄ keyring string, via json-glib's GVariant↔JSON bridge. */
+        private static string to_json (GLib.Variant v) {
+            size_t len;
+            return Json.gvariant_serialize_data (v, out len);
+        }
+        private static GLib.Variant to_variant (string json) {
+            try {
+                return Json.gvariant_deserialize_data (json, -1, null);
+            } catch (GLib.Error e) {
+                // TEMPORARY: legacy secret from before the Variant format — a bare
+                // token string. Wrap it so resume() finds it under "token". Remove
+                // once existing accounts have re-saved in the new JSON format.
+                var d = new GLib.VariantDict ();
+                d.insert_value ("token", new GLib.Variant.string (json));
+                return d.end ();
+            }
+        }
+
+        /* Credentials Variant from the stored secret. */
+        private static GLib.Variant creds_to_variant (string stored, string username) {
+            try {
+                return Json.gvariant_deserialize_data (stored, -1, null);
+            } catch (GLib.Error e) {
+                // TEMPORARY: legacy credentials from before the Variant format — a
+                // bare password string (no username). Reconstruct the form from the
+                // saved username. Remove once accounts have re-saved in the new
+                // JSON format.
+                var d = new GLib.VariantDict ();
+                d.insert_value ("username", new GLib.Variant.string (username));
+                d.insert_value ("password", new GLib.Variant.string (stored));
+                return d.end ();
             }
         }
 
@@ -251,10 +333,10 @@ namespace Opensprogskole {
             needs_login (null, null);
         }
 
-        private async void store_token (School school, string username,
-                                        UmsProvider provider) throws GLib.Error {
+        private async void store_secret (School school, string account,
+                                         SchoolProvider provider) throws GLib.Error {
             settings.set_int64 ("token-valid-until", provider.token_expires_at);
-            yield SecretStore.store_token (school.id, username, provider.token);
+            yield SecretStore.store_token (school.id, account, to_json (provider.session_secret));
         }
     }
 }

@@ -28,6 +28,13 @@ install_data('moe.ekusu.sprogskole.gschema.xml',
   install_dir: get_option('datadir') / 'glib-2.0' / 'schemas'
 )
 
+# Recompile the schema into the build dir whenever the .xml changes, so an
+# uninstalled run (meson devenv) never sees a stale gschemas.compiled.
+gnome = import('gnome')
+gnome.compile_schemas(
+  depend_files: files('moe.ekusu.sprogskole.gschema.xml'),
+)
+
 compile_schemas = find_program('glib-compile-schemas', required: false, disabler: true)
 test('Validate schema file',
      compile_schemas,

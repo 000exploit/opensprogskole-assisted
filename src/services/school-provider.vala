@@ -44,12 +44,37 @@ namespace Opensprogskole {
         public abstract School school { get; }
 
         /* Bind the provider to an account so it can build its per-account cache.
-         * Called once before any load_*, after login/resume. */
+         * Called once before any load_*, after authenticate/resume. */
         public abstract void use_account (string username);
 
-        /* Authenticate. Returns true on success; throws on bad credentials. */
-        public abstract async bool login (string username, string password)
+        /* The ways to sign in to this school/instance. Static for now (no UMS
+         * discovery API), but async so a future backend may probe. Default: a
+         * plain username/password method. */
+        public virtual async GLib.GenericArray<LoginMethod> login_methods ()
+            throws GLib.Error {
+            var list = new GLib.GenericArray<LoginMethod> ();
+            list.add (LoginMethod.password ());
+            return list;
+        }
+
+        /* Perform `method`. `credentials` is an a{ss} of field key→value for a
+         * PASSWORD method; empty for OAUTH/NONE (the provider drives the browser
+         * flow itself). One signature for every method — no overloads. Throws on
+         * failure. */
+        public abstract async void authenticate (LoginMethod method,
+                                                 GLib.Variant credentials,
+                                                 GLib.Cancellable? cancellable = null)
             throws GLib.Error;
+
+        /* Resume a saved session without UI, from a previously stored secret.
+         * Throws if the secret is dead. */
+        public abstract async void resume (GLib.Variant saved) throws GLib.Error;
+
+        /* The opaque secret to persist for resume (token / refresh token / …). */
+        public abstract GLib.Variant session_secret { owned get; }
+
+        /* When the current token expires (unix seconds), or 0 if unknown. */
+        public abstract int64 token_expires_at { get; }
 
         /* End the server-side session, each backend its own way (default no-op).
          * Best effort — the caller logs out locally regardless. */

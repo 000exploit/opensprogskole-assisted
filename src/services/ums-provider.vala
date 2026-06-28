@@ -51,10 +51,7 @@ namespace Opensprogskole {
                 ChecksumType.SHA256, "%s:%s".printf (school.id, username)));
         }
 
-        /* The current Bearer token (after login or resume). */
-        public string token { owned get { return client.token; } }
-
-        /* When the token expires (unix seconds), or 0 if unknown. Set by login. */
+        /* When the token expires (unix seconds), or 0 if unknown. */
         public int64 token_expires_at { get { return client.token_expires_at; } }
 
         /* Network-first with offline fallback: GET `path`, cache it under `key`,
@@ -78,16 +75,67 @@ namespace Opensprogskole {
             }
         }
 
-        public async bool login (string username, string password) throws GLib.Error {
-            yield client.authenticate (username, password,
-                                       school.login_type, school.auth_type,
-                                       device_name, device_id);
-            return true;
+        /* The methods this instance accepts, from the school's static config. UMS
+         * has three (plain username/password+JWT, AzureAD, a second SSO variant);
+         * only password is wired — the SSO ones are an OAuth slot, labelled "SSO". */
+        public async GLib.GenericArray<LoginMethod> login_methods () throws GLib.Error {
+            var list = new GLib.GenericArray<LoginMethod> ();
+            foreach (string id in school.login_methods) {
+                switch (id) {
+                    case "password":
+                        list.add (LoginMethod.password ());
+                        break;
+                    case "sso":
+                        list.add (new LoginMethod ("sso", LoginKind.OAUTH,
+                                                   _("SSO"), "globe-symbolic"));
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (list.length == 0) {
+                list.add (LoginMethod.password ());
+            }
+            return list;
         }
 
-        /* Resume with a previously saved token — no network call. */
-        public void resume (string token) {
+        public async void authenticate (LoginMethod method, GLib.Variant credentials,
+                                        GLib.Cancellable? cancellable = null)
+            throws GLib.Error {
+            if (method.kind == LoginKind.PASSWORD) {
+                string username = field (credentials, "username");
+                string password = field (credentials, "password");
+                yield client.authenticate (username, password,
+                                           school.login_type, school.auth_type,
+                                           device_name, device_id);
+                return;
+            }
+            throw new UmsError.HTTP ("SSO sign-in is not implemented yet");
+        }
+
+        /* Resume from a stored {token} secret — no network call; the controller
+         * has already checked the saved expiry. */
+        public async void resume (GLib.Variant saved) throws GLib.Error {
+            string token = field (saved, "token");
             client.token = token;
+            client.token_expires_at = UmsClient.decode_jwt_exp (token);
+        }
+
+        /* A string entry of an a{sv}/a{ss} credential or secret Variant, or "" if
+         * absent — the varargs lookup leaves its out value null on a miss, so we
+         * read it as a typed value instead. Keeps the empty-string contract that
+         * the auth path and keyring round-trip depend on. */
+        private static string field (GLib.Variant v, string key) {
+            var entry = new GLib.VariantDict (v).lookup_value (key, GLib.VariantType.STRING);
+            return entry != null ? entry.get_string () : "";
+        }
+
+        public GLib.Variant session_secret {
+            owned get {
+                var b = new GLib.VariantDict ();
+                b.insert_value ("token", new GLib.Variant.string (client.token));
+                return b.end ();
+            }
         }
 
         /* Invalidate the token server-side. Best effort — the caller logs out

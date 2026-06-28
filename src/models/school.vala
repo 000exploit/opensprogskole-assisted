@@ -32,6 +32,8 @@ namespace Opensprogskole {
         public string name { get; construct; }
         public string city { get; construct; }
         public string short_code { get; construct; }
+        // Which provider family this school belongs to (see ProviderFamily).
+        public string family_id { get; construct; }
         // Index into the Adwaita accent-ish avatar palette, as in the mockup.
         public int accent_index { get; construct; }
 
@@ -43,15 +45,26 @@ namespace Opensprogskole {
         public int auth_type { get; construct; }          // X-UMS-AuthType
         public int first_weekday { get; construct; }      // 1 = Monday
 
+        // Which login methods this instance enables (UMS provider maps the ids,
+        // e.g. {"password"} or {"password", "sso"}). Static config — no discovery
+        // API — and friendly to contributors registering a school.
+        public string[] login_methods;
+
+        // True for a school the user entered by hand (Custom tab); its config is
+        // persisted separately since it isn't in the static registry.
+        public bool is_custom = false;
+
         public School (string id, string name, string city, string short_code,
                        string base_url, string language = "1030",
                        int accent_index = 1, int login_type = 0,
-                       int auth_type = 0, int first_weekday = 1) {
+                       int auth_type = 0, int first_weekday = 1,
+                       string family_id = "ums", string[]? login_methods = null) {
             Object (
                 id: id,
                 name: name,
                 city: city,
                 short_code: short_code,
+                family_id: family_id,
                 base_url: base_url,
                 language: language,
                 accent_index: accent_index,
@@ -59,6 +72,8 @@ namespace Opensprogskole {
                 auth_type: auth_type,
                 first_weekday: first_weekday
             );
+            string[] fallback = { "password" };
+            this.login_methods = login_methods ?? fallback;
         }
     }
 }

@@ -35,9 +35,9 @@ public class Opensprogskole.Window : Adw.ApplicationWindow {
         this.controller = controller;
 
         // User intents → controller.
-        onboarding.authenticate_request.connect ((school, username, password, save) => {
+        onboarding.login_request.connect ((school, method, credentials, remember) => {
             onboarding.set_busy (true);
-            controller.try_login.begin (school, username, password, save);
+            controller.try_login.begin (school, method, credentials, remember);
         });
         onboarding.finished.connect (() => controller.enter ());
 

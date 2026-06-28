@@ -93,15 +93,27 @@ template $OpensprogskoleOnboardingView: Adw.Bin {
               }
 
               Adw.PreferencesGroup {
-                Adw.ComboRow school_row {
+                Adw.ActionRow school_row {
                   title: _("School");
+                  subtitle: _("Choose…");
+                  activatable: true;
 
                   [prefix]
                   Adw.Avatar school_avatar {
                     size: 28;
                     show-initials: true;
                   }
+
+                  [suffix]
+                  Image {
+                    icon-name: "go-next-symbolic";
+                    valign: center;
+                  }
                 }
+              }
+
+              Adw.PreferencesGroup credentials_group {
+                visible: false;
 
                 Adw.EntryRow username_row {
                   title: _("Username");
@@ -130,6 +142,7 @@ template $OpensprogskoleOnboardingView: Adw.Bin {
                 Button login_button {
                   label: _("Log in");
                   hexpand: true;
+                  sensitive: false;
 
                   styles [
                     "suggested-action",

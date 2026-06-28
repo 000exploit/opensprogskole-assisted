@@ -25,7 +25,7 @@ namespace Opensprogskole {
      * School and stays backend-agnostic. Only Sprogcenter Midt exists for now. */
     namespace Schools {
 
-        /* Sprogcenter Midt (SPC Midt) — runs the UMS backend. */
+        /* Sprogcenter Midt (SPC Midt) — runs the UMS backend, password login. */
         public School spc_midt () {
             return new School (
                 "scm",
@@ -38,10 +38,36 @@ namespace Opensprogskole {
             );
         }
 
-        /* Every selectable school, for the login picker. */
-        public GLib.GenericArray<School> all () {
+        /* The synthetic Demo school (DemoFamily / no credentials). */
+        public School demo () {
+            return new School (
+                "demo",
+                _("Demo School"),
+                "",
+                "DEMO",
+                "",
+                "1030",
+                4,                 // accent palette index
+                0, 0, 1,
+                "demo"             // family
+            );
+        }
+
+        /* The UMS-family schools, for that family's picker page. */
+        public GLib.GenericArray<School> ums () {
             var list = new GLib.GenericArray<School> ();
             list.add (spc_midt ());
+            return list;
+        }
+
+        /* Every selectable school across families (used to resolve a saved id). */
+        public GLib.GenericArray<School> all () {
+            var list = new GLib.GenericArray<School> ();
+            var u = ums ();
+            for (uint i = 0; i < u.length; i++) {
+                list.add (u[i]);
+            }
+            list.add (demo ());
             return list;
         }
 

@@ -59,16 +59,24 @@ namespace Opensprogskole {
             continue_button.clicked.connect (() => finished ());
         }
 
-        // --- School picker: a ViewStack switching Known schools / Custom backend -
+        // --- School picker: families → a searchable per-family school list -----
         private void present_school_picker () {
             var dialog = new Adw.Dialog () {
                 title = _("Choose your school"),
                 content_width = 420,
                 content_height = 560
             };
+            var nav = new Adw.NavigationView ();
+            nav.add (build_picker_root (dialog, nav));
+            dialog.child = nav;
+            dialog.present (this);
+        }
 
+        /* Root page: a switcher between the known families and the Custom tab. */
+        private Adw.NavigationPage build_picker_root (Adw.Dialog dialog,
+                                                      Adw.NavigationView nav) {
             var stack = new Adw.ViewStack ();
-            stack.add_titled_with_icon (build_known_view (dialog), "known",
+            stack.add_titled_with_icon (build_families_view (dialog, nav), "known",
                                         _("Schools"), "view-list-symbolic");
             stack.add_titled_with_icon (build_custom_view (dialog), "custom",
                                         _("Custom"), "document-edit-symbolic");
@@ -81,38 +89,95 @@ namespace Opensprogskole {
             };
             var view = new Adw.ToolbarView () { content = stack };
             view.add_top_bar (header);
-            dialog.child = view;
-            dialog.present (this);
+            return new Adw.NavigationPage (view, _("Choose your school"));
         }
 
-        /* Known schools, grouped by family (unavailable families show their note). */
-        private Gtk.Widget build_known_view (Adw.Dialog dialog) {
-            var box = new Box (Orientation.VERTICAL, 18);
+        /* The provider families as rows; each pushes its own school list. Uniform
+         * regardless of size — a family may list two schools or a hundred fetched
+         * online, so we never inline them. */
+        private Gtk.Widget build_families_view (Adw.Dialog dialog, Adw.NavigationView nav) {
+            var group = new Adw.PreferencesGroup ();
             var families = Families.all ();
             for (uint i = 0; i < families.length; i++) {
                 var family = families[i];
-                var group = new Adw.PreferencesGroup () { title = family.display_name };
+                var row = new Adw.ActionRow () {
+                    title = family.display_name,
+                    activatable = true
+                };
                 if (!family.available) {
-                    group.description = family.unavailable_note;
+                    row.subtitle = family.unavailable_note;
                 }
-                var schools = family.list_schools ();
-                for (uint j = 0; j < schools.length; j++) {
-                    var school = schools[j];
-                    var row = new Adw.ActionRow () {
-                        title = school.name,
-                        subtitle = school.city,
-                        activatable = true
-                    };
-                    row.add_suffix (new Image.from_icon_name ("go-next-symbolic"));
-                    row.activated.connect (() => {
-                        select_school (school);
-                        dialog.close ();
-                    });
-                    group.add (row);
-                }
-                box.append (group);
+                row.add_prefix (new Image.from_icon_name (family.icon_name));
+                row.add_suffix (new Image.from_icon_name ("go-next-symbolic"));
+                row.activated.connect (() => {
+                    nav.push (build_school_list_page (family, dialog));
+                });
+                group.add (row);
             }
-            return scrolled (box);
+            return scrolled (group);
+        }
+
+        /* One family's schools: a search field over the list, or an empty state
+         * when the family has none yet (e.g. LUDUS until its directory is wired
+         * up). The list is built from list_schools(); a future online-fetched
+         * family streams into the same page with a spinner. */
+        private Adw.NavigationPage build_school_list_page (ProviderFamily family,
+                                                           Adw.Dialog dialog) {
+            var schools = family.list_schools ();
+            var view = new Adw.ToolbarView ();
+            view.add_top_bar (new Adw.HeaderBar ());
+
+            if (schools.length == 0) {
+                view.content = new Adw.StatusPage () {
+                    icon_name = family.available ? "system-search-symbolic" : "globe-symbolic",
+                    title = family.available ? _("No schools yet") : family.unavailable_note,
+                    description = family.available
+                        ? _("This provider has no schools listed.")
+                        : _("Sign-in for this provider isn't available yet.")
+                };
+                return new Adw.NavigationPage (view, family.display_name);
+            }
+
+            var group = new Adw.PreferencesGroup ();
+            var rows = new GLib.GenericArray<Adw.ActionRow> ();
+            for (uint i = 0; i < schools.length; i++) {
+                var school = schools[i];
+                var row = new Adw.ActionRow () {
+                    title = school.name,
+                    subtitle = school.city,
+                    activatable = true
+                };
+                row.add_suffix (new Image.from_icon_name ("go-next-symbolic"));
+                row.activated.connect (() => {
+                    select_school (school);
+                    dialog.close ();
+                });
+                group.add (row);
+                rows.add (row);
+            }
+
+            var search = new Gtk.SearchEntry () { placeholder_text = _("Search schools") };
+            search.search_changed.connect (() => {
+                string q = search.text.strip ().down ();
+                for (uint i = 0; i < rows.length; i++) {
+                    var s = schools[i];
+                    rows[i].visible = q == "" || s.name.down ().contains (q)
+                                               || s.city.down ().contains (q);
+                }
+            });
+            var search_clamp = new Adw.Clamp () {
+                maximum_size = 420,
+                margin_top = 12, margin_start = 12, margin_end = 12,
+                child = search
+            };
+
+            var list = scrolled (group);
+            list.vexpand = true;
+            var box = new Box (Orientation.VERTICAL, 6);
+            box.append (search_clamp);
+            box.append (list);
+            view.content = box;
+            return new Adw.NavigationPage (view, family.display_name);
         }
 
         /* Custom backend: pick a provider type and enter its endpoint(s). UMS works

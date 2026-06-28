@@ -77,6 +77,21 @@ namespace Opensprogskole {
             }
         }
 
+        /* A greeting suited to the time of day. The "%s" is the user's first
+         * name. Boundaries: night < 5 ≤ morning < 12 ≤ afternoon < 18 ≤ evening. */
+        private static string greeting_for (int hour) {
+            if (hour < 5) {
+                return _("Good night, %s");
+            }
+            if (hour < 12) {
+                return _("Good morning, %s");
+            }
+            if (hour < 18) {
+                return _("Good afternoon, %s");
+            }
+            return _("Good evening, %s");
+        }
+
         private void reload_lessons_now () {
             reload_lessons (new DateTime.now_local ());
         }
@@ -88,8 +103,7 @@ namespace Opensprogskole {
 
             var now = new DateTime.now_local ();
             string first = session.display_name.split (" ")[0];
-            /* TODO: different time */
-            greeting.label = _("Good day, %s").printf (first);
+            greeting.label = greeting_for (now.get_hour ()).printf (first);
             subtitle.label = "%s · %s".printf (
                 now.format ("%A, %-d %B %Y"), session.school.name);
 

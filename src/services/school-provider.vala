@@ -38,6 +38,10 @@ namespace Opensprogskole {
         /* Which school this provider serves. */
         public abstract School school { get; }
 
+        /* The token-free AppSettings subtree from the last fresh login (links,
+         * call-in-sick policy, …), or null after a token-resume. */
+        public abstract Json.Node? app_settings { owned get; }
+
         /* Authenticate. Returns true on success; throws on bad credentials. */
         public abstract async bool login (string username, string password)
             throws GLib.Error;

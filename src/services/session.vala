@@ -57,10 +57,23 @@ namespace Opensprogskole {
         // Whether the school shows absence reasons to students (gates the reason
         // row in the lesson dialog). Loaded with the absence settings.
         public bool show_absence_reason { get; private set; default = false; }
-        // The school's call-in-sick policy, from the cached login AppSettings.
-        private CallInSickSettings? call_in_sick_settings = null;
-        // Fallback cutoff (minutes since midnight) when the school sends none.
+        // Daily call-in-sick cutoff (minutes since midnight) from the cached login
+        // AppSettings; -1 until loaded, then DEFAULT_CALL_IN_SICK_CUTOFF if the
+        // school sends none.
+        private int call_in_sick_cutoff = -1;
         private const int DEFAULT_CALL_IN_SICK_CUTOFF = 20 * 60 + 30;   // 20:30
+
+        // The per-account GVDB store backing every on-disk cache (lazy — built once
+        // school/username are set).
+        private Storage? _storage = null;
+        private Storage storage {
+            get {
+                if (_storage == null) {
+                    _storage = new Storage (cache_account);
+                }
+                return _storage;
+            }
+        }
 
         /* After the fast general data (grades/profile/settings). */
         public signal void updated ();
@@ -93,7 +106,7 @@ namespace Opensprogskole {
             Object (school: school, provider: provider, username: username);
         }
 
-        /* Opaque per-account key for the on-disk JSON cache (see JsonCache), so a
+        /* Opaque per-account key for the on-disk store (see Storage), so a
          * different account or school never reads another's cached data. */
         public string cache_account {
             owned get {
@@ -182,7 +195,7 @@ namespace Opensprogskole {
             timetable_updated ();   // spinner (back) on, incl. on a retry
 
             // Network-first; on failure fall back to the last cached copy so the
-            // schedule still shows offline (see JsonCache).
+            // schedule still shows offline (see Storage).
             Json.Node? node = null;
             try {
                 node = yield provider.fetch_timetable ();
@@ -190,14 +203,14 @@ namespace Opensprogskole {
                     return;   // superseded (dropped + retried) — leave the result
                 }
                 if (node != null) {
-                    JsonCache.save (cache_account, "timetable", node);
+                    storage.set_json ("timetable", node);
                 }
             } catch (GLib.Error e) {
                 if (gen != timetable_gen) {
                     return;
                 }
                 warning ("timetable fetch failed: %s", e.message);
-                node = JsonCache.load (cache_account, "timetable");
+                node = storage.get_json ("timetable");
             }
 
             if (node != null && node.get_node_type () == Json.NodeType.ARRAY) {
@@ -257,11 +270,11 @@ namespace Opensprogskole {
             try {
                 node = yield provider.fetch_user_info (username);
                 if (node != null) {
-                    JsonCache.save (cache_account, "user-info", node);
+                    storage.set_json ("user-info", node);
                 }
             } catch (GLib.Error e) {
                 warning ("user info fetch failed: %s", e.message);
-                node = JsonCache.load (cache_account, "user-info");
+                node = storage.get_json ("user-info");
             }
 
             if (node != null && node.get_node_type () == Json.NodeType.OBJECT) {
@@ -381,38 +394,69 @@ namespace Opensprogskole {
          * up to a daily cutoff (AbsenceCallInSickSettings.IgnoreMessageStart, e.g.
          * 20:30), falling back to a default when the school sends none. */
         public bool can_call_in_sick () {
-            int cutoff = call_in_sick_settings != null
-                && call_in_sick_settings.cutoff_minutes >= 0
-                    ? call_in_sick_settings.cutoff_minutes
-                    : DEFAULT_CALL_IN_SICK_CUTOFF;
+            int cutoff = call_in_sick_cutoff >= 0
+                ? call_in_sick_cutoff : DEFAULT_CALL_IN_SICK_CUTOFF;
             var now = new DateTime.now_local ();
             return now.get_hour () * 60 + now.get_minute () < cutoff;
         }
 
-        /* Load the school's links + call-in-sick policy from the cached login
-         * AppSettings (written by SessionController.cache_app_settings). Local,
-         * fast, best-effort — absent cache just leaves links empty + default cutoff. */
+        /* Load the school's links + call-in-sick cutoff from the per-account store.
+         * On a fresh login the (token-free) AppSettings whitelist is captured first
+         * so it survives token-resume restarts. Best-effort: an absent store just
+         * leaves links empty + the default cutoff. */
         private void load_app_settings () {
-            links.remove_all ();
-            call_in_sick_settings = null;
+            var fresh = provider.app_settings;
+            if (fresh != null) {
+                var curated = curate_app_settings (fresh);
+                if (curated != null) {
+                    storage.set_json ("app-settings", curated);
+                }
+            }
 
-            var node = JsonCache.load (cache_account, "app-settings");
-            if (node == null || node.get_node_type () != Json.NodeType.OBJECT) {
+            links.remove_all ();
+            call_in_sick_cutoff = -1;
+
+            var app = storage.get_node ("app-settings");
+            if (app == null) {
                 return;
             }
-            var obj = node.get_object ();
+            foreach (var n in app.get_array ("Links")) {
+                links.append (LinkItem.from_node (n));
+            }
+            var cis = app.get_object ("AbsenceCallInSickSettings");
+            if (cis != null) {
+                call_in_sick_cutoff = hhmm_to_minutes (cis.get_string ("IgnoreMessageStart"));
+            }
+        }
 
-            if (obj.has_member ("Links")
-                && obj.get_member ("Links").get_node_type () == Json.NodeType.ARRAY) {
-                obj.get_array_member ("Links").foreach_element ((arr, i, element) => {
-                    links.append (Json.gobject_deserialize (typeof (LinkItem), element));
-                });
+        /* The token-free slice of the login AppSettings we persist: Links (lifted
+         * out of UserVariables) + AbsenceCallInSickSettings, copied so neither the
+         * token (a sibling) nor the rest of UserVariables/PushSettings tags along. */
+        private static Json.Node? curate_app_settings (Json.Node app_settings) {
+            if (app_settings.get_node_type () != Json.NodeType.OBJECT) {
+                return null;
             }
-            if (obj.has_member ("AbsenceCallInSickSettings")
-                && obj.get_member ("AbsenceCallInSickSettings").get_node_type () == Json.NodeType.OBJECT) {
-                call_in_sick_settings = (CallInSickSettings) Json.gobject_deserialize (
-                    typeof (CallInSickSettings), obj.get_member ("AbsenceCallInSickSettings"));
+            var src = app_settings.get_object ();
+            var dst = new Json.Object ();
+
+            if (src.has_member ("UserVariables")
+                && src.get_member ("UserVariables").get_node_type () == Json.NodeType.OBJECT) {
+                var uv = src.get_object_member ("UserVariables");
+                if (uv.has_member ("Links")) {
+                    dst.set_member ("Links", uv.get_member ("Links").copy ());
+                }
             }
+            if (src.has_member ("AbsenceCallInSickSettings")) {
+                dst.set_member ("AbsenceCallInSickSettings",
+                                src.get_member ("AbsenceCallInSickSettings").copy ());
+            }
+
+            if (dst.get_size () == 0) {
+                return null;
+            }
+            var node = new Json.Node (Json.NodeType.OBJECT);
+            node.set_object (dst);
+            return node;
         }
 
         /* Describe (create or edit) the reason for a single past absent lesson. */

@@ -153,7 +153,6 @@ namespace Opensprogskole {
                     }
                     yield provider.login (username, password);
                     yield store_token (school, username, provider);
-                    cache_app_settings (school, username, provider);
                 }
 
                 yield enter_session (new Session (school, provider, username));
@@ -175,7 +174,6 @@ namespace Opensprogskole {
                 settings.set_string ("active-school", school.id);
                 settings.set_string ("username", username);
                 yield store_token (school, username, provider);
-                cache_app_settings (school, username, provider);
 
                 if (save_password) {
                     yield SecretStore.store (school.id, username, password);
@@ -245,8 +243,8 @@ namespace Opensprogskole {
             settings.set_string ("username", "");
             settings.set_int64 ("token-valid-until", 0);
 
-            // Wipe this account's cached profile/schedule along with its secrets.
-            JsonCache.clear (Checksum.compute_for_string (
+            // Wipe this account's whole on-disk store along with its secrets.
+            Storage.clear (Checksum.compute_for_string (
                 ChecksumType.SHA256, "%s:%s".printf (school_id, username)));
 
             session = null;
@@ -257,51 +255,6 @@ namespace Opensprogskole {
                                         UmsProvider provider) throws GLib.Error {
             settings.set_int64 ("token-valid-until", provider.token_expires_at);
             yield SecretStore.store_token (school.id, username, provider.token);
-        }
-
-        /* Persist the safe parts of the login response's AppSettings so they
-         * survive a token-resume restart (which never re-fetches them). Only a
-         * curated whitelist is written — never the token (a sibling of AppSettings,
-         * and not in our whitelist) nor the PII in UserVariables/PushSettings. */
-        private void cache_app_settings (School school, string username,
-                                         UmsProvider provider) {
-            var curated = curate_app_settings (provider.app_settings);
-            if (curated == null) {
-                return;
-            }
-            string hash = Checksum.compute_for_string (
-                ChecksumType.SHA256, "%s:%s".printf (school.id, username));
-            JsonCache.save (hash, "app-settings", curated);
-        }
-
-        /* Build the cache payload: a fresh object with only Links (lifted out of
-         * UserVariables) and AbsenceCallInSickSettings, copied so nothing else
-         * tags along. Null when there's nothing worth caching. */
-        private static Json.Node? curate_app_settings (Json.Node? app_settings) {
-            if (app_settings == null || app_settings.get_node_type () != Json.NodeType.OBJECT) {
-                return null;
-            }
-            var src = app_settings.get_object ();
-            var dst = new Json.Object ();
-
-            if (src.has_member ("UserVariables")
-                && src.get_member ("UserVariables").get_node_type () == Json.NodeType.OBJECT) {
-                var uv = src.get_object_member ("UserVariables");
-                if (uv.has_member ("Links")) {
-                    dst.set_member ("Links", uv.get_member ("Links").copy ());
-                }
-            }
-            if (src.has_member ("AbsenceCallInSickSettings")) {
-                dst.set_member ("AbsenceCallInSickSettings",
-                                src.get_member ("AbsenceCallInSickSettings").copy ());
-            }
-
-            if (dst.get_size () == 0) {
-                return null;
-            }
-            var node = new Json.Node (Json.NodeType.OBJECT);
-            node.set_object (dst);
-            return node;
         }
     }
 }

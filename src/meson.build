@@ -12,11 +12,10 @@ opensprogskole_vala_sources = [
   'models/absence-summary.vala',
   'models/absence-settings.vala',
   'models/future-absence-item.vala',
-  'models/call-in-sick-settings.vala',
   'models/user-info-settings.vala',
   'store/timetable-store.vala',
   'services/connectivity.vala',
-  'services/json-cache.vala',
+  'services/storage.vala',
   'services/school-provider.vala',
   'services/schools.vala',
   'services/secret-store.vala',
@@ -46,12 +45,22 @@ opensprogskole_vala_sources = [
   'widgets/lesson-dialog.vala',
   'widgets/absence-dialog.vala',
   'widgets/reason-dialog.vala',
+  # GVDB binding + C glue (the .c is compiled by cc, the .vapi feeds valac).
+  'gvdb-glue.vapi',
+  'gvdb-glue.c',
 ]
 
 opensprogskole_sources = [
 	opensprogskole_vala_sources,
 	opensprogskole_resources,
 ]
+
+# GVDB (GVariant database) copylib, pinned meson subproject. Its dependency
+# exposes the sources directly, so gvdb compiles straight into our target.
+gvdb_dep = dependency('gvdb',
+  fallback: ['gvdb', 'gvdb_dep'],
+  default_options: ['tests=false', 'build-tools=false'],
+)
 
 opensprogskole_deps = [
   config_dep,
@@ -60,6 +69,7 @@ opensprogskole_deps = [
   dependency('json-glib-1.0', version: '>= 1.10.0'),
   dependency('libsoup-3.0', version: '>= 3.6.0'),
   dependency('libsecret-1'),
+  gvdb_dep,
 ]
 
 opensprogskole_vala_args = [
@@ -71,7 +81,7 @@ opensprogskole_vala_args = [
 
 executable('opensprogskole', opensprogskole_sources,
   dependencies: opensprogskole_deps,
-  include_directories: config_inc,
+  include_directories: [config_inc, include_directories('.')],
         vala_args: opensprogskole_vala_args,
           # Name the GLib log domain so our debug()/warning()/message() calls can
           # be filtered on their own, e.g. `G_MESSAGES_DEBUG=opensprogskole`,

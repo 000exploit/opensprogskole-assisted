@@ -28,4 +28,19 @@ namespace Opensprogskole {
     public string current_utc_iso8601_time () {
         return new DateTime.now_utc ().format ("%Y-%m-%dT%H:%M:%S.0000000+00:00");
     }
+
+    /* Parse a wall-clock "HH:MM" into minutes since midnight, or -1 if it isn't a
+     * valid time (e.g. empty). */
+    public int hhmm_to_minutes (string value) {
+        string[] parts = value.split (":");
+        if (parts.length != 2) {
+            return -1;
+        }
+        int hour = int.parse (parts[0]);
+        int minute = int.parse (parts[1]);
+        if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+            return -1;
+        }
+        return hour * 60 + minute;
+    }
 }

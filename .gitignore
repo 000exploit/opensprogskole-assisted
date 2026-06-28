@@ -1,4 +1,6 @@
 /subprojects/blueprint-compiler
+/subprojects/gvdb
+/subprojects/.wraplock
 
 # Local build output
 /_build/

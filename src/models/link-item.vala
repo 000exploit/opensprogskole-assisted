@@ -20,23 +20,24 @@
 
 namespace Opensprogskole {
 
-    /* An external link shown in the "Links" section, mirroring the backend's
-     * LinkItem. Plain Entity subclass — PascalCase mapping is inherited.
-     *
-     * The backend's nested "LinkSettings" array is intentionally not modelled:
-     * Entity/json-glib does not auto-deserialize collections of objects, so if
-     * it is ever needed, iterate that Json.Array by hand (see the note in
-     * entity.vala). */
-    public class LinkItem : Entity {
-        public int id { get; set; default = 0; }
-        public string description { get; set; default = ""; }
+    /* An external link shown in the "Links" section, built from a StorageNode over
+     * the cached AppSettings.UserVariables.Links entry (PascalCase keys). Only the
+     * fields the Links page renders are kept. */
+    public class LinkItem : GLib.Object {
         public string link_text { get; set; default = ""; }
+        public string description { get; set; default = ""; }
         public string url { get; set; default = ""; }
-        public bool sso { get; set; default = false; }
-        public bool written2_web_folder { get; set; default = false; }
         public bool picture { get; set; default = false; }
-        public int picture_id { get; set; default = 0; }
         public string picture_path { get; set; default = ""; }
-        public int sort_order { get; set; default = 0; }
+
+        public static LinkItem from_node (StorageNode n) {
+            return new LinkItem () {
+                link_text = n.get_string ("LinkText"),
+                description = n.get_string ("Description"),
+                url = n.get_string ("Url"),
+                picture = n.get_bool ("Picture"),
+                picture_path = n.get_string ("PicturePath")
+            };
+        }
     }
 }

@@ -56,6 +56,10 @@ namespace Opensprogskole {
             submit_button.label = submit_label;
         }
 
+        // True while the caller's network call is in flight; combined with
+        // connectivity to drive the submit button (see sync_submit).
+        private bool busy = false;
+
         construct {
             submit_button.clicked.connect (() => {
                 string reason = reason_row.text.strip ();
@@ -66,6 +70,10 @@ namespace Opensprogskole {
                 submitted (reason);
             });
             reason_row.entry_activated.connect (() => submit_button.activate ());
+
+            // Saving is a write — keep submit off while offline (or busy).
+            Connectivity.get_default ().notify["online"].connect (sync_submit);
+            sync_submit ();
         }
 
         /* Offer the "whole day" toggle (default on), with a subtitle describing
@@ -77,10 +85,15 @@ namespace Opensprogskole {
 
         /* Toggle the in-flight state while the caller does its network call. */
         public void set_busy (bool busy) {
+            this.busy = busy;
             spinner.visible = busy;
-            submit_button.sensitive = !busy;
             reason_row.sensitive = !busy;
             whole_day_row.sensitive = !busy;
+            sync_submit ();
+        }
+
+        private void sync_submit () {
+            submit_button.sensitive = !busy && Connectivity.get_default ().online;
         }
 
         public void toast (string text) {

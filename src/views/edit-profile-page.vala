@@ -65,6 +65,11 @@ namespace Opensprogskole {
             }
 
             save_button.clicked.connect (on_save);
+
+            // Saving is a write — keep it off while offline (or busy). The page is
+            // only reachable when online, but the connection can drop mid-edit.
+            Connectivity.get_default ().notify["online"].connect (sync_save);
+            sync_save ();
         }
 
         private static void init_row (Adw.EntryRow row, bool allowed, string? value) {
@@ -103,9 +108,16 @@ namespace Opensprogskole {
             });
         }
 
+        private bool busy = false;
+
         private void set_busy (bool busy) {
+            this.busy = busy;
             spinner.visible = busy;
-            save_button.sensitive = !busy;
+            sync_save ();
+        }
+
+        private void sync_save () {
+            save_button.sensitive = !busy && Connectivity.get_default ().online;
         }
     }
 }

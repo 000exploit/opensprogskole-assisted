@@ -64,6 +64,10 @@ namespace Opensprogskole {
         private Session session;
         // 0 when creating; the future-absence id when editing an existing one.
         private int edit_id = 0;
+        // In-flight flags for the two submits; combined with connectivity to drive
+        // their sensitivity (see sync_submits).
+        private bool form_busy = false;
+        private bool sick_busy = false;
 
         public AbsenceDialog (Session session) {
             Object ();
@@ -118,6 +122,16 @@ namespace Opensprogskole {
             future_button.clicked.connect (() => nav.push_by_tag ("form"));
             submit_button.clicked.connect (on_submit);
             sick_submit_button.clicked.connect (on_sick_submit);
+
+            // Both submits are writes — keep them off while offline (or busy).
+            Connectivity.get_default ().notify["online"].connect (sync_submits);
+            sync_submits ();
+        }
+
+        private void sync_submits () {
+            bool online = Connectivity.get_default ().online;
+            submit_button.sensitive = !form_busy && online;
+            sick_submit_button.sensitive = !sick_busy && online;
         }
 
         /* "Today" = call in sick, on its own page in the same navigation view.
@@ -163,9 +177,10 @@ namespace Opensprogskole {
         }
 
         private void set_sick_busy (bool busy) {
+            sick_busy = busy;
             sick_spinner.visible = busy;
-            sick_submit_button.sensitive = !busy;
             sick_reason_row.sensitive = !busy;
+            sync_submits ();
         }
 
         private void set_date (DateTime dt) {
@@ -217,8 +232,9 @@ namespace Opensprogskole {
         }
 
         private void set_busy (bool busy) {
+            form_busy = busy;
             spinner.visible = busy;
-            submit_button.sensitive = !busy;
+            sync_submits ();
         }
 
         /* Build "yyyy-MM-ddTHH:mm:ss" from the Month/Day/Year rows + a time pair. */

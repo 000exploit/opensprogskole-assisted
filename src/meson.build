@@ -29,6 +29,7 @@ opensprogskole_vala_sources = [
   'services/avatar-cache.vala',
   'views/schedule-view.vala',
   'views/onboarding-view.vala',
+  'views/school-picker.vala',
   'views/main-view.vala',
   'views/overview-page.vala',
   'views/absence-page.vala',

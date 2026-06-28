@@ -1,0 +1,194 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OpensprogskoleSchoolPicker: Adw.Dialog {
+  title: _("Choose your school");
+  content-width: 420;
+  content-height: 560;
+
+  child: Adw.NavigationView nav {
+
+    // Root: the provider families, plus a quiet footer for the manual path.
+    // families_group is filled in code (one row per family).
+    Adw.NavigationPage {
+      tag: "families";
+      title: _("Choose your school");
+
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {}
+
+        content: Box {
+          orientation: vertical;
+
+          ScrolledWindow {
+            hscrollbar-policy: never;
+            vexpand: true;
+
+            Adw.Clamp {
+              maximum-size: 420;
+              margin-top: 12;
+              margin-bottom: 12;
+              margin-start: 12;
+              margin-end: 12;
+
+              Adw.PreferencesGroup families_group {}
+            }
+          }
+
+          Box {
+            orientation: vertical;
+            spacing: 2;
+            margin-top: 6;
+            margin-bottom: 12;
+
+            Label {
+              label: _("Can't find your school?");
+              halign: center;
+
+              styles [
+                "dim-label",
+                "caption",
+              ]
+            }
+
+            Button custom_button {
+              label: _("Enter it manually");
+              halign: center;
+
+              styles [
+                "flat",
+              ]
+            }
+          }
+        };
+      };
+    }
+
+    // One family's schools: a searchable list, or an empty state when the
+    // family has none yet. schools_group is filled in code per family.
+    Adw.NavigationPage {
+      tag: "school-list";
+      title: _("Schools");
+
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {}
+
+        content: Stack list_stack {
+          StackPage {
+            name: "list";
+
+            child: Box {
+              orientation: vertical;
+              spacing: 6;
+
+              Adw.Clamp {
+                maximum-size: 420;
+                margin-top: 12;
+                margin-start: 12;
+                margin-end: 12;
+
+                SearchEntry search_entry {
+                  placeholder-text: _("Search schools");
+                }
+              }
+
+              ScrolledWindow {
+                hscrollbar-policy: never;
+                vexpand: true;
+
+                Adw.Clamp {
+                  maximum-size: 420;
+                  margin-top: 6;
+                  margin-bottom: 18;
+                  margin-start: 12;
+                  margin-end: 12;
+
+                  Adw.PreferencesGroup schools_group {}
+                }
+              }
+            };
+          }
+
+          StackPage {
+            name: "empty";
+
+            child: Adw.StatusPage empty_page {
+              icon-name: "system-search-symbolic";
+            };
+          }
+        };
+      };
+    }
+
+    // The manual-entry form. The backend model is set in code (translated).
+    Adw.NavigationPage {
+      tag: "custom";
+      title: _("Custom school");
+
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {}
+
+        content: ScrolledWindow {
+          hscrollbar-policy: never;
+
+          Adw.Clamp {
+            maximum-size: 420;
+            margin-top: 12;
+            margin-bottom: 18;
+            margin-start: 12;
+            margin-end: 12;
+
+            Box {
+              orientation: vertical;
+              spacing: 12;
+
+              Adw.PreferencesGroup {
+                Adw.ComboRow backend_row {
+                  title: _("Backend");
+                }
+
+                Adw.EntryRow name_row {
+                  title: _("Display name");
+                }
+
+                Adw.EntryRow url_row {
+                  title: _("Base URL");
+                }
+
+                Adw.EntryRow realm_row {
+                  title: _("Realm (OIDC)");
+                  visible: false;
+                }
+              }
+
+              Label custom_note {
+                label: _("LUDUS sign-in isn't available yet.");
+                halign: start;
+                visible: false;
+                margin-start: 4;
+
+                styles [
+                  "dim-label",
+                ]
+              }
+
+              Button use_button {
+                label: _("Use this provider");
+                halign: center;
+                margin-top: 6;
+
+                styles [
+                  "suggested-action",
+                  "pill",
+                ]
+              }
+            }
+          }
+        };
+      };
+    }
+  };
+}

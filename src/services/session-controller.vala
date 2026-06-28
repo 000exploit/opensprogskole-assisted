@@ -216,7 +216,7 @@ namespace Opensprogskole {
          * rebuilt from settings. */
         private School resolve_saved_school (string id) {
             if (id == "custom") {
-                return OnboardingView.custom_ums_school (
+                return SchoolPicker.custom_ums_school (
                     settings.get_string ("custom-name"),
                     settings.get_string ("custom-base-url"));
             }

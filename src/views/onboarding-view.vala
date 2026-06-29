@@ -166,5 +166,16 @@ namespace Opensprogskole {
             error_banner.revealed = false;
             nav.pop_to_tag ("hello");
         }
+
+        /* One step of back navigation for the Android system-back handler: pop a
+         * pushed page (login/welcome → hello). False at the root → the app may
+         * leave. */
+        public bool handle_back () {
+            if (nav.navigation_stack.get_n_items () > 1) {
+                nav.pop ();
+                return true;
+            }
+            return false;
+        }
     }
 }

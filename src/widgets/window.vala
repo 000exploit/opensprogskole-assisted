@@ -27,6 +27,9 @@ public class Opensprogskole.Window : Adw.ApplicationWindow {
     [GtkChild] private unowned Gtk.Stack root_stack;
     [GtkChild] private unowned OnboardingView onboarding;
     [GtkChild] private unowned MainView main_view;
+#if ANDROID
+    [GtkChild] private unowned Adw.AlertDialog quit_dialog;
+#endif
 
     private SessionController controller;
 
@@ -38,6 +41,15 @@ public class Opensprogskole.Window : Adw.ApplicationWindow {
 		/  FIX: hack for the broken font */
 		#if ANDROID
 		    this.add_css_class ("android");
+		    // Android delivers the system back gesture/button as a window
+		    // close-request. Route it through the in-app navigation instead of
+		    // quitting outright (see on_close_request).
+		    close_request.connect (on_close_request);
+		    quit_dialog.response.connect ((response) => {
+		        if (response == "quit") {
+		            destroy ();
+		        }
+		    });
 		#endif
 
         // User intents → controller.
@@ -76,4 +88,40 @@ public class Opensprogskole.Window : Adw.ApplicationWindow {
             root_stack.visible_child_name = "main";
         });
     }
+
+#if ANDROID
+    /* Android system-back handler (wired only there). Back walks the UI from the
+     * inside out: close a presented dialog first, else step the visible screen's
+     * navigation, and only when nothing is left to go back to do we treat it as
+     * leaving — and then confirm rather than dropping the user out of the app.
+     * Always returns true: we either consumed the back or drive the quit
+     * ourselves via the confirmation, so the window never closes implicitly. */
+    private bool on_close_request () {
+        var dialog = get_visible_dialog ();
+        if (dialog != null) {
+            dialog.close ();
+            return true;
+        }
+
+        bool consumed = false;
+        switch (root_stack.visible_child_name) {
+            case "main":       consumed = main_view.handle_back (); break;
+            case "onboarding": consumed = onboarding.handle_back (); break;
+            default:           break;   // loading: nothing to pop
+        }
+        if (consumed) {
+            return true;
+        }
+
+        confirm_quit ();
+        return true;
+    }
+
+    /* The root-level "closing check": don't let a single back silently kill the
+     * app — ask first. The dialog itself lives in window.blp; we just present it
+     * (its response is wired once in the constructor). */
+    private void confirm_quit () {
+        quit_dialog.present (this);
+    }
+#endif
 }

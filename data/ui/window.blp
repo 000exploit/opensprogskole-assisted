@@ -35,3 +35,16 @@ template $OpensprogskoleWindow: Adw.ApplicationWindow {
     }
   };
 }
+
+// Root-level "leave the app?" confirmation, presented by the Android system-back
+// handler when there's nothing left to navigate back to.
+Adw.AlertDialog quit_dialog {
+  heading: _("Quit OpenSprogskole?");
+  default-response: "cancel";
+  close-response: "cancel";
+
+  responses [
+    cancel: _("Cancel"),
+    quit: _("Quit") destructive,
+  ]
+}

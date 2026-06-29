@@ -199,6 +199,22 @@ namespace Opensprogskole {
             }
         }
 
+        /* One step of back navigation, for the Android system-back handler:
+         * pop a pushed section, else (when collapsed) return from the content to
+         * the sidebar. Returns false when already at the root with nowhere left
+         * to go — the window then treats back as "leave the app". */
+        public bool handle_back () {
+            if (content_nav.navigation_stack.get_n_items () > 1) {
+                content_nav.pop ();
+                return true;
+            }
+            if (split.collapsed && split.show_content) {
+                split.show_content = false;   // back to the sidebar/menu
+                return true;
+            }
+            return false;
+        }
+
         private void open_absence_dialog () {
             if (session != null) {
                 var dialog = new AbsenceDialog (session);

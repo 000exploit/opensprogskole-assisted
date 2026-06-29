@@ -66,7 +66,7 @@ template $OpensprogskoleAbsencePage: Adw.Bin {
               halign: start;
 
               styles [
-                "title-4",
+                "heading",
               ]
             }
 
@@ -76,6 +76,9 @@ template $OpensprogskoleAbsencePage: Adw.Bin {
 
                 child: $OpensprogskoleLoadingState absence_loading {
                   label: _("Loading absences…");
+                  vexpand: false;
+                  margin-top: 24;
+                  margin-bottom: 24;
                 };
               }
 

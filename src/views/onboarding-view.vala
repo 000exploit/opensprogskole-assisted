@@ -57,6 +57,9 @@ namespace Opensprogskole {
             school_row.activated.connect (present_school_picker);
             login_button.clicked.connect (on_login);
             continue_button.clicked.connect (() => finished ());
+
+            username_row.entry_activated.connect (() => password_row.grab_focus ());
+            password_row.entry_activated.connect (on_login);
         }
 
         /* Open the school picker; its pick drives the auth section. The whole

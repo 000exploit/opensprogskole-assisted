@@ -1,6 +1,8 @@
-/* Application stylesheet, bundled as a GResource and loaded once at startup.
- * Colours reference libadwaita's named colours so everything follows the
- * active light/dark theme and accent. */
+/* Took from GeopJr/Tuba /
+/  ANDROID, FIXME FONT */
+window.android *:not(.title-2):not(.title-1) {
+	font-weight: 700;
+}
 
 /* Grades — coloured grade chip */
 .grade-chip {

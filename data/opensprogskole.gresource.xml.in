@@ -2,6 +2,7 @@
 <gresources>
   <gresource prefix="/moe/ekusu/sprogskole">
     <file>style.css</file>
+
     <file preprocess="xml-stripblanks">ui/window.ui</file>
     <file preprocess="xml-stripblanks">ui/shortcuts-dialog.ui</file>
     <file preprocess="xml-stripblanks">ui/loading-state.ui</file>
@@ -24,5 +25,8 @@
     <file preprocess="xml-stripblanks">ui/grades-page.ui</file>
     <file preprocess="xml-stripblanks">ui/profile-page.ui</file>
     <file preprocess="xml-stripblanks">ui/edit-profile-page.ui</file>
+
+    @ANDROID_ICONS@
+
   </gresource>
 </gresources>

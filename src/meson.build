@@ -49,7 +49,6 @@ opensprogskole_vala_sources = [
   'widgets/lesson-dialog.vala',
   'widgets/absence-dialog.vala',
   'widgets/reason-dialog.vala',
-  # GVDB binding + C glue (the .c is compiled by cc, the .vapi feeds valac).
   'gvdb-glue.vapi',
   'gvdb-glue.c',
 ]
@@ -73,13 +72,12 @@ opensprogskole_deps = [
   dependency('json-glib-1.0', version: '>= 1.10.0'),
   dependency('libsoup-3.0', version: '>= 3.6.0'),
   dependency('libsecret-1'),
+  dependency('gioopenssl', required: host_machine.system() == 'android'),
   gvdb_dep,
 ]
 
 opensprogskole_vala_args = [
-	'--gresources', opensprogskole_resource_files,
-	# libsecret's Vala bindings live outside valac's default vapidir on this
-	# system; make sure they are found.
+	'--gresources', gresource_xml,
 	'--vapidir=/usr/share/vala/vapi',
 ]
 
@@ -87,9 +85,7 @@ executable('opensprogskole', opensprogskole_sources,
   dependencies: opensprogskole_deps,
   include_directories: [config_inc, include_directories('.')],
         vala_args: opensprogskole_vala_args,
-          # Name the GLib log domain so our debug()/warning()/message() calls can
-          # be filtered on their own, e.g. `G_MESSAGES_DEBUG=opensprogskole`,
-          # without pulling in libsoup/GIO debug spam (which `=all` would).
-            c_args: ['-DG_LOG_DOMAIN="opensprogskole"'],
-          install: true,
+           c_args: ['-DG_LOG_DOMAIN="opensprogskole"'],
+           install: true,
+           android_exe_type: 'application',
 )

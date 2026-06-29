@@ -25,7 +25,8 @@ test('Validate appstream file', appstreamcli,
      args: ['validate', '--no-net', '--explain', appstream_file])
 
 install_data('moe.ekusu.sprogskole.gschema.xml',
-  install_dir: get_option('datadir') / 'glib-2.0' / 'schemas'
+  install_dir: get_option('datadir') / 'glib-2.0' / 'schemas',
+  install_tag: 'runtime',
 )
 
 # Recompile the schema into the build dir whenever the .xml changes, so an
@@ -72,11 +73,57 @@ blueprints = custom_target('blueprints',
   command: [find_program('blueprint-compiler'), 'batch-compile', '--minify', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
 )
 
+fs = import('fs')
+android_icon_files = files(
+  'icons/scalable/actions/accessories-dictionary-symbolic.svg',
+  'icons/scalable/actions/adw-external-link-symbolic.svg',
+  'icons/scalable/actions/application-rss+xml-symbolic.svg',
+  'icons/scalable/actions/applications-games-symbolic.svg',
+  'icons/scalable/actions/appointment-soon-symbolic.svg',
+  'icons/scalable/actions/avatar-default-symbolic.svg',
+  'icons/scalable/actions/camera-photo-symbolic.svg',
+  'icons/scalable/actions/dialog-information-symbolic.svg',
+  'icons/scalable/actions/dialog-password-symbolic.svg',
+  'icons/scalable/actions/dialog-warning-symbolic.svg',
+  'icons/scalable/actions/document-edit-symbolic.svg',
+  'icons/scalable/actions/edit-copy-symbolic.svg',
+  'icons/scalable/actions/face-sad-symbolic.svg',
+  'icons/scalable/actions/folder-documents-symbolic.svg',
+  'icons/scalable/actions/go-next-symbolic.svg',
+  'icons/scalable/actions/list-add-symbolic.svg',
+  'icons/scalable/actions/network-offline-symbolic.svg',
+  'icons/scalable/actions/network-wireless-symbolic.svg',
+  'icons/scalable/actions/network-workgroup-symbolic.svg',
+  'icons/scalable/actions/object-select-symbolic.svg',
+  'icons/scalable/actions/open-menu-symbolic.svg',
+  'icons/scalable/actions/pan-end-symbolic.svg',
+  'icons/scalable/actions/pan-start-symbolic.svg',
+  'icons/scalable/actions/starred-symbolic.svg',
+  'icons/scalable/actions/system-search-symbolic.svg',
+  'icons/scalable/actions/user-trash-symbolic.svg',
+  'icons/scalable/actions/view-grid-symbolic.svg',
+  'icons/scalable/actions/view-more-horizontal-symbolic.svg',
+  'icons/scalable/actions/view-refresh-symbolic.svg',
+  'icons/scalable/actions/web-browser-symbolic.svg',
+  'icons/scalable/actions/x-office-calendar-symbolic.svg',
+)
+android_icons_xml = ''
+if host_machine.system() == 'android'
+  foreach icon : android_icon_files
+    android_icons_xml += '<file preprocess="xml-stripblanks">icons/scalable/actions/' + fs.name(icon) + '</file>\n'
+  endforeach
+endif
+
+gresource_xml = configure_file(
+  input: 'opensprogskole.gresource.xml.in',
+  output: 'opensprogskole.gresource.xml',
+  configuration: { 'ANDROID_ICONS': android_icons_xml },
+)
+
 # Compile resources. The .ui files are produced under <builddir>/data/blueprints
 # (mirroring the source ui/ layout); sample assets live in the source tree.
-opensprogskole_resource_files = files('opensprogskole.gresource.xml')
 opensprogskole_resources = gnome.compile_resources('opensprogskole-resources',
-  opensprogskole_resource_files,
+  gresource_xml,
   source_dir: [meson.current_build_dir() / 'blueprints', meson.current_source_dir()],
   dependencies: blueprints,
   c_name: 'opensprogskole',

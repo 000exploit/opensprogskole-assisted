@@ -23,9 +23,14 @@ public class Opensprogskole.Application : Adw.Application {
     private SessionController controller;
 
     public Application () {
+#if ANDROID
+        var app_flags = ApplicationFlags.NON_UNIQUE;
+#else
+        var app_flags = ApplicationFlags.DEFAULT_FLAGS;
+#endif
         Object (
             application_id: "moe.ekusu.sprogskole",
-            flags: ApplicationFlags.DEFAULT_FLAGS,
+            flags: app_flags,
             resource_base_path: "/moe/ekusu/sprogskole"
         );
     }

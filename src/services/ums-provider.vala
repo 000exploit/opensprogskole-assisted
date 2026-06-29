@@ -87,7 +87,7 @@ namespace Opensprogskole {
                         break;
                     case "sso":
                         list.add (new LoginMethod ("sso", LoginKind.OAUTH,
-                                                   _("SSO"), "globe-symbolic"));
+                                                   _("SSO"), "network-workgroup-symbolic"));
                         break;
                     default:
                         break;

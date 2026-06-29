@@ -34,6 +34,12 @@ public class Opensprogskole.Window : Adw.ApplicationWindow {
         Object (application: app);
         this.controller = controller;
 
+        /* Took from GeopJr/Tuba /
+		/  FIX: hack for the broken font */
+		#if ANDROID
+		    this.add_css_class ("android");
+		#endif
+
         // User intents → controller.
         onboarding.login_request.connect ((school, method, credentials, remember) => {
             onboarding.set_busy (true);

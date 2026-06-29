@@ -47,7 +47,7 @@ namespace Opensprogskole {
     public class UmsFamily : GLib.Object, ProviderFamily {
         public string id { get { return "ums"; } }
         public string display_name { owned get { return _("UMS schools"); } }
-        public string icon_name { get { return "school-symbolic"; } }
+        public string icon_name { get { return "accessories-dictionary-symbolic"; } }
         public bool available { get { return true; } }
         public string unavailable_note { owned get { return ""; } }
 
@@ -87,7 +87,7 @@ namespace Opensprogskole {
     public class LudusFamily : GLib.Object, ProviderFamily {
         public string id { get { return "ludus"; } }
         public string display_name { owned get { return _("LUDUS schools"); } }
-        public string icon_name { get { return "globe-symbolic"; } }
+        public string icon_name { get { return "network-workgroup-symbolic"; } }
         public bool available { get { return false; } }
         public string unavailable_note { owned get { return _("Coming soon"); } }
 

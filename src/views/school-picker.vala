@@ -95,7 +95,7 @@ namespace Opensprogskole {
 
             if (listed.length == 0) {
                 empty_page.icon_name = family.available
-                    ? "system-search-symbolic" : "globe-symbolic";
+                    ? "system-search-symbolic" : "network-workgroup-symbolic";
                 empty_page.title = family.available
                     ? _("No schools yet") : family.unavailable_note;
                 empty_page.description = family.available

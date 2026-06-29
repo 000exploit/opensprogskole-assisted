@@ -4,7 +4,9 @@ data/moe.ekusu.sprogskole.desktop.in
 data/moe.ekusu.sprogskole.gschema.xml
 data/moe.ekusu.sprogskole.metainfo.xml.in
 data/ui/absence-dialog.blp
+data/ui/reason-dialog.blp
 data/ui/absence-page.blp
+data/ui/links-page.blp
 data/ui/agenda.blp
 data/ui/calendar-day.blp
 data/ui/calendar.blp
@@ -19,6 +21,7 @@ data/ui/onboarding-view.blp
 data/ui/overview-page.blp
 data/ui/profile-page.blp
 data/ui/schedule-view.blp
+data/ui/school-picker.blp
 data/ui/shortcuts-dialog.blp
 data/ui/window.blp
 src/application.vala
@@ -41,6 +44,7 @@ src/services/ums-client.vala
 src/services/ums-provider.vala
 src/store/timetable-store.vala
 src/views/absence-page.vala
+src/views/links-page.vala
 src/views/edit-profile-page.vala
 src/views/grades-page.vala
 src/views/main-view.vala
@@ -48,7 +52,9 @@ src/views/onboarding-view.vala
 src/views/overview-page.vala
 src/views/profile-page.vala
 src/views/schedule-view.vala
+src/views/school-picker.vala
 src/widgets/absence-dialog.vala
+src/widgets/reason-dialog.vala
 src/widgets/agenda.vala
 src/widgets/calendar.vala
 src/widgets/calendar-day.vala
@@ -58,3 +64,6 @@ src/widgets/grades.vala
 src/widgets/lesson-dialog.vala
 src/widgets/styles.vala
 src/widgets/window.vala
+src/services/provider-family.vala
+src/services/login-method.vala
+src/services/demo-provider.vala

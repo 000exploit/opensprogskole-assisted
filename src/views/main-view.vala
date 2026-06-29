@@ -38,6 +38,7 @@ namespace Opensprogskole {
         [GtkChild] private unowned Gtk.ListBox more_list;
         [GtkChild] private unowned Adw.NavigationView content_nav;
         [GtkChild] private unowned Adw.ViewStack view_stack;
+        [GtkChild] private unowned Gtk.Revealer bottom_revealer;
         [GtkChild] private unowned Adw.WindowTitle content_title;
         [GtkChild] private unowned Adw.Banner offline_banner;
         [GtkChild] private unowned Button profile_button;
@@ -123,12 +124,19 @@ namespace Opensprogskole {
             });
             update_connection_status ();
 
+            // Hide the bottom bar while a secondary page is pushed (the tab shell
+            // is "tabs"); show it on the tab shell. Adw.ViewSwitcherBar has no
+            // re-tap signal, so a persistent bar can't reliably close a drill-in
+            // — hiding it sidesteps that and keeps drill-ins focused.
+            content_nav.notify["visible-page"].connect (update_bottom_bar);
+
             // The ViewStack is the source of truth: whichever control (sidebar or
             // bottom bar) switches it, reflect that in the sidebar highlight and
             // the content header title.
             view_stack.notify["visible-child"].connect (sync_selection);
             content_nav.notify["visible-page"].connect (sync_selection);
             sync_selection ();
+            update_bottom_bar ();
         }
 
         public void bind (Session session) {
@@ -180,6 +188,14 @@ namespace Opensprogskole {
             }
             var paintable = yield session.load_avatar ();
             profile_avatar.custom_image = paintable;
+        }
+
+        /* Bottom bar shows on the tab shell, hides while a secondary page is
+         * pushed (so the drill-in is full-height and the bar can't sit there
+         * half-working). */
+        private void update_bottom_bar () {
+            var page = content_nav.visible_page;
+            bottom_revealer.reveal_child = page != null && page.tag == "tabs";
         }
 
         /* A core section switches the ViewStack tab; a secondary section is

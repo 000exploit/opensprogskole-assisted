@@ -203,9 +203,18 @@ template $OpensprogskoleMainView: Adw.Bin {
           };
 
           [bottom]
-          Adw.ViewSwitcherBar {
-            stack: view_stack;
-            reveal: true;
+          // Wrapped in a Revealer so it actually slides (the bar's own `reveal`
+          // snaps in a ToolbarView slot). reveal-child is driven in code: shown
+          // on the tab shell, slid away while a secondary page is pushed.
+          Revealer bottom_revealer {
+            transition-type: slide_up;
+            transition-duration: 250;
+            reveal-child: true;
+
+            child: Adw.ViewSwitcherBar {
+              stack: view_stack;
+              reveal: true;
+            };
           }
         };
       }

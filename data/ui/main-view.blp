@@ -6,126 +6,51 @@ template $OpensprogskoleMainView: Adw.Bin {
     width-request: 360;
     height-request: 400;
 
-    child: Adw.NavigationSplitView split {
-      min-sidebar-width: 240;
-      max-sidebar-width: 300;
-      show-content: true;
+    // One adaptive shell, identical on every backend. MultiLayoutView renders
+    // exactly one named layout at a time, so the sidebar (wide) and the bottom
+    // ViewSwitcherBar (narrow) can never both show. The shared content — the
+    // ViewStack of core sections wrapped in a NavigationView for drill-ins — is
+    // slotted into whichever layout is active.
+    // No explicit layout-name: it would be set before the layouts are added
+    // (Adwaita-CRITICAL); MultiLayoutView defaults to the first layout ("wide"),
+    // and the breakpoint switches to "narrow".
+    child: Adw.MultiLayoutView multi {
+      Adw.Layout {
+        name: "wide";
 
-      sidebar: Adw.NavigationPage {
-        title: _("OpenSprogskole");
+        content: Adw.NavigationSplitView {
+          min-sidebar-width: 240;
+          max-sidebar-width: 300;
 
-        child: Adw.ToolbarView {
-          [top]
-          Adw.HeaderBar {
-            [start]
-            Button refresh_button {
-              icon-name: "view-refresh-symbolic";
-              tooltip-text: _("Refresh");
-            }
-          }
+          sidebar: Adw.NavigationPage {
+            title: _("OpenSprogskole");
 
-          content: Box {
-            orientation: vertical;
-
-            Box {
-              spacing: 10;
-              margin-top: 6;
-              margin-bottom: 10;
-              margin-start: 12;
-              margin-end: 12;
-
-              Adw.Avatar school_avatar {
-                size: 36;
-                show-initials: true;
-              }
-
-              Box {
-                orientation: vertical;
-                valign: center;
-                hexpand: true;
-
-                Label school_label {
-                  halign: start;
-                  ellipsize: end;
-
-                  styles [
-                    "heading",
-                  ]
-                }
-
-                Label connection_label {
-                  label: _("Connected");
-                  halign: start;
-
-                  styles [
-                    "caption",
-                    "dim-label",
-                  ]
+            child: Adw.ToolbarView {
+              [top]
+              Adw.HeaderBar {
+                // Refresh stays at the window's top-left on wide (the sidebar);
+                // the narrow layout has its own copy in the content header. Both
+                // drive the one "view.refresh" action.
+                [start]
+                Button {
+                  icon-name: "view-refresh-symbolic";
+                  tooltip-text: _("Refresh");
+                  action-name: "view.refresh";
                 }
               }
-            }
 
-            ScrolledWindow {
-              vexpand: true;
-              hscrollbar-policy: never;
-
-              Box {
+              content: Box {
                 orientation: vertical;
 
-                ListBox nav_list {
-                  selection-mode: single;
-
-                  styles [
-                    "navigation-sidebar",
-                  ]
-                }
-
-                Label {
-                  label: _("More");
-                  halign: start;
-                  margin-top: 8;
-                  margin-start: 16;
-                  margin-bottom: 4;
-
-                  styles [
-                    "caption",
-                    "dim-label",
-                  ]
-                }
-
-                ListBox more_list {
-                  selection-mode: none;
-
-                  styles [
-                    "navigation-sidebar",
-                  ]
-                }
-              }
-            }
-
-            Separator {}
-
-            // Bottom bar: the whole section opens "Your information"; the
-            // trailing button opens the Edit/Log out menu (Tuba-style).
-            Box {
-              spacing: 4;
-
-              Button profile_button {
-                hexpand: true;
-
-                styles [
-                  "flat",
-                ]
-
-                child: Box {
+                Box {
                   spacing: 10;
                   margin-top: 6;
-                  margin-bottom: 6;
-                  margin-start: 6;
-                  margin-end: 6;
+                  margin-bottom: 10;
+                  margin-start: 12;
+                  margin-end: 12;
 
-                  Adw.Avatar profile_avatar {
-                    size: 32;
+                  Adw.Avatar school_avatar {
+                    size: 36;
                     show-initials: true;
                   }
 
@@ -134,7 +59,7 @@ template $OpensprogskoleMainView: Adw.Bin {
                     valign: center;
                     hexpand: true;
 
-                    Label profile_name {
+                    Label school_label {
                       halign: start;
                       ellipsize: end;
 
@@ -143,8 +68,8 @@ template $OpensprogskoleMainView: Adw.Bin {
                       ]
                     }
 
-                    Label {
-                      label: _("Student");
+                    Label connection_label {
+                      label: _("Connected");
                       halign: start;
 
                       styles [
@@ -153,153 +78,271 @@ template $OpensprogskoleMainView: Adw.Bin {
                       ]
                     }
                   }
-                };
-              }
+                }
 
-              MenuButton {
-                valign: center;
-                margin-end: 6;
-                icon-name: "view-more-horizontal-symbolic";
-                tooltip-text: _("Account menu");
-                menu-model: profile_menu;
+                ScrolledWindow {
+                  vexpand: true;
+                  hscrollbar-policy: never;
 
-                styles [
-                  "flat",
-                ]
-              }
-            }
+                  Box {
+                    orientation: vertical;
+
+                    ListBox nav_list {
+                      selection-mode: single;
+
+                      styles [
+                        "navigation-sidebar",
+                      ]
+                    }
+
+                    Label {
+                      label: _("More");
+                      halign: start;
+                      margin-top: 8;
+                      margin-start: 16;
+                      margin-bottom: 4;
+
+                      styles [
+                        "caption",
+                        "dim-label",
+                      ]
+                    }
+
+                    ListBox more_list {
+                      selection-mode: none;
+
+                      styles [
+                        "navigation-sidebar",
+                      ]
+                    }
+                  }
+                }
+
+                Separator {}
+
+                Box {
+                  spacing: 4;
+
+                  Button profile_button {
+                    hexpand: true;
+
+                    styles [
+                      "flat",
+                    ]
+
+                    child: Box {
+                      spacing: 10;
+                      margin-top: 6;
+                      margin-bottom: 6;
+                      margin-start: 6;
+                      margin-end: 6;
+
+                      Adw.Avatar profile_avatar {
+                        size: 32;
+                        show-initials: true;
+                      }
+
+                      Box {
+                        orientation: vertical;
+                        valign: center;
+                        hexpand: true;
+
+                        Label profile_name {
+                          halign: start;
+                          ellipsize: end;
+
+                          styles [
+                            "heading",
+                          ]
+                        }
+
+                        Label {
+                          label: _("Student");
+                          halign: start;
+
+                          styles [
+                            "caption",
+                            "dim-label",
+                          ]
+                        }
+                      }
+                    };
+                  }
+
+                  MenuButton {
+                    valign: center;
+                    margin-end: 6;
+                    icon-name: "view-more-horizontal-symbolic";
+                    tooltip-text: _("Account menu");
+                    menu-model: profile_menu;
+
+                    styles [
+                      "flat",
+                    ]
+                  }
+                }
+              };
+            };
+          };
+
+          content: Adw.NavigationPage {
+            title: _("OpenSprogskole");
+            child: Adw.LayoutSlot {
+              id: "content";
+            };
           };
         };
-      };
+      }
 
-      // Overview is the permanent root; every other section is pushed on top of
-      // it (with an automatic back arrow). Each page owns its header so the back
-      // button and title render; the Overview header carries the menu + the
-      // mobile sidebar reveal.
-      content: Adw.NavigationPage {
-        title: _("OpenSprogskole");
+      Adw.Layout {
+        name: "narrow";
 
-        child: Adw.NavigationView content_nav {
-          Adw.NavigationPage {
-            tag: "overview";
-            title: _("Overview");
+        content: Adw.ToolbarView {
+          content: Adw.LayoutSlot {
+            id: "content";
+          };
 
-            child: Adw.ToolbarView {
-              [top]
-              Adw.HeaderBar {
-                [end]
-                MenuButton {
-                  primary: true;
-                  icon-name: "open-menu-symbolic";
-                  tooltip-text: _("Main Menu");
-                  menu-model: primary_menu;
-                }
-              }
-
-              content: $OpensprogskoleOverviewPage overview {};
-            };
-          }
-
-          Adw.NavigationPage {
-            tag: "schedule";
-            title: _("Schedule");
-
-            child: Adw.ToolbarView {
-              [top]
-              Adw.HeaderBar {}
-
-              content: $OpensprogskoleScheduleView schedule {};
-            };
-          }
-
-          Adw.NavigationPage {
-            tag: "absence";
-            title: _("Absence");
-
-            child: Adw.ToolbarView {
-              [top]
-              Adw.HeaderBar {}
-
-              content: $OpensprogskoleAbsencePage absence {};
-            };
-          }
-
-          Adw.NavigationPage {
-            tag: "profile";
-            title: _("Your information");
-
-            child: Adw.ToolbarView {
-              [top]
-              Adw.HeaderBar {}
-
-              content: $OpensprogskoleProfilePage profile {};
-            };
-          }
-
-          Adw.NavigationPage {
-            tag: "grades";
-            title: _("Grades");
-
-            child: Adw.ToolbarView {
-              [top]
-              Adw.HeaderBar {}
-
-              content: $OpensprogskoleGradesPage grades_page {};
-            };
-          }
-
-          Adw.NavigationPage {
-            tag: "news";
-            title: _("News");
-
-            child: Adw.ToolbarView {
-              [top]
-              Adw.HeaderBar {}
-
-              content: Adw.StatusPage {
-                icon-name: "application-rss+xml-symbolic";
-                title: _("News");
-                description: _("Your school hasn't published any news.");
-              };
-            };
-          }
-
-          Adw.NavigationPage {
-            tag: "homework";
-            title: _("Homework");
-
-            child: Adw.ToolbarView {
-              [top]
-              Adw.HeaderBar {}
-
-              content: Adw.StatusPage {
-                icon-name: "folder-documents-symbolic";
-                title: _("Homework");
-                description: _("Coming soon.");
-              };
-            };
-          }
-
-          Adw.NavigationPage {
-            tag: "links";
-            title: _("Links");
-
-            child: Adw.ToolbarView {
-              [top]
-              Adw.HeaderBar {}
-
-              content: $OpensprogskoleLinksPage links_page {};
-            };
+          [bottom]
+          Adw.ViewSwitcherBar {
+            stack: view_stack;
+            reveal: true;
           }
         };
-      };
+      }
+
+      [content]
+      Adw.NavigationView content_nav {
+        Adw.NavigationPage {
+          tag: "tabs";
+          title: _("OpenSprogskole");
+
+          child: Adw.ToolbarView {
+            [top]
+            Adw.HeaderBar {
+              title-widget: Adw.WindowTitle content_title {
+                title: _("Overview");
+              };
+
+              // Window-left refresh + the secondary/account menu, both shown
+              // only on narrow (the wide sidebar already provides them).
+              [start]
+              Button content_refresh {
+                icon-name: "view-refresh-symbolic";
+                tooltip-text: _("Refresh");
+                action-name: "view.refresh";
+                visible: false;
+              }
+
+              [end]
+              MenuButton menu_button {
+                primary: true;
+                icon-name: "open-menu-symbolic";
+                tooltip-text: _("Main Menu");
+                menu-model: primary_menu;
+                visible: false;
+              }
+            }
+
+            [top]
+            Adw.Banner offline_banner {
+              title: _("You're offline");
+              revealed: false;
+            }
+
+            content: Adw.ViewStack view_stack {
+              Adw.ViewStackPage {
+                name: "overview";
+                title: _("Overview");
+                icon-name: "view-grid-symbolic";
+                child: $OpensprogskoleOverviewPage overview {};
+              }
+
+              Adw.ViewStackPage {
+                name: "schedule";
+                title: _("Schedule");
+                icon-name: "x-office-calendar-symbolic";
+                child: $OpensprogskoleScheduleView schedule {};
+              }
+
+              Adw.ViewStackPage {
+                name: "grades";
+                title: _("Grades");
+                icon-name: "starred-symbolic";
+                child: $OpensprogskoleGradesPage grades_page {};
+              }
+
+              Adw.ViewStackPage {
+                name: "absence";
+                title: _("Absence");
+                icon-name: "appointment-soon-symbolic";
+                child: $OpensprogskoleAbsencePage absence {};
+              }
+
+              Adw.ViewStackPage {
+                name: "profile";
+                title: _("You");
+                icon-name: "avatar-default-symbolic";
+                child: $OpensprogskoleProfilePage profile {};
+              }
+            };
+          };
+        }
+
+        Adw.NavigationPage {
+          tag: "links";
+          title: _("Links");
+
+          child: Adw.ToolbarView {
+            [top]
+            Adw.HeaderBar {}
+
+            content: $OpensprogskoleLinksPage links_page {};
+          };
+        }
+
+        Adw.NavigationPage {
+          tag: "news";
+          title: _("News");
+
+          child: Adw.ToolbarView {
+            [top]
+            Adw.HeaderBar {}
+
+            content: Adw.StatusPage {
+              icon-name: "application-rss+xml-symbolic";
+              title: _("News");
+              description: _("Your school hasn't published any news.");
+            };
+          };
+        }
+
+        Adw.NavigationPage {
+          tag: "homework";
+          title: _("Homework");
+
+          child: Adw.ToolbarView {
+            [top]
+            Adw.HeaderBar {}
+
+            content: Adw.StatusPage {
+              icon-name: "folder-documents-symbolic";
+              title: _("Homework");
+              description: _("Coming soon.");
+            };
+          };
+        }
+      }
     };
 
+
+    // content needs around 600sp
     Adw.Breakpoint {
-      condition ("max-width: 700sp")
+      condition ("max-width: 600sp")
 
       setters {
-        split.collapsed: true;
+        multi.layout-name: "narrow";
+        menu_button.visible: true;
+        content_refresh.visible: true;
       }
     }
   };
@@ -308,23 +351,25 @@ template $OpensprogskoleMainView: Adw.Bin {
 menu primary_menu {
   section {
     item {
-      label: _("_Log out");
-      action: "app.logout";
+      label: _("_News");
+      action: "nav.section";
+      target: "news";
     }
-  }
 
-  section {
     item {
-      label: _("_About OpenSprogskole");
-      action: "app.about";
+      label: _("_Homework");
+      action: "nav.section";
+      target: "homework";
+    }
+
+    item {
+      label: _("_Links");
+      action: "nav.section";
+      target: "links";
     }
   }
-}
 
-menu profile_menu {
   section {
-    // Backed by the "profile.edit" action group on MainView; disabled when the
-    // school doesn't allow editing any field.
     item {
       label: _("_Edit information");
       action: "profile.edit";
@@ -335,6 +380,32 @@ menu profile_menu {
     item {
       label: _("_Log out");
       action: "app.logout";
+    }
+
+    item {
+      label: _("_About OpenSprogskole");
+      action: "app.about";
+    }
+  }
+}
+
+menu profile_menu {
+  section {
+    item {
+      label: _("_Edit information");
+      action: "profile.edit";
+    }
+  }
+
+  section {
+    item {
+      label: _("_Log out");
+      action: "app.logout";
+    }
+
+    item {
+      label: _("_About OpenSprogskole");
+      action: "app.about";
     }
   }
 }

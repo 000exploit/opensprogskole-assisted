@@ -51,12 +51,20 @@ public class Opensprogskole.Application : Adw.Application {
         controller = new SessionController ();
     }
 
+    // The accent override (null = following the system accent).
+    private Gtk.CssProvider? accent_provider = null;
+
     public override void startup () {
         base.startup ();
-        // Apply the local color-scheme preference app-wide (default = follow
-        // system); reapply live when it changes from the Preferences dialog.
+        // Apply the local appearance preferences app-wide (defaults = follow
+        // system); reapply live when they change from the Preferences dialog.
         apply_color_scheme ();
+        apply_accent ();
         settings.changed["color-scheme"].connect (apply_color_scheme);
+        settings.changed["accent-color"].connect (apply_accent);
+        // The standalone accent differs between light/dark, so re-derive it when
+        // the effective scheme flips (system change or our own override).
+        Adw.StyleManager.get_default ().notify["dark"].connect (apply_accent);
     }
 
     private void apply_color_scheme () {
@@ -67,6 +75,34 @@ public class Opensprogskole.Application : Adw.Application {
             default: scheme = Adw.ColorScheme.DEFAULT;     break;
         }
         Adw.StyleManager.get_default ().color_scheme = scheme;
+    }
+
+    /* AdwStyleManager's accent is read-only (system-driven), so an override is a
+     * CSS provider redefining the accent named-colors. 0 = follow system (drop
+     * the override); 1–9 map to AdwAccentColor. */
+    private void apply_accent () {
+        var display = Gdk.Display.get_default ();
+        if (display == null) {
+            return;
+        }
+        if (accent_provider != null) {
+            Gtk.StyleContext.remove_provider_for_display (display, accent_provider);
+            accent_provider = null;
+        }
+        int choice = settings.get_int ("accent-color");
+        if (choice <= 0) {
+            return;   // follow system
+        }
+        var accent = (Adw.AccentColor) (choice - 1);
+        bool dark = Adw.StyleManager.get_default ().dark;
+        string css =
+            "@define-color accent_bg_color %s;\n".printf (accent.to_rgba ().to_string ()) +
+            "@define-color accent_color %s;\n".printf (accent.to_standalone_rgba (dark).to_string ()) +
+            "@define-color accent_fg_color #ffffff;\n";
+        accent_provider = new Gtk.CssProvider ();
+        accent_provider.load_from_string (css);
+        Gtk.StyleContext.add_provider_for_display (display, accent_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION + 1);
     }
 
     public override void activate () {

@@ -42,7 +42,13 @@ namespace Opensprogskole {
         [GtkChild] private unowned Adw.SwitchRow sms_row;
         [GtkChild] private unowned MenuButton sms_warning_button;
         [GtkChild] private unowned Adw.ComboRow privacy_row;
+        [GtkChild] private unowned Gtk.Box sync_dot;
+        [GtkChild] private unowned Label sync_label;
         [GtkChild] private unowned Button edit_button;
+
+        // True while an account setting is being saved. A property, so its notify
+        // drives the status dot — set it and the UI follows, no manual refresh.
+        private bool saving { get; set; default = false; }
 
         /* The user asked to edit the contact text fields. */
         public signal void edit_requested ();
@@ -62,7 +68,7 @@ namespace Opensprogskole {
 
         construct {
             privacy_row.model = new Gtk.StringList ({
-                _("Everyone"), _("School only"), _("Nobody")
+                _("Everyone"), _("School only"), _("No one")
             });
             edit_button.clicked.connect (() => edit_requested ());
             avatar_edit_button.clicked.connect (on_change_photo);
@@ -75,10 +81,21 @@ namespace Opensprogskole {
             // `online` in by hand instead of a plain bind (see update_avatar_button).
             var conn = Connectivity.get_default ();
             conn.bind_writable (edit_button);
-            conn.bind_writable (sms_row);
-            conn.bind_writable (privacy_row);
             conn.bind_writable (pending_banner);
             conn.notify["online"].connect (update_avatar_button);
+            // sms_row/privacy_row sensitivity folds in BOTH connectivity and the
+            // per-field allow-edit flag (school-managed), so it's recomputed in
+            // sync_settings rather than a plain bind.
+            conn.notify["online"].connect (() => {
+                if (session != null) {
+                    sync_settings ();
+                }
+            });
+            // The status dot is signal-driven: re-renders whenever the saving
+            // state or connectivity changes.
+            notify["saving"].connect (update_sync_status);
+            conn.notify["online"].connect (update_sync_status);
+            update_sync_status ();
             update_avatar_button ();
         }
 
@@ -91,6 +108,24 @@ namespace Opensprogskole {
             this.session = session;
             session.updated.connect (reload);
             reload ();
+        }
+
+        /* The sync-status dot + label in the Account group header: yellow while
+         * saving, red offline, green (synced) otherwise. */
+        private void update_sync_status () {
+            sync_dot.remove_css_class ("online");
+            sync_dot.remove_css_class ("saving");
+            sync_dot.remove_css_class ("offline");
+            if (saving) {
+                sync_dot.add_css_class ("saving");
+                sync_label.label = _("Saving…");
+            } else if (!Connectivity.get_default ().online) {
+                sync_dot.add_css_class ("offline");
+                sync_label.label = _("Offline");
+            } else {
+                sync_dot.add_css_class ("online");
+                sync_label.label = _("Synced");
+            }
         }
 
         private void reload () {
@@ -186,21 +221,31 @@ namespace Opensprogskole {
 
             syncing = true;
 
-            bool sms_editable = info != null && s != null && s.never_receive_sms_allow_edit;
-            sms_row.visible = sms_editable;
-            if (sms_editable) {
+            bool have = info != null && s != null;
+            bool online = Connectivity.get_default ().online;
+
+            // School-managed (allow-edit false) rows stay visible but disabled,
+            // with a "Managed by your school" subtitle, rather than vanishing.
+            bool sms_editable = have && s.never_receive_sms_allow_edit;
+            sms_row.sensitive = sms_editable && online;
+            sms_row.subtitle = sms_editable
+                ? _("Reminders about lessons and absence, sent to your phone")
+                : _("Managed by your school");
+            if (have) {
                 sms_row.active = !info.never_receive_sms;
             }
             sms_warning_button.visible = sms_editable && info.never_receive_sms;
 
-            bool privacy_editable = info != null && s != null
-                && s.picture_privacy_setting_allow_edit;
-            privacy_row.visible = privacy_editable;
-            if (privacy_editable) {
+            bool privacy_editable = have && s.picture_privacy_setting_allow_edit;
+            privacy_row.sensitive = privacy_editable && online;
+            privacy_row.subtitle = privacy_editable
+                ? _("Who can see your photo")
+                : _("Managed by your school");
+            if (have) {
                 privacy_row.selected = clamp_privacy (info.picture_privacy_setting);
             }
 
-            prefs_group.visible = sms_editable || privacy_editable;
+            prefs_group.visible = have;
             edit_button.visible = s != null && s.any_editable;
 
             // Picture upload / pending removal, gated by the selfie permission.
@@ -247,6 +292,7 @@ namespace Opensprogskole {
         /* Save the (already mutated) user_info; on failure run `revert` to undo
          * the in-memory change, re-sync the rows and toast the error. */
         private void persist (owned RevertAction revert) {
+            saving = true;   // notify::saving → the dot turns yellow
             session.save_user_info.begin ((obj, res) => {
                 try {
                     session.save_user_info.end (res);
@@ -256,6 +302,7 @@ namespace Opensprogskole {
                     sync_settings ();
                     toast (_("Couldn't save your change — check your connection."));
                 }
+                saving = false;   // notify::saving → back to green/red
             });
         }
 

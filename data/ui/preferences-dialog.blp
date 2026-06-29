@@ -10,10 +10,15 @@ template $OpensprogskolePreferencesDialog: Adw.PreferencesDialog {
     Adw.PreferencesGroup {
       title: _("Appearance");
 
-      // model (translated) set in code.
+      // models (translated) set in code.
       Adw.ComboRow color_scheme_row {
         title: _("Color scheme");
         subtitle: _("Override the system light/dark setting");
+      }
+
+      Adw.ComboRow accent_color_row {
+        title: _("Accent color");
+        subtitle: _("Override the system accent");
       }
     }
 

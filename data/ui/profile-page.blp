@@ -99,14 +99,40 @@ template $OpensprogskoleProfilePage: Adw.Bin {
 
           // Quick, auto-saving settings. The whole group is hidden unless at least
           // one of its rows is permitted by GetUserInfoSettings.
+          // "Account" (not "Preferences" — that's the local app dialog now):
+          // these are server-side, per-account, synced across devices. The
+          // header suffix is a live sync-status dot (green synced / yellow saving
+          // / red offline), driven in code.
           Adw.PreferencesGroup prefs_group {
-            title: _("Preferences");
+            title: _("Account");
             visible: false;
 
+            [header-suffix]
+            Box {
+              spacing: 6;
+              valign: center;
+
+              Box sync_dot {
+                width-request: 10;
+                height-request: 10;
+                valign: center;
+
+                styles [
+                  "sync-dot",
+                ]
+              }
+
+              Label sync_label {
+                styles [
+                  "caption",
+                  "dim-label",
+                ]
+              }
+            }
+
             Adw.SwitchRow sms_row {
-              title: _("Receive SMS reminders");
-              subtitle: _("Texts about exams, appointments and schedule changes");
-              visible: false;
+              title: _("SMS reminders");
+              subtitle: _("Reminders about lessons and absence, sent to your phone");
 
               [suffix]
               MenuButton sms_warning_button {
@@ -135,8 +161,8 @@ template $OpensprogskoleProfilePage: Adw.Bin {
             }
 
             Adw.ComboRow privacy_row {
-              title: _("Picture visibility");
-              visible: false;
+              title: _("Profile photo visibility");
+              subtitle: _("Who can see your photo");
             }
           }
         }

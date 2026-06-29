@@ -72,6 +72,16 @@ window.android *:not(.title-2):not(.title-1) {
 .lesson-dot-warning  { background-color: @warning_bg_color; }
 .lesson-dot-upcoming { background-color: transparent; }
 
+/* Account sync-status dot (profile page): green synced, yellow saving, red
+ * offline. Semantic Adwaita colours so it tracks the theme. */
+.sync-dot {
+    border-radius: 9999px;
+    background-color: @window_fg_color;
+}
+.sync-dot.online  { background-color: @success_bg_color; }
+.sync-dot.saving  { background-color: @warning_bg_color; }
+.sync-dot.offline { background-color: @error_bg_color; }
+
 /* Absence dialog — large vertical time steppers (GNOME Settings style). */
 .time-field { font-size: 1.6em; }
 .time-field text { padding-left: 2px; padding-right: 2px; }

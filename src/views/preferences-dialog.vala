@@ -29,6 +29,7 @@ namespace Opensprogskole {
     public class PreferencesDialog : Adw.PreferencesDialog {
 
         [GtkChild] private unowned Adw.ComboRow color_scheme_row;
+        [GtkChild] private unowned Adw.ComboRow accent_color_row;
         [GtkChild] private unowned Adw.ComboRow first_weekday_row;
         [GtkChild] private unowned Label cache_size_label;
         [GtkChild] private unowned Button clear_button;
@@ -55,6 +56,17 @@ namespace Opensprogskole {
             color_scheme_row.selected = settings.get_int ("color-scheme");
             color_scheme_row.notify["selected"].connect (() => {
                 settings.set_int ("color-scheme", (int) color_scheme_row.selected);
+            });
+
+            // Accent: index 0 = follow system, 1–9 = AdwAccentColor. Index is the
+            // stored value; Application applies it via a CSS override.
+            accent_color_row.model = new StringList ({
+                _("Follow system"), _("Blue"), _("Teal"), _("Green"), _("Yellow"),
+                _("Orange"), _("Red"), _("Pink"), _("Purple"), _("Slate")
+            });
+            accent_color_row.selected = settings.get_int ("accent-color");
+            accent_color_row.notify["selected"].connect (() => {
+                settings.set_int ("accent-color", (int) accent_color_row.selected);
             });
 
             // First weekday: index ≠ stored value, so map both directions.

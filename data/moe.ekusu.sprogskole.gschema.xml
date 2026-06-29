@@ -36,6 +36,12 @@
 			<summary>Preferred color scheme</summary>
 			<description>0 = follow system, 1 = light, 2 = dark. Applied via AdwStyleManager.</description>
 		</key>
+		<key name="accent-color" type="i">
+			<default>0</default>
+			<range min="0" max="9"/>
+			<summary>Preferred accent color</summary>
+			<description>0 = follow system; 1–9 = AdwAccentColor (blue, teal, green, yellow, orange, red, pink, purple, slate). Overridden via a CSS provider since AdwStyleManager's accent is read-only.</description>
+		</key>
 		<key name="first-weekday" type="i">
 			<default>0</default>
 			<range min="0" max="7"/>

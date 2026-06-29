@@ -1,0 +1,57 @@
+using Gtk 4.0;
+using Adw 1;
+
+// Local, instant, reversible app preferences only — no account/server settings
+// (those live on the profile page). Appearance → Schedule → Data, per GNOME HIG.
+template $OpensprogskolePreferencesDialog: Adw.PreferencesDialog {
+  title: _("Preferences");
+
+  Adw.PreferencesPage {
+    Adw.PreferencesGroup {
+      title: _("Appearance");
+
+      // model (translated) set in code.
+      Adw.ComboRow color_scheme_row {
+        title: _("Color scheme");
+        subtitle: _("Override the system light/dark setting");
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Schedule");
+
+      Adw.ComboRow first_weekday_row {
+        title: _("First day of week");
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _("Data");
+
+      Adw.ActionRow cache_row {
+        title: _("Cached data");
+        subtitle: _("Schedule, grades and photos saved for offline use. Clearing re-downloads them when needed.");
+
+        [suffix]
+        Label cache_size_label {
+          valign: center;
+
+          styles [
+            "dim-label",
+            "numeric",
+          ]
+        }
+
+        [suffix]
+        Button clear_button {
+          label: _("Clear");
+          valign: center;
+
+          styles [
+            "flat",
+          ]
+        }
+      }
+    }
+  }
+}

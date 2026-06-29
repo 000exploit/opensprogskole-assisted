@@ -141,8 +141,54 @@ namespace Opensprogskole {
         }
 
         private static string account_dir (string account) {
-            return Path.build_filename (
-                Environment.get_user_cache_dir (), "opensprogskole", "data", account);
+            return Path.build_filename (cache_root (), "data", account);
+        }
+
+        /* The app's whole on-disk cache root (all accounts). */
+        private static string cache_root () {
+            return Path.build_filename (Environment.get_user_cache_dir (), "opensprogskole");
+        }
+
+        /* Total bytes of cached data across all accounts, for the Preferences
+         * "Cached data" row. Best effort — unreadable entries count as zero. */
+        public static int64 total_size () {
+            return dir_size (File.new_for_path (cache_root ()));
+        }
+
+        private static int64 dir_size (File dir) {
+            int64 total = 0;
+            try {
+                var children = dir.enumerate_children (
+                    "%s,%s".printf (FileAttribute.STANDARD_TYPE, FileAttribute.STANDARD_SIZE),
+                    FileQueryInfoFlags.NONE);
+                FileInfo info;
+                while ((info = children.next_file ()) != null) {
+                    if (info.get_file_type () == FileType.DIRECTORY) {
+                        total += dir_size (dir.get_child (info.get_name ()));
+                    } else {
+                        total += info.get_size ();
+                    }
+                }
+            } catch (GLib.Error e) {
+                // Missing/unreadable — contributes nothing.
+            }
+            return total;
+        }
+
+        /* Drop every account's cached data (Preferences → Clear). The stores
+         * rebuild from the next fetch; never fatal. */
+        public static void clear_all () {
+            var root = File.new_for_path (Path.build_filename (cache_root (), "data"));
+            try {
+                var children = root.enumerate_children (
+                    FileAttribute.STANDARD_NAME, FileQueryInfoFlags.NONE);
+                FileInfo info;
+                while ((info = children.next_file ()) != null) {
+                    clear (info.get_name ());
+                }
+            } catch (GLib.Error e) {
+                // No cache dir yet — nothing to clear.
+            }
         }
     }
 

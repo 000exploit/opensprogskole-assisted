@@ -49,8 +49,17 @@ namespace Opensprogskole {
         // it's switched to. Set by on_day_selected.
         private string selected_key = "";
 
+        private GLib.Settings settings = new GLib.Settings (Config.APP_ID);
+
         construct {
             ensure_widget_styles (this);
+
+            // Calendar week start: the "first-weekday" preference, or the school's
+            // default when it's "use school default" (0). Re-applies when either
+            // the preference or the bound session changes.
+            settings.changed["first-weekday"].connect (apply_first_weekday);
+            notify["session"].connect (apply_first_weekday);
+            apply_first_weekday ();
 
             calendar.day_selected.connect (on_day_selected);
             calendar.month_changed.connect (on_month_changed);
@@ -70,6 +79,14 @@ namespace Opensprogskole {
                     agenda.reveal_anchor ();
                 }
             });
+        }
+
+        /* ISO weekday the calendar starts on: the user override, or the school's
+         * default when the preference is "use school default" (0). */
+        private void apply_first_weekday () {
+            int pref = settings.get_int ("first-weekday");
+            int school_default = session != null ? session.school.first_weekday : 1;
+            calendar.first_weekday = pref != 0 ? pref : school_default;
         }
 
         /* Use a shared store (e.g. the Session's). Renders its current contents

@@ -21,6 +21,7 @@
 public class Opensprogskole.Application : Adw.Application {
 
     private SessionController controller;
+    private GLib.Settings settings;
 
     public Application () {
 #if ANDROID
@@ -44,8 +45,28 @@ public class Opensprogskole.Application : Adw.Application {
         };
         this.add_action_entries (action_entries, this);
         this.set_accels_for_action ("app.quit", {"<control>q"});
+        this.set_accels_for_action ("app.preferences", {"<control>comma"});
 
+        settings = new GLib.Settings (Config.APP_ID);
         controller = new SessionController ();
+    }
+
+    public override void startup () {
+        base.startup ();
+        // Apply the local color-scheme preference app-wide (default = follow
+        // system); reapply live when it changes from the Preferences dialog.
+        apply_color_scheme ();
+        settings.changed["color-scheme"].connect (apply_color_scheme);
+    }
+
+    private void apply_color_scheme () {
+        Adw.ColorScheme scheme;
+        switch (settings.get_int ("color-scheme")) {
+            case 1:  scheme = Adw.ColorScheme.FORCE_LIGHT; break;
+            case 2:  scheme = Adw.ColorScheme.FORCE_DARK;  break;
+            default: scheme = Adw.ColorScheme.DEFAULT;     break;
+        }
+        Adw.StyleManager.get_default ().color_scheme = scheme;
     }
 
     public override void activate () {
@@ -78,7 +99,11 @@ public class Opensprogskole.Application : Adw.Application {
     }
 
     private void on_preferences_action () {
-        message ("app.preferences action activated");
+        // Pass the school's own week-start so "Use school default" can show what
+        // it resolves to; fall back to Monday before any session exists.
+        int school_weekday = controller.session != null
+            ? controller.session.school.first_weekday : 1;
+        new PreferencesDialog (settings, school_weekday).present (this.active_window);
     }
 
     private void on_logout_action () {

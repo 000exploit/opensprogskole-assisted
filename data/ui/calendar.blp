@@ -39,13 +39,35 @@ template $OpensprogskoleCalendar: Adw.Bin {
       }
     }
 
-    Grid grid {
+    // Three month grids: previous / current / next. The current one is centered;
+    // dragging reveals the neighbours and snaps to one, then the code recenters
+    // (see calendar.vala). allow-mouse-drag so it's draggable with a pointer too.
+    Adw.Carousel carousel {
       hexpand: true;
-      column-homogeneous: true;
-      row-spacing: 6;
-      // Tight column spacing so a full 7-column month fits the 360 px minimum
-      // window without overflowing.
-      column-spacing: 2;
+      allow-scroll-wheel: true;
+      allow-mouse-drag: false;
+      spacing: 12;
+
+      Grid page0 {
+        hexpand: true;
+        column-homogeneous: true;
+        row-spacing: 6;
+        column-spacing: 2;
+      }
+
+      Grid page1 {
+        hexpand: true;
+        column-homogeneous: true;
+        row-spacing: 6;
+        column-spacing: 2;
+      }
+
+      Grid page2 {
+        hexpand: true;
+        column-homogeneous: true;
+        row-spacing: 6;
+        column-spacing: 2;
+      }
     }
   };
 }

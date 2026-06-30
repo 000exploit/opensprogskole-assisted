@@ -85,7 +85,10 @@ namespace Opensprogskole {
             profile_button.clicked.connect (() => navigate ("profile"));
             overview.report_absence_requested.connect (open_absence_dialog);
             absence.report_absence_requested.connect (open_absence_dialog);
-            overview.open_schedule.connect (() => navigate ("schedule"));
+            overview.open_schedule.connect (() => {
+                navigate ("schedule");
+                schedule.focus_upcoming ();
+            });
             overview.open_grades.connect (() => navigate ("grades"));
             profile.edit_requested.connect (open_profile_edit);
 

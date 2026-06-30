@@ -93,56 +93,71 @@ namespace Opensprogskole {
          * immediately and tracks future changes. */
         public void use_store (TimetableStore store) {
             this.store = store;
+            // The calendar pulls lesson dots through this, so all three visible
+            // months populate themselves. Captures `store` (not `this`) to avoid
+            // a reference cycle.
+            calendar.set_marker_func ((y, m, d) =>
+                store.has_lessons (y, m, d) ? store.marker_label (y, m, d) : null);
             store.changed.connect (on_store_changed);
             on_store_changed ();
         }
 
-        /* The data set changed: the agenda lists every lesson day in the store,
-         * so it is rebuilt here (not per month). The month-dependent calendar
-         * bits are refreshed for whatever month is currently shown. */
+        /* The data set changed: rebuild the agenda, confine the calendar to the
+         * course's date range and re-query its lesson dots, then open it. */
         private void on_store_changed () {
             agenda.set_all (store);
-            position_to_upcoming ();
+            reset_calendar ();
         }
 
-        /* On a fresh data load, jump the calendar to the soonest upcoming lesson
-         * (which may be in a later month) and select it — rather than landing on
-         * the first lesson of whatever month happens to be showing. Falls back to
-         * the normal per-month pick when there is no upcoming lesson at all. */
-        private void position_to_upcoming () {
-            string? key = store.upcoming_day_key (new DateTime.now_local ());
-            if (key == null) {
-                refresh_month (calendar.year, calendar.month);
-                return;
+        /* Bound the calendar to the months that carry lessons (so it can't page
+         * into empty months outside the course) and open on the current month
+         * with today selected. Only when today falls outside the course period do
+         * we clamp to its nearest edge, so the view never lands on an empty,
+         * unreachable month. */
+        private void reset_calendar () {
+            var now = new DateTime.now_local ();
+            int year = now.get_year (), month = now.get_month (), day = now.get_day_of_month ();
+
+            var keys = store.sorted_keys ();
+            if (keys.length () == 0) {
+                calendar.clear_bounds ();
+            } else {
+                string first = keys.nth_data (0);
+                string last = keys.last ().data;
+                calendar.set_bounds (key_year (first), key_month (first),
+                                     key_year (last), key_month (last));
+
+                int today = year * 12 + (month - 1);
+                if (today < key_year (first) * 12 + (key_month (first) - 1)) {
+                    year = key_year (first); month = key_month (first); day = key_day (first);
+                } else if (today > key_year (last) * 12 + (key_month (last) - 1)) {
+                    year = key_year (last); month = key_month (last); day = key_day (last);
+                }
             }
 
-            int year = int.parse (key.substring (0, 4));
-            int month = int.parse (key.substring (5, 2));
-            int day = int.parse (key.substring (8, 2));
-
             calendar.set_date (year, month);
-            refresh_markers (year, month);
             show_day (year, month, day);
         }
 
-        /* Refresh the parts that depend on the visible month. */
-        private void refresh_month (int year, int month) {
-            refresh_markers (year, month);
-            select_initial_day (year, month);
+        /* Jump to and select the soonest upcoming lesson — the same "next up" day
+         * the overview surfaces. Used when the user opens the schedule from the
+         * overview's "View schedule" button. No-op when nothing is upcoming, so
+         * the current view is kept. */
+        public void focus_upcoming () {
+            string? key = store.upcoming_day_key (new DateTime.now_local ());
+            if (key == null) {
+                return;
+            }
+            calendar.set_date (key_year (key), key_month (key));
+            show_day (key_year (key), key_month (key), key_day (key));
         }
+
+        private static int key_year (string key) { return int.parse (key.substring (0, 4)); }
+        private static int key_month (string key) { return int.parse (key.substring (5, 2)); }
+        private static int key_day (string key) { return int.parse (key.substring (8, 2)); }
 
         private void on_month_changed (int year, int month) {
-            refresh_month (year, month);
-        }
-
-        private void refresh_markers (int year, int month) {
-            calendar.clear_markers ();
-            int days = GLib.Date.get_days_in_month ((DateMonth) month, (DateYear) year);
-            for (int day = 1; day <= days; day++) {
-                if (store.has_lessons (year, month, day)) {
-                    calendar.set_marker (day, store.marker_label (year, month, day));
-                }
-            }
+            select_initial_day (year, month);
         }
 
         /* Pick a sensible day to show: today if it has lessons, else the first

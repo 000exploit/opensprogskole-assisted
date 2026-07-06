@@ -105,6 +105,13 @@ public class Opensprogskole.Application : Adw.Application {
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION + 1);
     }
 
+    public override void shutdown () {
+        // A cache write may still sit in its debounce window; put it on disk
+        // before the process goes away.
+        Storage.flush_all ();
+        base.shutdown ();
+    }
+
     public override void activate () {
         base.activate ();
         if (this.active_window == null) {

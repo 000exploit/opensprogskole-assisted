@@ -292,6 +292,12 @@ namespace Opensprogskole {
             string username = settings.get_string ("username");
 
             if (session != null) {
+                // Abort the in-flight loads first: a fetch completing after the
+                // wipe below would re-cache data for the departed account (the
+                // generation bump also makes a late result drop itself). The
+                // DeleteToken call still works — an aborted Soup.Session accepts
+                // new requests, it only cancels the outstanding ones.
+                session.abort_requests ();
                 try {
                     yield session.provider.logout ();
                 } catch (GLib.Error e) {

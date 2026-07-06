@@ -29,14 +29,46 @@ namespace Opensprogskole {
      * gets rebuilt from the next successful fetch — never fatal. */
     public class Storage : GLib.Object {
 
-        // In-memory source of truth; the whole map is rewritten on each change.
+        // How long a disk write may wait for further changes: a refresh burst
+        // updates several keys in quick succession, and each write serializes
+        // the whole map, so batch the burst into one rewrite.
+        private const uint PERSIST_DELAY_MS = 1000;
+
+        // In-memory source of truth; the whole map is rewritten on each flush.
         private GLib.HashTable<string, Variant> values
             = new GLib.HashTable<string, Variant> (str_hash, str_equal);
         private string file_path;
+        private string account;
+        // Pending debounced write, or 0. While set, the timeout's closure keeps
+        // this instance alive, so a queued write always reaches flush_all/clear.
+        private uint persist_source = 0;
+
+        // Live instances by account (weak — the registry must not keep a
+        // logged-out store alive), so clear() can cancel a pending write for
+        // the account being wiped and flush_all() can drain them on shutdown.
+        private static GLib.HashTable<string, unowned Storage>? live_stores = null;
+
+        private static unowned GLib.HashTable<string, unowned Storage> live () {
+            if (live_stores == null) {
+                live_stores = new GLib.HashTable<string, unowned Storage> (str_hash, str_equal);
+            }
+            return live_stores;
+        }
 
         public Storage (string account) {
+            this.account = account;
             file_path = Path.build_filename (account_dir (account), "store.gvdb");
             load ();
+            live ().set (account, this);
+        }
+
+        ~Storage () {
+            // A pending source holds a ref on us, so finalization implies no
+            // queued write — this is pure registry hygiene. Guard against a
+            // newer instance having already re-registered the same account.
+            if (live ().lookup (account) == this) {
+                live ().remove (account);
+            }
         }
 
         public Variant? get_value (string key) {
@@ -45,7 +77,7 @@ namespace Opensprogskole {
 
         public void set_value (string key, Variant value) {
             values.insert (key, value);
-            persist ();
+            schedule_persist ();
         }
 
         public bool has (string key) {
@@ -54,8 +86,43 @@ namespace Opensprogskole {
 
         public void remove (string key) {
             if (values.remove (key)) {
-                persist ();
+                schedule_persist ();
             }
+        }
+
+        /* Queue a debounced write. An already-queued one is left alone — it
+         * serializes the live map when it fires, so it picks this change up. */
+        private void schedule_persist () {
+            if (persist_source != 0) {
+                return;
+            }
+            persist_source = Timeout.add (PERSIST_DELAY_MS, () => {
+                persist_source = 0;
+                persist ();
+                return Source.REMOVE;
+            });
+        }
+
+        /* Cancel the queued write and empty the in-memory map — the account is
+         * being wiped, so nothing may flush its data back to disk afterwards. */
+        private void discard_pending () {
+            if (persist_source != 0) {
+                Source.remove (persist_source);
+                persist_source = 0;
+            }
+            values = new GLib.HashTable<string, Variant> (str_hash, str_equal);
+        }
+
+        /* Write out every store with a queued change. Called on application
+         * shutdown so the debounce window can't swallow the last writes. */
+        public static void flush_all () {
+            live ().foreach ((account, store) => {
+                if (store.persist_source != 0) {
+                    Source.remove (store.persist_source);
+                    store.persist_source = 0;
+                    store.persist ();
+                }
+            });
         }
 
         /* A value as a JSON tree, for model deserialization / interop. */
@@ -99,6 +166,12 @@ namespace Opensprogskole {
 
         /* Drop an account's whole store (logout). Best effort. */
         public static void clear (string account) {
+            // If the account's store is open, silence it first: a debounced
+            // write firing after the wipe would resurrect the data.
+            var open = live ().lookup (account);
+            if (open != null) {
+                open.discard_pending ();
+            }
             var dir = File.new_for_path (account_dir (account));
             try {
                 var children = dir.enumerate_children (

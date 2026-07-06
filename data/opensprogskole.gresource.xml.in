@@ -3,6 +3,10 @@
   <gresource prefix="/moe/ekusu/sprogskole">
     <file>style.css</file>
 
+    <!-- The translated metainfo (a merge_file output in the build dir); the
+         About dialog is populated from it via Adw.AboutDialog.from_appdata. -->
+    <file>moe.ekusu.sprogskole.metainfo.xml</file>
+
     <file preprocess="xml-stripblanks">ui/window.ui</file>
     <file preprocess="xml-stripblanks">ui/shortcuts-dialog.ui</file>
     <file preprocess="xml-stripblanks">ui/loading-state.ui</file>

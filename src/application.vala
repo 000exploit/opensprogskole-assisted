@@ -119,19 +119,65 @@ public class Opensprogskole.Application : Adw.Application {
         }
     }
 
+    /* Built from the metainfo (bundled as a resource), so the name, license,
+     * website, issue tracker and release notes can never drift from the
+     * AppStream listing. Only what the metainfo can't carry is set here:
+     * credits, third-party legal sections and the debug snapshot. */
     private void on_about_action () {
-        string[] developers = { "000exploit" };
-        var about = new Adw.AboutDialog () {
-            application_name = "OpenSprogskole",
-            application_icon = "moe.ekusu.sprogskole",
-            developer_name = "000exploit",
-            translator_credits = _("translator-credits"),
-            version = "0.9.9",
-            developers = developers,
-            copyright = "© 2026 000exploit",
-        };
+        var about = new Adw.AboutDialog.from_appdata (
+            resource_base_path + "/" + Config.APP_ID + ".metainfo.xml",
+            Config.PACKAGE_VERSION);
+
+        about.developers = { "000exploit" };
+        about.designers = { "000exploit" };
+        about.translator_credits = _("translator-credits");
+        about.copyright = "© 2026 000exploit";
+        about.comments = _("View your schedule, grades and homework, and report absence at your Danish language school.\n\nThis app is not affiliated with Sprogcenter Midt or Inlogic.");
+
+        // The school and its backend vendor; a LUDUS link joins these once
+        // LUDUS sign-in actually works.
+        about.add_link (_("Sprogcenter Midt"), "https://sprogcentermidt.dk");
+        about.add_link (_("UMS by Inlogic"), "https://inlogic.dk");
+
+        // Vendored/adapted third-party code. GVDB is statically built in;
+        // main.vala and window.vala carry snippets adapted from Tuba.
+        about.add_legal_section ("GVDB", "© GVDB contributors",
+                                 Gtk.License.LGPL_2_1, null);
+        about.add_legal_section (_("Portions adapted from Tuba"),
+                                 "© Evangelos “GeopJr” Paterakis",
+                                 Gtk.License.GPL_3_0, null);
+
+        about.add_acknowledgement_section (null, {
+            "Evangelos “GeopJr” Paterakis (Tuba) https://github.com/GeopJr/Tuba",
+            "sp1rit (pixiewood) https://github.com/sp1ritCS/gtk-android-builder",
+            "The GNOME Project https://www.gnome.org",
+            "Claude (Anthropic) https://claude.com",
+        });
+
+#if ANDROID
+        // The APK bundles the platform stack a desktop OS would provide as
+        // shared libraries; the notice-requiring licenses get a section.
+        about.add_legal_section ("OpenSSL", null, Gtk.License.APACHE_2_0, null);
+        about.add_legal_section (_("Bundled GNOME platform libraries"),
+                                 "GLib, GTK, libadwaita, libsoup, glib-networking, libsecret",
+                                 Gtk.License.LGPL_2_1, null);
+#endif
+
+        about.debug_info = debug_info ();
+        about.debug_info_filename = "opensprogskole-debug.txt";
 
         about.present (this.active_window);
+    }
+
+    /* A copy-pasteable environment snapshot for bug reports, shown on the About
+     * dialog's troubleshooting page. */
+    private string debug_info () {
+        return "OpenSprogskole %s\nGTK %u.%u.%u\nlibadwaita %u.%u.%u\nlibsoup %u.%u.%u\nOS: %s\n".printf (
+            Config.PACKAGE_VERSION,
+            Gtk.get_major_version (), Gtk.get_minor_version (), Gtk.get_micro_version (),
+            Adw.get_major_version (), Adw.get_minor_version (), Adw.get_micro_version (),
+            Soup.get_major_version (), Soup.get_minor_version (), Soup.get_micro_version (),
+            Environment.get_os_info (GLib.OsInfoKey.PRETTY_NAME) ?? "unknown");
     }
 
     private void on_preferences_action () {

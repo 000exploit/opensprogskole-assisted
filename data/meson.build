@@ -122,11 +122,16 @@ gresource_xml = configure_file(
 )
 
 # Compile resources. The .ui files are produced under <builddir>/data/blueprints
-# (mirroring the source ui/ layout); sample assets live in the source tree.
+# (mirroring the source ui/ layout); the merged metainfo lands in this build
+# dir itself; sample assets live in the source tree.
 opensprogskole_resources = gnome.compile_resources('opensprogskole-resources',
   gresource_xml,
-  source_dir: [meson.current_build_dir() / 'blueprints', meson.current_source_dir()],
-  dependencies: blueprints,
+  source_dir: [
+    meson.current_build_dir() / 'blueprints',
+    meson.current_build_dir(),
+    meson.current_source_dir(),
+  ],
+  dependencies: [blueprints, appstream_file],
   c_name: 'opensprogskole',
   install_dir: get_option('datadir') / meson.project_name(),
 )

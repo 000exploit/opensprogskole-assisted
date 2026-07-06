@@ -257,11 +257,17 @@ namespace Opensprogskole {
         }
 
         /* GET raw bytes from an absolute URL (a profile picture), carrying the
-         * Bearer token. Returns null on any non-200 instead of throwing — a
+         * Bearer token only when the URL stays on the API's own origin — the
+         * URL is server-supplied data, so a third-party host must not receive
+         * the credential. Returns null on any non-200 instead of throwing — a
          * missing avatar is not an error worth propagating. */
         public async GLib.Bytes? fetch_picture (string url) {
             var msg = new Soup.Message ("GET", url);
-            if (token != "") {
+            if (msg == null) {
+                warning ("picture fetch skipped: invalid URL");
+                return null;
+            }
+            if (token != "" && same_origin_as_base (url)) {
                 msg.request_headers.append ("Authorization", "Bearer " + token);
             }
             try {
@@ -270,6 +276,37 @@ namespace Opensprogskole {
             } catch (GLib.Error e) {
                 warning ("picture fetch failed: %s", e.message);
                 return null;
+            }
+        }
+
+        /* Whether `url` shares scheme + host + port with base_url. Anything
+         * unparseable counts as foreign — the safe default for a credential. */
+        private bool same_origin_as_base (string url) {
+            try {
+                var target = GLib.Uri.parse (url, GLib.UriFlags.NONE);
+                var origin = GLib.Uri.parse (base_url, GLib.UriFlags.NONE);
+                string? target_host = target.get_host ();
+                string? origin_host = origin.get_host ();
+                return target.get_scheme () == origin.get_scheme ()
+                    && target_host != null && origin_host != null
+                    && target_host.down () == origin_host.down ()
+                    && effective_port (target) == effective_port (origin);
+            } catch (GLib.Error e) {
+                return false;
+            }
+        }
+
+        /* The URI's port with the scheme default filled in, so implicit and
+         * explicit forms of the same origin compare equal. */
+        private static int effective_port (GLib.Uri uri) {
+            int port = uri.get_port ();
+            if (port != -1) {
+                return port;
+            }
+            switch (uri.get_scheme ()) {
+                case "https": return 443;
+                case "http":  return 80;
+                default:      return -1;
             }
         }
 

@@ -164,6 +164,18 @@ template $OpensprogskoleSchoolPicker: Adw.Dialog {
                 }
               }
 
+              Label url_note {
+                label: _("Enter an https:// URL — plain http would send your password unencrypted.");
+                halign: start;
+                visible: false;
+                wrap: true;
+                margin-start: 4;
+
+                styles [
+                  "error",
+                ]
+              }
+
               Label custom_note {
                 label: _("LUDUS sign-in isn't available yet.");
                 halign: start;

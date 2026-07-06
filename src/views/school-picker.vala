@@ -40,6 +40,7 @@ namespace Opensprogskole {
         [GtkChild] private unowned Adw.EntryRow name_row;
         [GtkChild] private unowned Adw.EntryRow url_row;
         [GtkChild] private unowned Adw.EntryRow realm_row;
+        [GtkChild] private unowned Label url_note;
         [GtkChild] private unowned Label custom_note;
         [GtkChild] private unowned Button use_button;
 
@@ -61,7 +62,9 @@ namespace Opensprogskole {
             custom_button.clicked.connect (() => nav.push_by_tag ("custom"));
             search_entry.search_changed.connect (filter_schools);
             backend_row.notify["selected"].connect (sync_backend);
+            url_row.changed.connect (validate_custom);
             use_button.clicked.connect (on_use_custom);
+            validate_custom ();
         }
 
         /* One row per family; tapping it opens that family's school list. */
@@ -131,15 +134,64 @@ namespace Opensprogskole {
         }
 
         // --- Custom form --------------------------------------------------------
+
+        // Hosts a plain-http base URL is tolerated for: loopback only, so a
+        // developer can point at a local backend without ever letting a real
+        // password travel unencrypted.
+        private const string[] PLAIN_HTTP_ALLOWED_HOSTS = { "localhost", "127.0.0.1", "::1" };
+
         private void sync_backend () {
             bool ludus = backend_row.selected == 1;
             realm_row.visible = ludus;
             custom_note.visible = ludus;
-            use_button.sensitive = !ludus;   // LUDUS not implemented
+            validate_custom ();
+        }
+
+        /* Whether a hand-entered base URL is safe to log in against: parseable,
+         * with a host, and https — credentials would otherwise go out in
+         * cleartext. Plain http passes only toward loopback (local testing). */
+        private static bool valid_custom_url (string url) {
+            try {
+                var uri = GLib.Uri.parse (url, GLib.UriFlags.NONE);
+                string? host = uri.get_host ();
+                if (host == null || host == "") {
+                    return false;
+                }
+                if (uri.get_scheme () == "https") {
+                    return true;
+                }
+                if (uri.get_scheme () == "http") {
+                    foreach (string allowed in PLAIN_HTTP_ALLOWED_HOSTS) {
+                        if (host.down () == allowed) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            } catch (GLib.Error e) {
+                return false;
+            }
+        }
+
+        /* Gate "Use this provider" on a valid URL and flag a bad one inline.
+         * The note only appears once something is typed — an empty field just
+         * leaves the button off. */
+        private void validate_custom () {
+            string url = url_row.text.strip ();
+            bool valid = valid_custom_url (url);
+            bool problem = url != "" && !valid;
+            url_note.visible = problem;
+            if (problem) {
+                url_row.add_css_class ("error");
+            } else {
+                url_row.remove_css_class ("error");
+            }
+            use_button.sensitive = valid
+                && backend_row.selected == 0;   // LUDUS not implemented
         }
 
         private void on_use_custom () {
-            if (backend_row.selected != 0 || url_row.text.strip () == "") {
+            if (backend_row.selected != 0 || !valid_custom_url (url_row.text.strip ())) {
                 return;
             }
             choose (custom_ums_school (name_row.text.strip (), url_row.text.strip ()));

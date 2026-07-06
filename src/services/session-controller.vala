@@ -143,19 +143,22 @@ namespace Opensprogskole {
                     // Reuse a still-valid saved secret without contacting the server.
                     // valid_until == 0 means no expiry claim — still try it.
                     string? secret = yield SecretStore.lookup_token (school_id, username);
+                    GLib.Variant? saved = secret != null ? parse_secret (secret) : null;
                     int64 valid_until = settings.get_int64 ("token-valid-until");
                     int64 now = GLib.get_real_time () / 1000000;
 
-                    if (secret != null && (valid_until == 0 || valid_until > now + 60)) {
-                        yield provider.resume (to_variant (secret));
+                    if (saved != null && (valid_until == 0 || valid_until > now + 60)) {
+                        yield provider.resume (saved);
                     } else {
                         warning ("saved session expired, re-authenticating.");
                         string? creds = yield SecretStore.lookup (school_id, username);
-                        if (creds == null) {
+                        GLib.Variant? credentials =
+                            creds != null ? parse_secret (creds) : null;
+                        if (credentials == null) {
                             needs_login (username, null);
                             return;
                         }
-                        yield provider.authenticate (method, creds_to_variant (creds, username));
+                        yield provider.authenticate (method, credentials);
                         yield store_secret (school, username, provider);
                     }
                 }
@@ -240,37 +243,21 @@ namespace Opensprogskole {
             return v != null ? v.get_string () : "";
         }
 
-        /* Variant ⇄ keyring string, via json-glib's GVariant↔JSON bridge. */
+        /* Variant → keyring string, via json-glib's GVariant↔JSON bridge. */
         private static string to_json (GLib.Variant v) {
             size_t len;
             return Json.gvariant_serialize_data (v, out len);
         }
-        private static GLib.Variant to_variant (string json) {
+
+        /* Keyring string → Variant. A blob that doesn't parse (a corrupted
+         * entry) counts as no secret at all — it is never reinterpreted or
+         * sent to the server; the caller falls back to a manual login. */
+        private static GLib.Variant? parse_secret (string json) {
             try {
                 return Json.gvariant_deserialize_data (json, -1, null);
             } catch (GLib.Error e) {
-                // TEMPORARY: legacy secret from before the Variant format — a bare
-                // token string. Wrap it so resume() finds it under "token". Remove
-                // once existing accounts have re-saved in the new JSON format.
-                var d = new GLib.VariantDict ();
-                d.insert_value ("token", new GLib.Variant.string (json));
-                return d.end ();
-            }
-        }
-
-        /* Credentials Variant from the stored secret. */
-        private static GLib.Variant creds_to_variant (string stored, string username) {
-            try {
-                return Json.gvariant_deserialize_data (stored, -1, null);
-            } catch (GLib.Error e) {
-                // TEMPORARY: legacy credentials from before the Variant format — a
-                // bare password string (no username). Reconstruct the form from the
-                // saved username. Remove once accounts have re-saved in the new
-                // JSON format.
-                var d = new GLib.VariantDict ();
-                d.insert_value ("username", new GLib.Variant.string (username));
-                d.insert_value ("password", new GLib.Variant.string (stored));
-                return d.end ();
+                warning ("stored secret is unreadable — ignoring it");
+                return null;
             }
         }
 
@@ -325,9 +312,12 @@ namespace Opensprogskole {
             settings.set_string ("username", "");
             settings.set_int64 ("token-valid-until", 0);
 
-            // Wipe this account's whole on-disk store along with its secrets.
+            // Wipe this account's whole on-disk store along with its secrets,
+            // and the (account-agnostic) avatar cache so the profile photo
+            // doesn't outlive the session.
             Storage.clear (Checksum.compute_for_string (
                 ChecksumType.SHA256, "%s:%s".printf (school_id, username)));
+            AvatarCache.clear_all ();
 
             session = null;
             needs_login (null, null);

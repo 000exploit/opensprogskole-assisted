@@ -63,11 +63,37 @@ namespace Opensprogskole {
         }
 
         private static GLib.File cache_file (string url) {
-            string dir = Path.build_filename (
-                Environment.get_user_cache_dir (), "opensprogskole", "avatars");
+            string dir = cache_dir ();
             DirUtils.create_with_parents (dir, 0700);
             string name = Checksum.compute_for_string (ChecksumType.SHA256, url);
             return GLib.File.new_for_path (Path.build_filename (dir, name));
+        }
+
+        /* The on-disk avatar directory (shared across accounts — entries are
+         * keyed by URL hash, not by account). */
+        private static string cache_dir () {
+            return Path.build_filename (
+                Environment.get_user_cache_dir (), "opensprogskole", "avatars");
+        }
+
+        /* Drop every cached avatar — on logout and from Preferences → Clear, so
+         * a previous user's photo doesn't outlive their session. Best effort. */
+        public void clear_all () {
+            var dir = GLib.File.new_for_path (cache_dir ());
+            try {
+                var children = dir.enumerate_children (
+                    FileAttribute.STANDARD_NAME, FileQueryInfoFlags.NONE);
+                FileInfo info;
+                while ((info = children.next_file ()) != null) {
+                    try {
+                        dir.get_child (info.get_name ()).delete ();
+                    } catch (GLib.Error e) {
+                        warning ("avatar evict failed: %s", e.message);
+                    }
+                }
+            } catch (GLib.Error e) {
+                // No avatar dir yet — nothing to clear.
+            }
         }
 
         private static void save (GLib.File file, GLib.Bytes bytes) {

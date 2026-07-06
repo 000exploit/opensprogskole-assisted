@@ -120,6 +120,7 @@ namespace Opensprogskole {
          * toast, per HIG. */
         private void on_clear () {
             Storage.clear_all ();
+            AvatarCache.clear_all ();
             refresh_cache_size ();
             add_toast (new Adw.Toast (_("Cached data cleared")));
         }

@@ -1,3 +1,21 @@
+# UI-free service core, compiled once as a static library so the unit tests
+# in tests/ can link the exact same objects the app uses (Vala sources can't
+# be listed across subdirs — meson mislays the generated C files).
+opensprogskole_core_deps = [
+  dependency('glib-2.0'),
+  dependency('gobject-2.0'),
+  dependency('gio-2.0'),
+  dependency('libsoup-3.0', version: '>= 3.6.0'),
+]
+
+opensprogskole_core = static_library('opensprogskole-core',
+  [
+    'services/error-reporter.vala',
+    'services/ums-endpoints.vala',
+  ],
+  dependencies: opensprogskole_core_deps,
+)
+
 opensprogskole_vala_sources = [
   'main.vala',
   'application.vala',
@@ -15,8 +33,6 @@ opensprogskole_vala_sources = [
   'models/user-info-settings.vala',
   'store/timetable-store.vala',
   'services/connectivity.vala',
-  'services/error-reporter.vala',
-  'services/ums-endpoints.vala',
   'services/storage.vala',
   'services/school-provider.vala',
   'services/login-method.vala',
@@ -87,6 +103,7 @@ opensprogskole_vala_args = [
 
 executable('opensprogskole', opensprogskole_sources,
   dependencies: opensprogskole_deps,
+  link_with: opensprogskole_core,
   include_directories: [config_inc, include_directories('.')],
         vala_args: opensprogskole_vala_args,
            c_args: ['-DG_LOG_DOMAIN="opensprogskole"'],

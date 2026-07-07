@@ -43,6 +43,10 @@ add_project_arguments('-DGETTEXT_PACKAGE="' + meson.project_name () + '"', langu
 subdir('data')
 subdir('src')
 subdir('po')
+# Unit tests are host tools — pointless inside an APK.
+if host_machine.system() != 'android'
+  subdir('tests')
+endif
 
 gnome.post_install(
   glib_compile_schemas: true,

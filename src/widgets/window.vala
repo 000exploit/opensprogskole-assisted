@@ -24,6 +24,7 @@
 [GtkTemplate (ui = "/moe/ekusu/sprogskole/ui/window.ui")]
 public class Opensprogskole.Window : Adw.ApplicationWindow {
 
+    [GtkChild] private unowned Adw.ToastOverlay toast_overlay;
     [GtkChild] private unowned Gtk.Stack root_stack;
     [GtkChild] private unowned OnboardingView onboarding;
     [GtkChild] private unowned MainView main_view;
@@ -33,9 +34,15 @@ public class Opensprogskole.Window : Adw.ApplicationWindow {
 
     private SessionController controller;
 
+    // The one pending error toast: repeated background failures (e.g. every
+    // refresh while the server is down) update it instead of stacking.
+    private Adw.Toast? error_toast = null;
+
     public Window (Gtk.Application app, SessionController controller) {
         Object (application: app);
         this.controller = controller;
+
+        ErrorReporter.get_default ().error_reported.connect (on_error_reported);
 
         /* Took from GeopJr/Tuba /
 		/  FIX: hack for the broken font */
@@ -87,6 +94,29 @@ public class Opensprogskole.Window : Adw.ApplicationWindow {
             main_view.bind (session);
             root_stack.visible_child_name = "main";
         });
+    }
+
+    /* Debug aid for server-side failures: one toast whose "Details" opens the
+     * response dialog. Known limitation: while an Adw.Dialog is presented the
+     * toast sits behind its scrim; the reporter keeps last_error, so the
+     * details stay reachable after the dialog closes. */
+    private void on_error_reported (ErrorDetails details) {
+        if (error_toast != null) {
+            error_toast.title = details.summary ();
+            return;
+        }
+        var toast = new Adw.Toast (details.summary ()) {
+            button_label = _("Details")
+        };
+        toast.button_clicked.connect (() => {
+            var last = ErrorReporter.get_default ().last_error;
+            if (last != null) {
+                new ErrorDetailsDialog (last).present (this);
+            }
+        });
+        toast.dismissed.connect (() => error_toast = null);
+        error_toast = toast;
+        toast_overlay.add_toast (toast);
     }
 
 #if ANDROID

@@ -8,31 +8,35 @@ template $OpensprogskoleWindow: Adw.ApplicationWindow {
   width-request: 360;
   height-request: 400;
 
-  content: Stack root_stack {
-    StackPage {
-      name: "onboarding";
-      child: $OpensprogskoleOnboardingView onboarding {};
-    }
+  // Window-level overlay for cross-cutting toasts (the "Details" error toast);
+  // the per-page overlays keep carrying their own local feedback.
+  content: Adw.ToastOverlay toast_overlay {
+    child: Stack root_stack {
+      StackPage {
+        name: "onboarding";
+        child: $OpensprogskoleOnboardingView onboarding {};
+      }
 
-    StackPage {
-      name: "loading";
+      StackPage {
+        name: "loading";
 
-      child: Adw.StatusPage {
-        title: _("Updating information…");
-        description: _("Fetching your latest schedule, grades and absence.");
+        child: Adw.StatusPage {
+          title: _("Updating information…");
+          description: _("Fetching your latest schedule, grades and absence.");
 
-        child: Adw.Spinner {
-          width-request: 32;
-          height-request: 32;
-          halign: center;
+          child: Adw.Spinner {
+            width-request: 32;
+            height-request: 32;
+            halign: center;
+          };
         };
-      };
-    }
+      }
 
-    StackPage {
-      name: "main";
-      child: $OpensprogskoleMainView main_view {};
-    }
+      StackPage {
+        name: "main";
+        child: $OpensprogskoleMainView main_view {};
+      }
+    };
   };
 }
 

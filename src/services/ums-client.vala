@@ -83,7 +83,7 @@ namespace Opensprogskole {
                                         int login_type, int auth_type,
                                         string device_name, string device_id)
             throws GLib.Error {
-            var msg = new Soup.Message ("POST", base_url + "/Login/Authenticate");
+            var msg = new Soup.Message ("POST", base_url + UmsEndpoints.AUTHENTICATE);
             msg.request_headers.append ("X-UMS-AppMaui", "1");
             msg.request_headers.append ("X-UMS-Version", "4");
             msg.request_headers.append ("X-UMS-LoginType", login_type.to_string ());
@@ -95,18 +95,22 @@ namespace Opensprogskole {
             var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
 
             if (msg.status_code == 400 || msg.status_code == 401) {
+                // Expected user error, surfaced by onboarding — not reported.
                 throw new UmsError.UNAUTHORIZED ("Invalid username or password");
             }
             if (msg.status_code != 200) {
+                report (msg, bytes);
                 throw new UmsError.HTTP ("Login failed (HTTP %u)".printf (msg.status_code));
             }
 
             var root = parse (bytes);
             if (root == null || root.get_node_type () != Json.NodeType.OBJECT) {
+                report (msg, bytes, _("Malformed response"));
                 throw new UmsError.MALFORMED ("Unexpected login response");
             }
             token = root.get_object ().get_string_member_with_default ("Token", "");
             if (token == "") {
+                report (msg, bytes, _("Malformed response"));
                 throw new UmsError.MALFORMED ("No token in login response");
             }
             token_expires_at = decode_jwt_exp (token);
@@ -164,10 +168,12 @@ namespace Opensprogskole {
             var msg = authed ("GET", path, version);
             var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
             if (msg.status_code != 200) {
+                report (msg, bytes);
                 throw new UmsError.HTTP ("HTTP %u for %s".printf (msg.status_code, path));
             }
             var root = parse (bytes);
             if (root == null) {
+                report (msg, bytes, _("Malformed response"));
                 throw new UmsError.MALFORMED ("Empty/invalid JSON for %s".printf (path));
             }
             return root;
@@ -186,8 +192,8 @@ namespace Opensprogskole {
         public async void post_action (string path, string version = "2")
             throws GLib.Error {
             var msg = authed ("POST", path, version);
-            yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
-            check_post_status (msg.status_code, path);
+            var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
+            check_post_status (msg, bytes, path);
         }
 
         /* Authenticated multipart/form-data POST of a single file part; the
@@ -207,8 +213,8 @@ namespace Opensprogskole {
                 msg.request_headers.append ("Authorization", "Bearer " + token);
             }
 
-            yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
-            check_post_status (msg.status_code, path);
+            var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
+            check_post_status (msg, bytes, path);
         }
 
         /* Authenticated POST with a JSON body, returning the parsed response.
@@ -219,9 +225,10 @@ namespace Opensprogskole {
             msg.set_request_body_from_bytes ("application/json", new Bytes (body.data));
 
             var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
-            check_post_status (msg.status_code, path);
+            check_post_status (msg, bytes, path);
             var root = parse (bytes);
             if (root == null) {
+                report (msg, bytes, _("Malformed response"));
                 throw new UmsError.MALFORMED ("Empty/invalid JSON for %s".printf (path));
             }
             return root;
@@ -233,8 +240,8 @@ namespace Opensprogskole {
             throws GLib.Error {
             var msg = authed ("POST", path, version);
             msg.set_request_body_from_bytes ("application/json", new Bytes (body.data));
-            yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
-            check_post_status (msg.status_code, path);
+            var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
+            check_post_status (msg, bytes, path);
         }
 
         /* Authenticated PUT with a JSON body whose response body is ignored; the
@@ -243,8 +250,8 @@ namespace Opensprogskole {
             throws GLib.Error {
             var msg = authed ("PUT", path, version);
             msg.set_request_body_from_bytes ("application/json", new Bytes (body.data));
-            yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
-            check_post_status (msg.status_code, path);
+            var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
+            check_post_status (msg, bytes, path);
         }
 
         /* Authenticated DELETE; the response body is ignored, the status checked.
@@ -252,8 +259,8 @@ namespace Opensprogskole {
         public async void delete_void (string path, string version = "2")
             throws GLib.Error {
             var msg = authed ("DELETE", path, version);
-            yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
-            check_post_status (msg.status_code, path);
+            var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT, Connectivity.get_default ().cancellable);
+            check_post_status (msg, bytes, path);
         }
 
         /* GET raw bytes from an absolute URL (a profile picture), carrying the
@@ -310,13 +317,28 @@ namespace Opensprogskole {
             }
         }
 
-        private static void check_post_status (uint status, string path) throws UmsError {
+        private static void check_post_status (Soup.Message msg, GLib.Bytes? bytes,
+                                               string path) throws UmsError {
+            uint status = msg.status_code;
             if (status == 400 || status == 401) {
+                report (msg, bytes);
                 throw new UmsError.UNAUTHORIZED ("Request rejected (HTTP %u)".printf (status));
             }
             if (status != 200) {
+                report (msg, bytes);
                 throw new UmsError.HTTP ("HTTP %u for %s".printf (status, path));
             }
+        }
+
+        /* Publish the failed exchange for the in-app error toast/dialog. Only
+         * called for errors the *server* produced (bad status, malformed
+         * body); transport failures (offline, timeout, cancel) throw before
+         * any response exists and the loading states already cover them. */
+        private static void report (Soup.Message msg, GLib.Bytes? bytes,
+                                    string note = "") {
+            string? operation = UmsEndpoints.describe (msg.get_uri ().get_path ());
+            ErrorReporter.get_default ().report (
+                new ErrorDetails.from_message (msg, bytes, note, operation ?? ""));
         }
 
         /* base64url, used for the UserInfo path segment (username). */

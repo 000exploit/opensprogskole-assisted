@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opensprogskole\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 02:05+0200\n"
+"POT-Creation-Date: 2026-07-07 21:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,9 +18,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: data/moe.ekusu.sprogskole.desktop.in:2
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:7 data/ui/main-view.blp:15
-#: data/ui/main-view.blp:180 data/ui/onboarding-view.blp:19
-#: data/ui/onboarding-view.blp:73 data/ui/window.blp:5
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:7 data/ui/main-view.blp:26
+#: data/ui/main-view.blp:189 data/ui/main-view.blp:226
+#: data/ui/onboarding-view.blp:19 data/ui/onboarding-view.blp:73
+#: data/ui/window.blp:5
 msgid "OpenSprogskole"
 msgstr ""
 
@@ -60,41 +61,137 @@ msgstr ""
 msgid "Provider family of a hand-entered (Custom) school"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.gschema.xml:35
+#: data/moe.ekusu.sprogskole.gschema.xml:36
+msgid "Preferred color scheme"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.gschema.xml:37
+msgid "0 = follow system, 1 = light, 2 = dark. Applied via AdwStyleManager."
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.gschema.xml:42
+msgid "Preferred accent color"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.gschema.xml:43
+msgid ""
+"0 = follow system; 1–9 = AdwAccentColor (blue, teal, green, yellow, orange, "
+"red, pink, purple, slate). Overridden via a CSS provider since "
+"AdwStyleManager's accent is read-only."
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.gschema.xml:48
+msgid "Day the calendar week starts on"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.gschema.xml:49
+msgid "0 = use the school's default; 1–7 = ISO weekday (1 Monday … 7 Sunday)."
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.gschema.xml:53
 msgid "Unix time (seconds) the saved session token is valid until"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.gschema.xml:36
+#: data/moe.ekusu.sprogskole.gschema.xml:54
 msgid ""
 "From the JWT 'exp' claim. 0 means unknown (no expiry claim); the token is "
 "still tried."
 msgstr ""
 
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:3
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:18
+msgid "moe.ekusu.sprogskole"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:4
+msgid "CC0-1.0"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:5
+msgid "GPL-3.0-or-later"
+msgstr ""
+
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:8
-msgid "Keep the summary shorter, between 10 and 35 characters"
+msgid "Your language school life"
 msgstr ""
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:10
-msgid "No description"
+msgid ""
+"View your schedule, grades, homework and report when you are sick or "
+"unavailable."
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:52
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:56
-msgid "A caption"
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:14
+msgid "000exploit"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:64
-msgid "Release description"
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:21
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:22
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:25
+msgid "https://github.com/000exploit/opensprogskole-assisted"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:66
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:67
-msgid "List of changes"
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:23
+msgid "https://github.com/000exploit/opensprogskole-assisted/issues"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:24
+msgid ""
+"https://github.com/000exploit/opensprogskole-assisted/blob/main/README.md"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:27
+msgid "opensprogskole"
+msgstr ""
+
+#. All graphical applications having a desktop file must have this tag in the MetaInfo.
+#. If this is present, appstreamcli compose will pull icons, keywords and categories from the desktop file.
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:30
+msgid "moe.ekusu.sprogskole.desktop"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:32
+msgid "mild"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:38
+msgid "#ff00ff"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:39
+msgid "#993d3d"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:44
+msgid ""
+"https://raw.githubusercontent.com/000exploit/opensprogskole-assisted/refs/"
+"heads/main/data/screenshots/greetings.png"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:45
+msgid "Greetings"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:50
+msgid "always"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:55
+msgid "https://example.org/changelog.html#version_1.0.1"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:57
+msgid "Early release v0.9.9"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:59
+msgid "Initial android port"
 msgstr ""
 
 #: data/ui/absence-dialog.blp:5 data/ui/absence-dialog.blp:13
 #: data/ui/absence-dialog.blp:376 data/ui/absence-page.blp:39
 #: data/ui/overview-page.blp:50 data/ui/overview-page.blp:226
+#: src/services/ums-endpoints.vala:62
 msgid "Report absence"
 msgstr ""
 
@@ -164,6 +261,7 @@ msgid "End"
 msgstr ""
 
 #: data/ui/absence-dialog.blp:392 data/ui/absence-dialog.blp:438
+#: src/services/ums-endpoints.vala:60
 msgid "Call in sick"
 msgstr ""
 
@@ -171,7 +269,7 @@ msgstr ""
 msgid "Report that you're absent for the rest of today."
 msgstr ""
 
-#: data/ui/reason-dialog.blp:5
+#: data/ui/reason-dialog.blp:5 src/services/ums-endpoints.vala:59
 msgid "Absence reason"
 msgstr ""
 
@@ -185,8 +283,9 @@ msgid "Save"
 msgstr ""
 
 #: data/ui/absence-page.blp:26 data/ui/lesson-dialog.blp:105
-#: data/ui/main-view.blp:217 src/views/absence-page.vala:138
-#: src/views/absence-page.vala:204 src/views/main-view.vala:61
+#: data/ui/main-view.blp:285 src/services/ums-endpoints.vala:57
+#: src/views/absence-page.vala:138 src/views/absence-page.vala:204
+#: src/views/main-view.vala:76 src/views/main-view.vala:263
 msgid "Absence"
 msgstr ""
 
@@ -202,7 +301,7 @@ msgstr ""
 msgid "Loading absences…"
 msgstr ""
 
-#: data/ui/absence-page.blp:99
+#: data/ui/absence-page.blp:102
 msgid "No reported absences yet."
 msgstr ""
 
@@ -244,32 +343,44 @@ msgstr ""
 msgid "Contact"
 msgstr ""
 
-#: data/ui/edit-profile-page.blp:61 src/views/profile-page.vala:132
+#: data/ui/edit-profile-page.blp:61 src/views/profile-page.vala:167
 msgid "Phone"
 msgstr ""
 
-#: data/ui/edit-profile-page.blp:67 src/views/profile-page.vala:133
+#: data/ui/edit-profile-page.blp:67 src/views/profile-page.vala:168
 msgid "Mobile"
 msgstr ""
 
-#: data/ui/edit-profile-page.blp:73 src/views/profile-page.vala:134
+#: data/ui/edit-profile-page.blp:73 src/views/profile-page.vala:169
 msgid "Work phone"
 msgstr ""
 
-#: data/ui/edit-profile-page.blp:79 src/views/profile-page.vala:135
+#: data/ui/edit-profile-page.blp:79 src/views/profile-page.vala:170
 msgid "Work mobile"
 msgstr ""
 
-#: data/ui/edit-profile-page.blp:85 src/views/profile-page.vala:136
+#: data/ui/edit-profile-page.blp:85 src/views/profile-page.vala:171
 msgid "Email"
 msgstr ""
 
-#: data/ui/edit-profile-page.blp:91 src/views/profile-page.vala:137
+#: data/ui/edit-profile-page.blp:91 src/views/profile-page.vala:172
 msgid "Work email"
 msgstr ""
 
 #: data/ui/edit-profile-page.blp:101
 msgid "Other information"
+msgstr ""
+
+#: data/ui/error-details-dialog.blp:10
+msgid "Request Failed"
+msgstr ""
+
+#: data/ui/error-details-dialog.blp:34
+msgid "Copy to Clipboard"
+msgstr ""
+
+#: data/ui/error-details-dialog.blp:69
+msgid "Close"
 msgstr ""
 
 #: data/ui/grades-page.blp:30
@@ -292,79 +403,106 @@ msgstr ""
 msgid "It's not recommended to skip this lesson."
 msgstr ""
 
-#: data/ui/main-view.blp:23
+#: data/ui/main-view.blp:37 data/ui/main-view.blp:240
 msgid "Refresh"
 msgstr ""
 
-#: data/ui/main-view.blp:57 src/views/main-view.vala:127
+#: data/ui/main-view.blp:72 src/views/main-view.vala:165
 msgid "Connected"
 msgstr ""
 
-#: data/ui/main-view.blp:84
+#: data/ui/main-view.blp:99
 msgid "More"
 msgstr ""
 
-#: data/ui/main-view.blp:147
+#: data/ui/main-view.blp:160
 msgid "Student"
 msgstr ""
 
-#: data/ui/main-view.blp:163
+#: data/ui/main-view.blp:176
 msgid "Account menu"
 msgstr ""
 
-#: data/ui/main-view.blp:185 src/views/main-view.vala:58
+#. Establish the default layout here, not in the .blp: setting
+#. layout-name as a template property runs before the layouts are
+#. added (Adwaita-CRITICAL) and leaves the width breakpoint without a
+#. valid value to save/restore. Set once the template (and its
+#. layouts) exist.
+#: data/ui/main-view.blp:232 data/ui/main-view.blp:264
+#: src/views/main-view.vala:73 src/views/main-view.vala:265
 msgid "Overview"
 msgstr ""
 
-#: data/ui/main-view.blp:194
+#: data/ui/main-view.blp:249
 msgid "Main Menu"
 msgstr ""
 
-#: data/ui/main-view.blp:205 data/ui/schedule-view.blp:19
-#: src/views/main-view.vala:59
+#: data/ui/main-view.blp:257
+msgid "You're offline"
+msgstr ""
+
+#: data/ui/main-view.blp:271 data/ui/schedule-view.blp:19
+#: src/views/main-view.vala:74 src/views/main-view.vala:261
 msgid "Schedule"
 msgstr ""
 
-#: data/ui/main-view.blp:229 src/views/main-view.vala:62
-msgid "Your information"
-msgstr ""
-
-#: data/ui/main-view.blp:241 src/views/main-view.vala:60
+#: data/ui/main-view.blp:278 src/services/ums-endpoints.vala:56
+#: src/views/main-view.vala:75 src/views/main-view.vala:262
 msgid "Grades"
 msgstr ""
 
-#: data/ui/main-view.blp:253 data/ui/main-view.blp:261
-#: src/views/main-view.vala:64
-msgid "News"
+#: data/ui/main-view.blp:292
+msgid "You"
 msgstr ""
 
-#: data/ui/main-view.blp:262 data/ui/overview-page.blp:276
-msgid "Your school hasn't published any news."
-msgstr ""
-
-#: data/ui/main-view.blp:269 data/ui/main-view.blp:277
-#: src/views/main-view.vala:65 src/widgets/lesson-dialog.vala:108
-msgid "Homework"
-msgstr ""
-
-#: data/ui/main-view.blp:278
-msgid "Coming soon."
-msgstr ""
-
-#: data/ui/main-view.blp:285 src/views/main-view.vala:66
+#: data/ui/main-view.blp:302 src/views/main-view.vala:81
 msgid "Links"
 msgstr ""
 
-#: data/ui/main-view.blp:311 data/ui/main-view.blp:336
+#: data/ui/main-view.blp:314 data/ui/main-view.blp:322
+#: src/views/main-view.vala:79
+msgid "News"
+msgstr ""
+
+#: data/ui/main-view.blp:323 data/ui/overview-page.blp:276
+msgid "Your school hasn't published any news."
+msgstr ""
+
+#: data/ui/main-view.blp:330 data/ui/main-view.blp:338
+#: src/views/main-view.vala:80 src/widgets/lesson-dialog.vala:108
+msgid "Homework"
+msgstr ""
+
+#: data/ui/main-view.blp:339
+msgid "Coming soon."
+msgstr ""
+
+#: data/ui/main-view.blp:363
+msgid "_News"
+msgstr ""
+
+#: data/ui/main-view.blp:369
+msgid "_Homework"
+msgstr ""
+
+#: data/ui/main-view.blp:375
+msgid "_Links"
+msgstr ""
+
+#: data/ui/main-view.blp:383 data/ui/main-view.blp:411
+msgid "_Edit information"
+msgstr ""
+
+#: data/ui/main-view.blp:390 data/ui/main-view.blp:418
+msgid "_Preferences"
+msgstr ""
+
+#: data/ui/main-view.blp:397 data/ui/main-view.blp:425
 msgid "_Log out"
 msgstr ""
 
-#: data/ui/main-view.blp:318
+#: data/ui/main-view.blp:402 data/ui/main-view.blp:430
 msgid "_About OpenSprogskole"
-msgstr ""
-
-#: data/ui/main-view.blp:329
-msgid "_Edit information"
 msgstr ""
 
 #: data/ui/onboarding-view.blp:9 data/ui/onboarding-view.blp:171
@@ -380,7 +518,7 @@ msgid "Get started"
 msgstr ""
 
 #: data/ui/onboarding-view.blp:37 data/ui/onboarding-view.blp:143
-#: src/views/onboarding-view.vala:96
+#: src/views/onboarding-view.vala:99
 msgid "Log in"
 msgstr ""
 
@@ -476,29 +614,33 @@ msgstr ""
 msgid "About"
 msgstr ""
 
-#: data/ui/profile-page.blp:103
-msgid "Preferences"
-msgstr ""
-
 #: data/ui/profile-page.blp:107
-msgid "Receive SMS reminders"
+msgid "Account"
 msgstr ""
 
-#: data/ui/profile-page.blp:108
-msgid "Texts about exams, appointments and schedule changes"
+#: data/ui/profile-page.blp:134
+msgid "SMS reminders"
 msgstr ""
 
-#: data/ui/profile-page.blp:116
+#: data/ui/profile-page.blp:135 src/views/profile-page.vala:232
+msgid "Reminders about lessons and absence, sent to your phone"
+msgstr ""
+
+#: data/ui/profile-page.blp:142
 msgid "Why this matters"
 msgstr ""
 
-#: data/ui/profile-page.blp:125
+#: data/ui/profile-page.blp:151
 msgid ""
 "SMS reminders are off. You could miss an exam or an important appointment."
 msgstr ""
 
-#: data/ui/profile-page.blp:138
-msgid "Picture visibility"
+#: data/ui/profile-page.blp:164
+msgid "Profile photo visibility"
+msgstr ""
+
+#: data/ui/profile-page.blp:165 src/views/profile-page.vala:242
+msgid "Who can see your photo"
 msgstr ""
 
 #: data/ui/schedule-view.blp:101
@@ -525,7 +667,7 @@ msgstr ""
 msgid "Search schools"
 msgstr ""
 
-#: data/ui/school-picker.blp:128 src/views/school-picker.vala:156
+#: data/ui/school-picker.blp:128 src/views/school-picker.vala:208
 msgid "Custom school"
 msgstr ""
 
@@ -546,10 +688,15 @@ msgid "Realm (OIDC)"
 msgstr ""
 
 #: data/ui/school-picker.blp:168
+msgid ""
+"Enter an https:// URL — plain http would send your password unencrypted."
+msgstr ""
+
+#: data/ui/school-picker.blp:180
 msgid "LUDUS sign-in isn't available yet."
 msgstr ""
 
-#: data/ui/school-picker.blp:179
+#: data/ui/school-picker.blp:191
 msgid "Use this provider"
 msgstr ""
 
@@ -567,34 +714,131 @@ msgctxt "shortcut window"
 msgid "Quit"
 msgstr ""
 
-#: data/ui/window.blp:21
+#: data/ui/window.blp:24
 msgid "Updating information…"
 msgstr ""
 
-#: data/ui/window.blp:22
+#: data/ui/window.blp:25
 msgid "Fetching your latest schedule, grades and absence."
 msgstr ""
 
-#: src/application.vala:66
+#: data/ui/window.blp:46
+msgid "Quit OpenSprogskole?"
+msgstr ""
+
+#: data/ui/window.blp:51 src/views/absence-page.vala:250
+msgid "Cancel"
+msgstr ""
+
+#: data/ui/window.blp:52
+msgid "Quit"
+msgstr ""
+
+#: src/application.vala:140
 msgid "translator-credits"
+msgstr ""
+
+#: src/application.vala:142
+msgid ""
+"View your schedule, grades and homework, and report absence at your Danish "
+"language school.\n"
+"\n"
+"This app is not affiliated with Sprogcenter Midt or Inlogic."
+msgstr ""
+
+#. The school and its backend vendor; a LUDUS link joins these once
+#. LUDUS sign-in actually works.
+#: src/application.vala:146
+msgid "Sprogcenter Midt"
+msgstr ""
+
+#: src/application.vala:147
+msgid "UMS by Inlogic"
+msgstr ""
+
+#: src/application.vala:153
+msgid "Portions adapted from Tuba"
+msgstr ""
+
+#. The APK bundles the platform stack a desktop OS would provide as
+#. shared libraries; the notice-requiring licenses get a section.
+#: src/application.vala:168
+msgid "Bundled GNOME platform libraries"
+msgstr ""
+
+#: src/services/error-reporter.vala:121
+msgid "… [truncated]"
 msgstr ""
 
 #: src/services/schools.vala:45
 msgid "Demo School"
 msgstr ""
 
-#: src/services/session-controller.vala:167
+#: src/services/session-controller.vala:170
 msgid "Couldn't sign you in automatically. Please log in again."
 msgstr ""
 
-#: src/services/session-controller.vala:208
+#: src/services/session-controller.vala:211
 msgid "Invalid username or password."
 msgstr ""
 
-#: src/services/session-controller.vala:209
-#: src/services/session-controller.vala:211
+#: src/services/session-controller.vala:212
+#: src/services/session-controller.vala:214
 #, c-format
 msgid "Login failed: %s"
+msgstr ""
+
+#: src/services/ums-client.vala:108 src/services/ums-client.vala:113
+#: src/services/ums-client.vala:176 src/services/ums-client.vala:231
+msgid "Malformed response"
+msgstr ""
+
+#: src/services/ums-endpoints.vala:53
+msgid "Login"
+msgstr ""
+
+#: src/services/ums-endpoints.vala:54
+msgid "Logout"
+msgstr ""
+
+#: src/services/ums-endpoints.vala:55
+msgid "Timetable"
+msgstr ""
+
+#: src/services/ums-endpoints.vala:58
+msgid "Absence settings"
+msgstr ""
+
+#: src/services/ums-endpoints.vala:61
+msgid "Reported absences"
+msgstr ""
+
+#: src/services/ums-endpoints.vala:63
+msgid "Update reported absence"
+msgstr ""
+
+#: src/services/ums-endpoints.vala:64
+msgid "Delete reported absence"
+msgstr ""
+
+#: src/services/ums-endpoints.vala:65
+msgid "Profile settings"
+msgstr ""
+
+#: src/services/ums-endpoints.vala:66
+msgid "Save profile"
+msgstr ""
+
+#: src/services/ums-endpoints.vala:67
+msgid "Upload profile picture"
+msgstr ""
+
+#: src/services/ums-endpoints.vala:68
+msgid "Remove pending picture"
+msgstr ""
+
+#: src/services/ums-endpoints.vala:69
+msgid "Profile"
 msgstr ""
 
 #: src/services/ums-provider.vala:90
@@ -642,10 +886,6 @@ msgstr ""
 msgid "The reported absence will be removed."
 msgstr ""
 
-#: src/views/absence-page.vala:250
-msgid "Cancel"
-msgstr ""
-
 #: src/views/absence-page.vala:272
 msgid "Couldn't delete absence — check your connection."
 msgstr ""
@@ -658,7 +898,11 @@ msgstr ""
 msgid "Couldn't load grades."
 msgstr ""
 
-#: src/views/main-view.vala:127
+#: src/views/main-view.vala:77 src/views/main-view.vala:264
+msgid "Your information"
+msgstr ""
+
+#: src/views/main-view.vala:165 src/views/profile-page.vala:124
 msgid "Offline"
 msgstr ""
 
@@ -667,7 +911,7 @@ msgstr ""
 msgid "Version %s"
 msgstr ""
 
-#: src/views/onboarding-view.vala:96 src/services/login-method.vala:75
+#: src/views/onboarding-view.vala:99 src/services/login-method.vala:75
 msgid "Enter"
 msgstr ""
 
@@ -723,99 +967,111 @@ msgstr ""
 msgid "Present %.1f%% · Not approved %.1f%% · Late %.1f%%"
 msgstr ""
 
-#: src/views/profile-page.vala:65
+#: src/views/profile-page.vala:71
 msgid "Everyone"
 msgstr ""
 
-#: src/views/profile-page.vala:65
+#: src/views/profile-page.vala:71
 msgid "School only"
 msgstr ""
 
-#: src/views/profile-page.vala:65
-msgid "Nobody"
+#: src/views/profile-page.vala:71
+msgid "No one"
 msgstr ""
 
 #: src/views/profile-page.vala:121
+msgid "Saving…"
+msgstr ""
+
+#: src/views/profile-page.vala:127
+msgid "Synced"
+msgstr ""
+
+#: src/views/profile-page.vala:156
 msgid "Name"
 msgstr ""
 
-#: src/views/profile-page.vala:122
+#: src/views/profile-page.vala:157
 msgid "Date of birth"
 msgstr ""
 
-#: src/views/profile-page.vala:123
+#: src/views/profile-page.vala:158
 msgid "Address"
 msgstr ""
 
-#: src/views/profile-page.vala:125
+#: src/views/profile-page.vala:160
 msgid "Department"
 msgstr ""
 
-#: src/views/profile-page.vala:126
+#: src/views/profile-page.vala:161
 msgid "Course length"
 msgstr ""
 
-#: src/views/profile-page.vala:128
+#: src/views/profile-page.vala:163
 msgid "Card number"
 msgstr ""
 
-#: src/views/profile-page.vala:157
+#: src/views/profile-page.vala:192
 msgid "Copy"
 msgstr ""
 
-#: src/views/profile-page.vala:162
+#: src/views/profile-page.vala:197
 msgid "Copied to clipboard"
 msgstr ""
 
-#: src/views/profile-page.vala:228
+#: src/views/profile-page.vala:233 src/views/profile-page.vala:243
+msgid "Managed by your school"
+msgstr ""
+
+#: src/views/profile-page.vala:273
 msgid "SMS reminders are off — you may miss reminders."
 msgstr ""
 
-#: src/views/profile-page.vala:257
+#: src/views/profile-page.vala:303
 msgid "Couldn't save your change — check your connection."
 msgstr ""
 
-#: src/views/profile-page.vala:282
+#: src/views/profile-page.vala:329
 msgid "Choose a profile photo"
 msgstr ""
 
-#: src/views/profile-page.vala:284
+#: src/views/profile-page.vala:331
 msgid "Images"
 msgstr ""
 
-#: src/views/profile-page.vala:313
+#: src/views/profile-page.vala:360
 msgid "Photo uploaded — awaiting approval"
 msgstr ""
 
-#: src/views/profile-page.vala:316
+#: src/views/profile-page.vala:363
 msgid "Couldn't upload the photo — check your connection."
 msgstr ""
 
-#: src/views/profile-page.vala:328
+#: src/views/profile-page.vala:375
 msgid "Pending photo removed"
 msgstr ""
 
-#: src/views/profile-page.vala:331
+#: src/views/profile-page.vala:378
 msgid "Couldn't remove the photo. Please try again."
 msgstr ""
 
-#: src/views/school-picker.vala:58
+#: src/views/school-picker.vala:59
 msgid "UMS (username / password)"
 msgstr ""
 
-#: src/views/school-picker.vala:59
+#: src/views/school-picker.vala:60
 msgid "LUDUS (OIDC / MitID)"
 msgstr ""
 
-#: src/views/school-picker.vala:100
+#: src/views/school-picker.vala:103
 msgid "No schools yet"
 msgstr ""
 
-#: src/views/school-picker.vala:102
+#: src/views/school-picker.vala:105
 msgid "This provider has no schools listed."
 msgstr ""
 
-#: src/views/school-picker.vala:103
+#: src/views/school-picker.vala:106
 msgid "Sign-in for this provider isn't available yet."
 msgstr ""
 
@@ -858,6 +1114,10 @@ msgstr ""
 msgid "Room %s"
 msgstr ""
 
+#: src/widgets/error-details-dialog.vala:53
+msgid "(empty response body)"
+msgstr ""
+
 #: src/widgets/lesson-dialog.vala:111
 msgid "Comment"
 msgstr ""
@@ -872,6 +1132,10 @@ msgstr ""
 
 #: src/widgets/lesson-dialog.vala:174
 msgid "Teachers"
+msgstr ""
+
+#: src/widgets/window.vala:109
+msgid "Details"
 msgstr ""
 
 #: src/services/provider-family.vala:49

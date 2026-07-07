@@ -1,0 +1,71 @@
+using Gtk 4.0;
+using Adw 1;
+
+// Debug companion to the window-level error toast: the failed request's
+// summary in the body, the (monospace, copyable) server response below it.
+// Same shape as GNOME Console's close dialog — an AlertDialog with an
+// extra-child. Copy lives inside the extra-child because AlertDialog
+// responses always close the dialog.
+template $OpensprogskoleErrorDetailsDialog: Adw.AlertDialog {
+  heading: _("Request Failed");
+  default-response: "close";
+  close-response: "close";
+
+  extra-child: Box {
+    orientation: vertical;
+    spacing: 6;
+
+    Box {
+      spacing: 6;
+
+      Label header_label {
+        hexpand: true;
+        halign: start;
+        ellipsize: end;
+
+        styles [
+          "dim-label",
+          "caption",
+        ]
+      }
+
+      Button copy_button {
+        icon-name: "edit-copy-symbolic";
+        tooltip-text: _("Copy to Clipboard");
+
+        styles [
+          "flat",
+        ]
+      }
+    }
+
+    ScrolledWindow {
+      propagate-natural-height: true;
+      max-content-height: 320;
+
+      child: Label body_label {
+        selectable: true;
+        wrap: true;
+        wrap-mode: word_char;
+        xalign: 0;
+        yalign: 0;
+        margin-top: 8;
+        margin-bottom: 8;
+        margin-start: 8;
+        margin-end: 8;
+
+        styles [
+          "monospace",
+        ]
+      };
+
+      styles [
+        "card",
+      ]
+    }
+  };
+
+  responses [
+    close: _("Close"),
+  ]
+}

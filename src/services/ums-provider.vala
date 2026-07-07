@@ -141,12 +141,12 @@ namespace Opensprogskole {
         /* Invalidate the token server-side. Best effort — the caller logs out
          * locally regardless. */
         public async void logout () throws GLib.Error {
-            yield client.post ("/Login/DeleteToken");
+            yield client.post (UmsEndpoints.DELETE_TOKEN);
         }
 
         public async GLib.GenericArray<TimetableItem> load_timetable () throws GLib.Error {
             var node = yield fetch_cached ("timetable",
-                "/Timetable/GetTimetable?language=" + school.language);
+                UmsEndpoints.GET_TIMETABLE + "?language=" + school.language);
             if (node.get_node_type () != Json.NodeType.ARRAY) {
                 throw new UmsError.MALFORMED ("timetable is not an array");
             }
@@ -154,7 +154,7 @@ namespace Opensprogskole {
         }
 
         public async GLib.GenericArray<GradeItem> load_grades () throws GLib.Error {
-            var node = yield fetch_cached ("grades", "/Grades/GetGrades");
+            var node = yield fetch_cached ("grades", UmsEndpoints.GET_GRADES);
             if (node.get_node_type () != Json.NodeType.ARRAY) {
                 throw new UmsError.MALFORMED ("grades is not an array");
             }
@@ -170,7 +170,7 @@ namespace Opensprogskole {
 
         public async AbsenceData load_absence () throws GLib.Error {
             var node = yield fetch_cached ("absence",
-                "/Absence/GetUserAbsence?language=" + school.language);
+                UmsEndpoints.GET_USER_ABSENCE + "?language=" + school.language);
             if (node.get_node_type () != Json.NodeType.OBJECT) {
                 throw new UmsError.MALFORMED ("absence is not an object");
             }
@@ -198,7 +198,7 @@ namespace Opensprogskole {
 
         public async UserInfoItem? load_user_info () throws GLib.Error {
             var node = yield fetch_cached ("user-info",
-                "/UserInfo/GetUserInfo/" + UmsClient.base64url (account_username));
+                UmsEndpoints.GET_USER_INFO + "/" + UmsClient.base64url (account_username));
             return node.get_node_type () == Json.NodeType.OBJECT
                 ? (UserInfoItem) Json.gobject_deserialize (typeof (UserInfoItem), node)
                 : null;
@@ -206,7 +206,7 @@ namespace Opensprogskole {
 
         public async UserInfoSettings? load_user_info_settings () throws GLib.Error {
             // Not cached (matches prior behaviour — it gates edit-field visibility).
-            var node = yield client.get_json ("/UserInfo/GetUserInfoSettings", "2");
+            var node = yield client.get_json (UmsEndpoints.GET_USER_INFO_SETTINGS, "2");
             return node.get_node_type () == Json.NodeType.OBJECT
                 ? (UserInfoSettings) Json.gobject_deserialize (typeof (UserInfoSettings), node)
                 : null;
@@ -232,18 +232,18 @@ namespace Opensprogskole {
             var gen = new Json.Generator ();
             gen.set_root (b.get_root ());
 
-            yield client.post_void ("/UserInfo/UpdateUserInfo", gen.to_data (null), "2");
+            yield client.post_void (UmsEndpoints.UPDATE_USER_INFO, gen.to_data (null), "2");
             return true;
         }
 
         public async bool update_user_image (GLib.Bytes image) throws GLib.Error {
-            yield client.post_multipart ("/UserInfo/UpdateUserImage",
+            yield client.post_multipart (UmsEndpoints.UPDATE_USER_IMAGE,
                 "profilepicture", "profilepicture.jpg", "image/jpeg", image, "2");
             return true;
         }
 
         public async bool delete_pending_image () throws GLib.Error {
-            yield client.post_action ("/UserInfo/DeletePendingImage", "2");
+            yield client.post_action (UmsEndpoints.DELETE_PENDING_IMAGE, "2");
             return true;
         }
 
@@ -267,7 +267,7 @@ namespace Opensprogskole {
                                                 string end_iso) throws GLib.Error {
             string body = future_absence_body (0, 0, reason, start_iso, end_iso, current_utc_iso8601_time ());
             var result = yield client.post_json (
-                "/Absence/CreateFutureStudentAbsence", body, "2");
+                UmsEndpoints.CREATE_FUTURE_ABSENCE, body, "2");
             // 200 returns a bare number — the new absence id.
             return (int) result.get_int ();
         }
@@ -275,7 +275,7 @@ namespace Opensprogskole {
         public async GLib.GenericArray<FutureAbsenceItem> load_future_absence () throws GLib.Error {
             // Not cached (matches prior behaviour); any successful fetch counts as
             // loaded, even an empty/odd one — only a network failure throws.
-            var node = yield client.get_json ("/Absence/GetFutureStudentAbsence", "2");
+            var node = yield client.get_json (UmsEndpoints.GET_FUTURE_ABSENCE, "2");
             var items = new GLib.GenericArray<FutureAbsenceItem> ();
             if (node.get_node_type () == Json.NodeType.ARRAY) {
                 node.get_array ().foreach_element ((arr, i, element) => {
@@ -298,18 +298,18 @@ namespace Opensprogskole {
             throws GLib.Error {
             // SLI_ID is ignored by the backend on update; only ID is honoured.
             string body = future_absence_body (id, 0, reason, start_iso, end_iso, current_utc_iso8601_time ());
-            yield client.put_void ("/Absence/UpdateFutureStudentAbsence", body, "2");
+            yield client.put_void (UmsEndpoints.UPDATE_FUTURE_ABSENCE, body, "2");
         }
 
         public async void delete_future_absence (int id) throws GLib.Error {
             yield client.delete_void (
-                "/Absence/DeleteFutureStudentAbsence?ID=%d".printf (id), "2");
+                UmsEndpoints.DELETE_FUTURE_ABSENCE + "?ID=%d".printf (id), "2");
         }
 
         public async AbsenceSettings? load_absence_settings () throws GLib.Error {
             // Not cached (it gates "describe reason", a write — irrelevant offline).
             var node = yield client.get_json (
-                "/Absence/GetAbsenceSettings?language=" + school.language, "2");
+                UmsEndpoints.GET_ABSENCE_SETTINGS + "?language=" + school.language, "2");
             return node.get_node_type () == Json.NodeType.OBJECT
                 ? (AbsenceSettings) Json.gobject_deserialize (typeof (AbsenceSettings), node)
                 : null;
@@ -394,7 +394,7 @@ namespace Opensprogskole {
             // The endpoint reads the JSON from a base64 text body (content-type
             // still application/json). Response is the JSON string confirmation.
             string b64 = GLib.Base64.encode (gen.to_data (null).data);
-            yield client.post_json ("/Absence/CreateAbsenceReason", b64, "2");
+            yield client.post_json (UmsEndpoints.CREATE_ABSENCE_REASON, b64, "2");
         }
 
         public async void student_call_in_sick (string reason, int type,
@@ -410,7 +410,7 @@ namespace Opensprogskole {
             gen.set_root (b.get_root ());
 
             string b64 = GLib.Base64.encode (gen.to_data (null).data);
-            var result = yield client.post_json ("/Absence/StudentCallInSick", b64, "2");
+            var result = yield client.post_json (UmsEndpoints.CALL_IN_SICK, b64, "2");
 
             code = 0;
             message = "";

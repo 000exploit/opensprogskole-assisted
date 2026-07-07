@@ -15,6 +15,8 @@ opensprogskole_vala_sources = [
   'models/user-info-settings.vala',
   'store/timetable-store.vala',
   'services/connectivity.vala',
+  'services/error-reporter.vala',
+  'services/ums-endpoints.vala',
   'services/storage.vala',
   'services/school-provider.vala',
   'services/login-method.vala',
@@ -50,6 +52,7 @@ opensprogskole_vala_sources = [
   'widgets/lesson-dialog.vala',
   'widgets/absence-dialog.vala',
   'widgets/reason-dialog.vala',
+  'widgets/error-details-dialog.vala',
   'gvdb-glue.vapi',
   'gvdb-glue.c',
 ]

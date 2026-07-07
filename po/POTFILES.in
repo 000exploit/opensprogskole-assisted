@@ -13,6 +13,7 @@ data/ui/calendar.blp
 data/ui/chart.blp
 data/ui/day-lessons.blp
 data/ui/edit-profile-page.blp
+data/ui/error-details-dialog.blp
 data/ui/grades-page.blp
 data/ui/grades.blp
 data/ui/lesson-dialog.blp
@@ -35,12 +36,14 @@ src/models/timetable-item.vala
 src/models/user-info-item.vala
 src/models/user-info-settings.vala
 src/services/avatar-cache.vala
+src/services/error-reporter.vala
 src/services/school-provider.vala
 src/services/schools.vala
 src/services/secret-store.vala
 src/services/session-controller.vala
 src/services/session.vala
 src/services/ums-client.vala
+src/services/ums-endpoints.vala
 src/services/ums-provider.vala
 src/store/timetable-store.vala
 src/views/absence-page.vala
@@ -60,6 +63,7 @@ src/widgets/calendar.vala
 src/widgets/calendar-day.vala
 src/widgets/chart.vala
 src/widgets/day-lessons.vala
+src/widgets/error-details-dialog.vala
 src/widgets/grades.vala
 src/widgets/lesson-dialog.vala
 src/widgets/styles.vala

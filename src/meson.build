@@ -5,12 +5,15 @@ opensprogskole_core_deps = [
   dependency('glib-2.0'),
   dependency('gobject-2.0'),
   dependency('gio-2.0'),
+  dependency('json-glib-1.0', version: '>= 1.10.0'),
   dependency('libsoup-3.0', version: '>= 3.6.0'),
 ]
 
 opensprogskole_core = static_library('opensprogskole-core',
   [
+    'models/school.vala',
     'services/error-reporter.vala',
+    'services/school-config.vala',
     'services/ums-endpoints.vala',
   ],
   dependencies: opensprogskole_core_deps,
@@ -23,7 +26,6 @@ opensprogskole_vala_sources = [
   'models/entity.vala',
   'models/timetable-item.vala',
   'models/grade.vala',
-  'models/school.vala',
   'models/user-info-item.vala',
   'models/link-item.vala',
   'models/absence-item.vala',

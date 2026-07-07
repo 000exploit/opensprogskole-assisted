@@ -28,6 +28,14 @@ namespace Opensprogskole {
      * what the sidebar school switcher in the design lists. No behaviour yet —
      * accounts, sessions and stores will hang off this later. */
     public class School : GLib.Object {
+        // The canonical fallbacks, shared by the constructor signature and by
+        // SchoolConfig.from_json for members a pasted config omits (GObject
+        // construction can't carry these — pspec defaults stay null/0).
+        public const string DEFAULT_LANGUAGE = "1030";
+        public const string DEFAULT_FAMILY = "ums";
+        public const int DEFAULT_ACCENT_INDEX = 1;
+        public const int DEFAULT_FIRST_WEEKDAY = 1;   // Monday
+
         public string id { get; construct; }
         public string name { get; construct; }
         public string city { get; construct; }
@@ -47,18 +55,19 @@ namespace Opensprogskole {
 
         // Which login methods this instance enables (UMS provider maps the ids,
         // e.g. {"password"} or {"password", "sso"}). Static config — no discovery
-        // API — and friendly to contributors registering a school.
-        public string[] login_methods;
+        // API — and friendly to contributors registering a school. A read-write
+        // property (not construct) so Json.gobject_deserialize can set it.
+        public string[] login_methods { get; set; }
 
         // True for a school the user entered by hand (Custom tab); its config is
         // persisted separately since it isn't in the static registry.
         public bool is_custom = false;
 
         public School (string id, string name, string city, string short_code,
-                       string base_url, string language = "1030",
-                       int accent_index = 1, int login_type = 0,
-                       int auth_type = 0, int first_weekday = 1,
-                       string family_id = "ums", string[]? login_methods = null) {
+                       string base_url, string language = DEFAULT_LANGUAGE,
+                       int accent_index = DEFAULT_ACCENT_INDEX, int login_type = 0,
+                       int auth_type = 0, int first_weekday = DEFAULT_FIRST_WEEKDAY,
+                       string family_id = DEFAULT_FAMILY, string[]? login_methods = null) {
             Object (
                 id: id,
                 name: name,

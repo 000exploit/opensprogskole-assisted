@@ -176,6 +176,18 @@ template $OpensprogskoleSchoolPicker: Adw.Dialog {
                 ]
               }
 
+              Label api_note {
+                label: _("UMS base URLs usually end with “/api” — double-check if sign-in fails.");
+                halign: start;
+                visible: false;
+                wrap: true;
+                margin-start: 4;
+
+                styles [
+                  "warning",
+                ]
+              }
+
               Label custom_note {
                 label: _("LUDUS sign-in isn't available yet.");
                 halign: start;
@@ -197,10 +209,70 @@ template $OpensprogskoleSchoolPicker: Adw.Dialog {
                   "pill",
                 ]
               }
+
+              // Config sharing: paste a school config someone shared, or copy
+              // the form above to share it. Nothing is persisted either way.
+              Label {
+                label: _("Have a shared school config?");
+                halign: center;
+                margin-top: 6;
+
+                styles [
+                  "dim-label",
+                  "caption",
+                ]
+              }
+
+              // The caption above carries the context, so the pair can stay
+              // short enough to sit linked even in wide translations.
+              Box {
+                halign: center;
+
+                styles [
+                  "linked",
+                ]
+
+                Button paste_button {
+                  label: _("Paste");
+                }
+
+                Button copy_button {
+                  label: _("Copy");
+                }
+              }
+
+              Revealer paste_note_revealer {
+                transition-type: slide_down;
+                reveal-child: false;
+
+                child: Label paste_note {
+                  label: _("There is no config on the clipboard.");
+                  halign: center;
+                  justify: center;
+                  wrap: true;
+
+                  styles [
+                    "error",
+                  ]
+                };
+              }
             }
           }
         };
       };
     }
   };
+}
+
+// Confirms a pasted config before it reaches the login page — the body names
+// the school and, crucially, the URL the credentials would be sent to.
+Adw.AlertDialog paste_dialog {
+  heading: _("Use this school?");
+  default-response: "use";
+  close-response: "cancel";
+
+  responses [
+    cancel: _("Cancel"),
+    use: _("Use") suggested,
+  ]
 }

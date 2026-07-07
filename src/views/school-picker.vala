@@ -41,8 +41,19 @@ namespace Opensprogskole {
         [GtkChild] private unowned Adw.EntryRow url_row;
         [GtkChild] private unowned Adw.EntryRow realm_row;
         [GtkChild] private unowned Label url_note;
+        [GtkChild] private unowned Label api_note;
         [GtkChild] private unowned Label custom_note;
         [GtkChild] private unowned Button use_button;
+        [GtkChild] private unowned Button paste_button;
+        [GtkChild] private unowned Button copy_button;
+        [GtkChild] private unowned Revealer paste_note_revealer;
+        [GtkChild] private unowned Label paste_note;
+        [GtkChild] private unowned Adw.AlertDialog paste_dialog;
+
+        // The Blueprint-defined resting strings, captured before code ever
+        // overwrites them (a dynamic parse error, the "Copied" feedback).
+        private string default_paste_error;
+        private string default_copy_label;
 
         /* The chosen school (a registry entry or a hand-entered Custom one). */
         public signal void school_chosen (School school);
@@ -54,6 +65,8 @@ namespace Opensprogskole {
             new GLib.GenericArray<Adw.ActionRow> ();
 
         construct {
+            default_paste_error = paste_note.label;
+            default_copy_label = copy_button.label;
             build_families ();
 
             backend_row.model = new StringList ({ _("UMS (username / password)"),
@@ -64,6 +77,13 @@ namespace Opensprogskole {
             backend_row.notify["selected"].connect (sync_backend);
             url_row.changed.connect (validate_custom);
             use_button.clicked.connect (on_use_custom);
+            paste_button.clicked.connect (on_paste_config);
+            copy_button.clicked.connect (on_copy_config);
+            paste_dialog.response.connect ((response) => {
+                if (response == "use" && pasted != null) {
+                    choose (pasted);
+                }
+            });
             validate_custom ();
         }
 
@@ -135,11 +155,6 @@ namespace Opensprogskole {
 
         // --- Custom form --------------------------------------------------------
 
-        // Hosts a plain-http base URL is tolerated for: loopback only, so a
-        // developer can point at a local backend without ever letting a real
-        // password travel unencrypted.
-        private const string[] PLAIN_HTTP_ALLOWED_HOSTS = { "localhost", "127.0.0.1", "::1" };
-
         private void sync_backend () {
             bool ludus = backend_row.selected == 1;
             realm_row.visible = ludus;
@@ -147,54 +162,101 @@ namespace Opensprogskole {
             validate_custom ();
         }
 
-        /* Whether a hand-entered base URL is safe to log in against: parseable,
-         * with a host, and https — credentials would otherwise go out in
-         * cleartext. Plain http passes only toward loopback (local testing). */
-        private static bool valid_custom_url (string url) {
-            try {
-                var uri = GLib.Uri.parse (url, GLib.UriFlags.NONE);
-                string? host = uri.get_host ();
-                if (host == null || host == "") {
-                    return false;
-                }
-                if (uri.get_scheme () == "https") {
-                    return true;
-                }
-                if (uri.get_scheme () == "http") {
-                    foreach (string allowed in PLAIN_HTTP_ALLOWED_HOSTS) {
-                        if (host.down () == allowed) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            } catch (GLib.Error e) {
-                return false;
-            }
-        }
-
-        /* Gate "Use this provider" on a valid URL and flag a bad one inline.
-         * The note only appears once something is typed — an empty field just
-         * leaves the button off. */
+        /* Gate "Use this provider" on a valid URL and flag problems inline.
+         * The scheme is a hard requirement (credential safety); the UMS
+         * "/api" shape is only a warning — an instance may serve the API
+         * elsewhere, so the button stays on. The notes only appear once
+         * something is typed — an empty field just leaves the button off.
+         * The policies live with the config parser (SchoolConfig) so pasted
+         * configs share them. */
         private void validate_custom () {
             string url = url_row.text.strip ();
-            bool valid = valid_custom_url (url);
-            bool problem = url != "" && !valid;
-            url_note.visible = problem;
-            if (problem) {
+            bool ums = backend_row.selected == 0;   // LUDUS not implemented
+            bool scheme_ok = SchoolConfig.valid_base_url (url);
+            url_note.visible = url != "" && !scheme_ok;
+            api_note.visible = url != "" && scheme_ok && ums
+                && !SchoolConfig.valid_ums_base_url (url);
+            if (url_note.visible) {
                 url_row.add_css_class ("error");
             } else {
                 url_row.remove_css_class ("error");
             }
-            use_button.sensitive = valid
-                && backend_row.selected == 0;   // LUDUS not implemented
+            use_button.sensitive = ums && scheme_ok;
+            // A copied config is exactly what "Use this provider" would use.
+            copy_button.sensitive = use_button.sensitive;
         }
 
         private void on_use_custom () {
-            if (backend_row.selected != 0 || !valid_custom_url (url_row.text.strip ())) {
+            if (backend_row.selected != 0
+                || !SchoolConfig.valid_base_url (url_row.text.strip ())) {
                 return;
             }
             choose (custom_ums_school (name_row.text.strip (), url_row.text.strip ()));
+        }
+
+        // --- Config sharing -----------------------------------------------------
+
+        // How long the Copy button confirms before its label reverts.
+        private const uint COPY_FEEDBACK_MS = 1500;
+
+        // A parsed-but-unconfirmed pasted config, kept while paste_dialog asks.
+        private School? pasted = null;
+
+        private uint copy_feedback_source = 0;
+
+        /* Read a config from the clipboard and, when it parses, confirm the
+         * school (name + the URL credentials would go to) before using it.
+         * Pasted configs are session-only — nothing is written anywhere. */
+        private void on_paste_config () {
+            paste_note_revealer.reveal_child = false;
+            var clipboard = get_clipboard ();
+            clipboard.read_text_async.begin (null, (obj, res) => {
+                string? text = null;
+                try {
+                    text = clipboard.read_text_async.end (res);
+                } catch (GLib.Error e) {
+                    // Fall through to the empty-clipboard message.
+                }
+                if (text == null || text.strip () == "") {
+                    show_paste_error ();
+                    return;
+                }
+                try {
+                    pasted = SchoolConfig.from_json (text);
+                } catch (SchoolConfigError e) {
+                    show_paste_error (e.message);
+                    return;
+                }
+                string body = "%s\n%s".printf (pasted.name, pasted.base_url);
+                if (!SchoolConfig.valid_ums_base_url (pasted.base_url)) {
+                    // Reuse the form's Blueprint-defined warning verbatim.
+                    body += "\n\n" + api_note.label;
+                }
+                paste_dialog.body = body;
+                paste_dialog.present (this);
+            });
+        }
+
+        /* Copy the school the form would produce, to share or keep. */
+        private void on_copy_config () {
+            copy_button.get_clipboard ().set_text (SchoolConfig.to_json (
+                custom_ums_school (name_row.text.strip (), url_row.text.strip ())));
+            copy_button.label = _("Copied");
+            if (copy_feedback_source != 0) {
+                GLib.Source.remove (copy_feedback_source);
+            }
+            copy_feedback_source = GLib.Timeout.add (COPY_FEEDBACK_MS, () => {
+                copy_button.label = default_copy_label;
+                copy_feedback_source = 0;
+                return GLib.Source.REMOVE;
+            });
+        }
+
+        /* Reveal the error note: a dynamic message (parse failure), or with
+         * no argument the label's Blueprint default (empty clipboard). */
+        private void show_paste_error (string? message = null) {
+            paste_note.label = message ?? default_paste_error;
+            paste_note_revealer.reveal_child = true;
         }
 
         private void choose (School school) {
@@ -206,7 +268,9 @@ namespace Opensprogskole {
         public static School custom_ums_school (string name, string base_url) {
             var school = new School ("custom",
                                      name != "" ? name : _("Custom school"),
-                                     "", "★", base_url, "1030", 2, 0, 0, 1, "ums");
+                                     "", "★",
+                                     SchoolConfig.normalize_base_url (base_url),
+                                     "1030", 2, 0, 0, 1, "ums");
             school.is_custom = true;
             return school;
         }

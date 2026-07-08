@@ -49,11 +49,13 @@ namespace Opensprogskole {
             get { return tokens != null ? tokens.expires_at : 0; }
         }
 
-        /* LUDUS is OIDC only — one browser-driven method. */
+        /* LUDUS is OIDC only — one browser-driven method. The label stays
+         * neutral: the school's Keycloak page decides whether it's MitID or
+         * username/password, so we can't name the mechanism up front. */
         public async GLib.GenericArray<LoginMethod> login_methods () throws GLib.Error {
             var list = new GLib.GenericArray<LoginMethod> ();
-            list.add (new LoginMethod ("mitid", LoginKind.OAUTH,
-                                       _("Log in with MitID"), "dialog-password-symbolic"));
+            list.add (new LoginMethod ("oidc", LoginKind.OAUTH,
+                                       _("Continue to sign-in"), "dialog-password-symbolic"));
             return list;
         }
 

@@ -45,10 +45,9 @@ namespace Opensprogskole {
             this.device_id = device_id;
         }
 
-        public void use_account (string username) {
+        public void use_account (string username, Storage storage) {
             account_username = username;
-            storage = new Storage (Checksum.compute_for_string (
-                ChecksumType.SHA256, "%s:%s".printf (school.id, username)));
+            this.storage = storage;   // the session's shared per-account store
         }
 
         /* When the token expires (unix seconds), or 0 if unknown. */

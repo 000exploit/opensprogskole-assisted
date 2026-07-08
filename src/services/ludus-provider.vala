@@ -41,8 +41,14 @@ namespace Opensprogskole {
             this._school = school;
         }
 
-        public void use_account (string username) {
+        public void use_account (string username, Storage storage) {
             // No per-account cache yet — added with the data endpoints.
+        }
+
+        /* Data endpoints are all stubbed (LudusError.NOT_MAPPED), so no widget
+         * has data to show yet. Flip specific kinds to true as they're mapped. */
+        public bool supports (DataKind kind) {
+            return false;
         }
 
         public int64 token_expires_at {

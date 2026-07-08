@@ -35,7 +35,7 @@ namespace Opensprogskole {
         }
 
         // --- Auth: nothing to do ------------------------------------------------
-        public void use_account (string username) {}
+        public void use_account (string username, Storage storage) {}   // canned data
 
         public async GLib.GenericArray<LoginMethod> login_methods () throws GLib.Error {
             var list = new GLib.GenericArray<LoginMethod> ();

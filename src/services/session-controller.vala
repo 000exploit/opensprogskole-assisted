@@ -347,8 +347,7 @@ namespace Opensprogskole {
             // Wipe this account's whole on-disk store along with its secrets,
             // and the (account-agnostic) avatar cache so the profile photo
             // doesn't outlive the session.
-            Storage.clear (Checksum.compute_for_string (
-                ChecksumType.SHA256, "%s:%s".printf (school_id, username)));
+            Storage.clear (Session.account_hash (school_id, username));
             AvatarCache.clear_all ();
 
             session = null;

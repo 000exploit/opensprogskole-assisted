@@ -38,6 +38,13 @@ namespace Opensprogskole {
         public SchoolProvider provider { get; construct; }
         public string username { get; construct; }
 
+        // The one per-account GVDB store, shared by the provider's offline cache
+        // and app-level per-account state (e.g. the dashboard layout). Owning it
+        // here — rather than letting the provider open its own — guarantees a
+        // single instance per account; two instances on the same file would
+        // clobber each other's keys on their debounced writes.
+        public Storage storage { get; construct; }
+
         public TimetableStore timetable { get; default = new TimetableStore (); }
         public GLib.ListStore grades { get; default = new GLib.ListStore (typeof (GradeItem)); }
         public GLib.ListStore absences { get; default = new GLib.ListStore (typeof (AbsenceItem)); }
@@ -89,9 +96,18 @@ namespace Opensprogskole {
         private uint grades_gen = 0;
 
         public Session (School school, SchoolProvider provider, string username) {
-            Object (school: school, provider: provider, username: username);
-            // Let the provider build its per-account cache before any load.
-            provider.use_account (username);
+            Object (school: school, provider: provider, username: username,
+                    storage: new Storage (account_hash (school.id, username)));
+            // Hand the provider the shared per-account store before any load.
+            provider.use_account (username, storage);
+        }
+
+        /* The account key both the provider cache and the per-account Storage
+         * are scoped by. One place, so callers (logout wipe, dashboard) can't
+         * drift from how the store is named. */
+        public static string account_hash (string school_id, string username) {
+            return Checksum.compute_for_string (
+                ChecksumType.SHA256, "%s:%s".printf (school_id, username));
         }
 
         /* Best-effort name for the sidebar/profile. */

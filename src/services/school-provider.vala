@@ -30,6 +30,13 @@ namespace Opensprogskole {
         public int call_in_sick_cutoff = -1;     // minutes; -1 = none
     }
 
+    /* A category of data a provider may or may not serve. Drives which dashboard
+     * widgets a school can offer (see SchoolProvider.supports): UMS/Demo serve
+     * everything, LUDUS almost nothing yet. */
+    public enum DataKind {
+        TIMETABLE, ABSENCE, GRADES, PROFILE, FUTURE_ABSENCE, LINKS, NEWS
+    }
+
     /* The contract every language school's backend must satisfy.
      *
      * This is the seam that lets the app talk to several different schools: the
@@ -43,9 +50,19 @@ namespace Opensprogskole {
         /* Which school this provider serves. */
         public abstract School school { get; }
 
-        /* Bind the provider to an account so it can build its per-account cache.
-         * Called once before any load_*, after authenticate/resume. */
-        public abstract void use_account (string username);
+        /* Bind the provider to an account, handing it the session's shared
+         * per-account store to cache into. Called once before any load_*, after
+         * authenticate/resume. The provider must NOT open its own Storage on the
+         * same account — a second instance would clobber this one's writes. */
+        public abstract void use_account (string username, Storage storage);
+
+        /* Whether this school's backend serves `kind`. Default: everything
+         * (UMS/Demo). Providers with gaps (LUDUS) override. Lets the dashboard
+         * offer only widgets the school can actually fill, and show a clear
+         * "not available" state rather than a spinner that resolves to an error. */
+        public virtual bool supports (DataKind kind) {
+            return true;
+        }
 
         /* The ways to sign in to this school/instance. Static for now (no UMS
          * discovery API), but async so a future backend may probe. Default: a

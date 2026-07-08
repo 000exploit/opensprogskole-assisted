@@ -1,10 +1,13 @@
 [Desktop Entry]
 Name=OpenSprogskole
-Exec=opensprogskole
+# %u passes the OIDC redirect URI (x-scheme-handler below) to the running
+# instance; GApplication delivers it to Application.open().
+Exec=opensprogskole %u
 Icon=moe.ekusu.sprogskole
 Terminal=false
 Type=Application
 Categories=Utility;
 Keywords=GTK;
+MimeType=x-scheme-handler/dk.eg.ludus.mobile;
 StartupNotify=true
 DBusActivatable=true

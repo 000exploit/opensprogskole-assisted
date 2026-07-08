@@ -106,47 +106,105 @@ namespace Opensprogskole {
                 }
                 row.add_prefix (new Image.from_icon_name (family.icon_name));
                 row.add_suffix (new Image.from_icon_name ("go-next-symbolic"));
-                row.activated.connect (() => open_family (family));
+                row.activated.connect (() => open_family.begin (family));
                 families_group.add (row);
             }
         }
 
-        /* Populate (and show) the shared school-list page for `family`. A family
-         * with no schools — e.g. LUDUS until its directory is wired up — shows an
-         * empty state instead. */
-        private void open_family (ProviderFamily family) {
+        // Cancels an in-flight directory fetch when the user opens a different
+        // family or leaves — a slow LUDUS fetch shouldn't populate a stale page.
+        private GLib.Cancellable? directory_cancellable = null;
+
+        /* Open the shared school-list page for `family`. An unavailable family
+         * (still in development) shows a status page instead of a usable list —
+         * its schools are never rendered, so it can't be signed in to. An
+         * available one shows a spinner, fetches the schools (instant for the
+         * static UMS/Demo registries, a network round-trip for LUDUS), then
+         * shows the list, an empty state, or an error. */
+        private async void open_family (ProviderFamily family) {
             for (uint i = 0; i < listed_rows.length; i++) {
                 schools_group.remove (listed_rows[i]);
             }
             listed_rows = new GLib.GenericArray<Adw.ActionRow> ();
-            listed = family.list_schools ();
+            listed = new GLib.GenericArray<School> ();
 
-            if (listed.length == 0) {
-                empty_page.icon_name = family.available
-                    ? "system-search-symbolic" : "network-workgroup-symbolic";
-                empty_page.title = family.available
-                    ? _("No schools yet") : family.unavailable_note;
-                empty_page.description = family.available
-                    ? _("This provider has no schools listed.")
-                    : _("Sign-in for this provider isn't available yet.");
-                list_stack.visible_child_name = "empty";
-            } else {
-                for (uint i = 0; i < listed.length; i++) {
-                    var school = listed[i];
-                    var row = new Adw.ActionRow () {
-                        title = school.name,
-                        subtitle = school.city,
-                        activatable = true
-                    };
-                    row.add_suffix (new Image.from_icon_name ("go-next-symbolic"));
-                    row.activated.connect (() => choose (school));
-                    schools_group.add (row);
-                    listed_rows.add (row);
-                }
-                search_entry.text = "";
-                list_stack.visible_child_name = "list";
+            // Drop any in-flight fetch from a previous open before switching.
+            if (directory_cancellable != null) {
+                directory_cancellable.cancel ();
+                directory_cancellable = null;
             }
             nav.push_by_tag ("school-list");
+
+            if (!family.available) {
+                show_unavailable (family);
+                return;
+            }
+
+            list_stack.visible_child_name = "loading";
+            var cancellable = new GLib.Cancellable ();
+            directory_cancellable = cancellable;
+
+            try {
+                listed = yield family.fetch_schools (cancellable);
+            } catch (GLib.Error e) {
+                if (cancellable.is_cancelled ()) {
+                    return;   // superseded by another open — leave its page alone
+                }
+                show_directory_error ();
+                return;
+            }
+            if (cancellable.is_cancelled ()) {
+                return;
+            }
+            show_schools ();
+        }
+
+        /* A provider that isn't ready for sign-in yet (available == false): show
+         * its own note rather than any schools. */
+        private void show_unavailable (ProviderFamily family) {
+            empty_page.icon_name = "dialog-information-symbolic";
+            empty_page.title = _("Not available yet");
+            empty_page.description = family.unavailable_note != ""
+                ? family.unavailable_note
+                : _("Sign-in for this provider isn't available yet.");
+            list_stack.visible_child_name = "empty";
+        }
+
+        /* Render the fetched `listed` schools, or the empty state when the
+         * directory came back with none. */
+        private void show_schools () {
+            if (listed.length == 0) {
+                empty_page.icon_name = "system-search-symbolic";
+                empty_page.title = _("No schools yet");
+                empty_page.description = _("This provider has no schools listed.");
+                list_stack.visible_child_name = "empty";
+                return;
+            }
+            for (uint i = 0; i < listed.length; i++) {
+                var school = listed[i];
+                var row = new Adw.ActionRow () {
+                    title = school.name,
+                    subtitle = school.city,
+                    activatable = true,
+                    // School names are server data and contain literal "&"
+                    // (e.g. "Aarhus HF & VUC"); without this the default Pango
+                    // markup parse fails and the title renders blank.
+                    use_markup = false
+                };
+                row.add_suffix (new Image.from_icon_name ("go-next-symbolic"));
+                row.activated.connect (() => choose (school));
+                schools_group.add (row);
+                listed_rows.add (row);
+            }
+            search_entry.text = "";
+            list_stack.visible_child_name = "list";
+        }
+
+        private void show_directory_error () {
+            empty_page.icon_name = "network-offline-symbolic";
+            empty_page.title = _("Couldn't load schools");
+            empty_page.description = _("Check your connection and try again.");
+            list_stack.visible_child_name = "empty";
         }
 
         private void filter_schools () {

@@ -39,12 +39,15 @@ namespace Opensprogskole {
         [GtkChild] private unowned Adw.Banner error_banner;
         [GtkChild] private unowned Adw.Spinner spinner;
         [GtkChild] private unowned Button login_button;
+        [GtkChild] private unowned Button cancel_button;
         [GtkChild] private unowned Button continue_button;
         [GtkChild] private unowned Label version_label;
 
         /* The controller handles this. credentials is an a{sv} of field key→value. */
         public signal void login_request (School school, LoginMethod method,
                                           GLib.Variant credentials, bool remember);
+        /* The user asked to abort an in-flight login (see cancel_button). */
+        public signal void login_cancel_request ();
         public signal void finished ();
 
         private School? selected_school = null;
@@ -56,6 +59,7 @@ namespace Opensprogskole {
             hello_next_button.clicked.connect (() => nav.push_by_tag ("login"));
             school_row.activated.connect (present_school_picker);
             login_button.clicked.connect (on_login);
+            cancel_button.clicked.connect (() => login_cancel_request ());
             continue_button.clicked.connect (() => finished ());
 
             username_row.entry_activated.connect (() => password_row.grab_focus ());
@@ -141,6 +145,10 @@ namespace Opensprogskole {
         // --- Driven by the controller -------------------------------------------
         public void set_busy (bool busy) {
             spinner.visible = busy;
+            // Swap the login button for a Cancel button while busy, so a stuck
+            // browser flow is always escapable.
+            login_button.visible = !busy;
+            cancel_button.visible = busy;
             login_button.sensitive = !busy && methods.length > 0;
             school_row.sensitive = !busy;
             credentials_group.sensitive = !busy;

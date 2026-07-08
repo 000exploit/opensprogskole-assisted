@@ -77,6 +77,17 @@ template $OpensprogskoleSchoolPicker: Adw.Dialog {
 
         content: Stack list_stack {
           StackPage {
+            name: "loading";
+
+            child: Adw.Spinner {
+              width-request: 32;
+              height-request: 32;
+              halign: center;
+              valign: center;
+            };
+          }
+
+          StackPage {
             name: "list";
 
             child: Box {

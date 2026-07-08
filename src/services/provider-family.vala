@@ -32,9 +32,18 @@ namespace Opensprogskole {
         public abstract bool available { get; }
         public abstract string unavailable_note { owned get; }
 
-        /* The selectable schools in this family (static today; a future family may
-         * fetch its directory). */
+        /* The selectable schools in this family, synchronously — for families
+         * with a static registry (UMS, Demo). Families that fetch a directory
+         * return empty here and override fetch_schools. */
         public abstract GLib.GenericArray<School> list_schools ();
+
+        /* The selectable schools, possibly fetched from a directory. The picker
+         * calls this (with a spinner); the default just wraps the static
+         * list_schools so registry families need no async code. */
+        public virtual async GLib.GenericArray<School> fetch_schools (
+            GLib.Cancellable? cancellable = null) throws GLib.Error {
+            return list_schools ();
+        }
 
         /* Build the provider for a chosen school. device_* are used by UMS; other
          * families ignore them. */
@@ -82,22 +91,57 @@ namespace Opensprogskole {
         }
     }
 
-    /* LUDUS (EG) schools — OAuth/MitID. Not usable yet: shown greyed-out until the
-     * OAuth flow + per-school directory land. */
+    /* LUDUS (EG) schools — OIDC/MitID. Sign-in (LudusProvider) is implemented;
+     * the school directory is fetched live from the API gateway. NOTE: the data
+     * endpoints past sign-in are still stubbed (LudusError.NOT_MAPPED) pending a
+     * live check of their response shapes — see docs/ludus-api.md. */
     public class LudusFamily : GLib.Object, ProviderFamily {
         public string id { get { return "ludus"; } }
         public string display_name { owned get { return _("LUDUS schools"); } }
         public string icon_name { get { return "network-workgroup-symbolic"; } }
         public bool available { get { return false; } }
-        public string unavailable_note { owned get { return _("Coming soon"); } }
+        public string unavailable_note { owned get { return "In early development"; } }
+
+        // Palette index for the (identical) LUDUS school avatars in the picker.
+        private const int LUDUS_ACCENT = 5;
 
         public GLib.GenericArray<School> list_schools () {
-            return new GLib.GenericArray<School> ();   // fetched later
+            return new GLib.GenericArray<School> ();   // directory: see fetch_schools
+        }
+
+        /* Fetch the EG school directory and turn each entry into a School. The
+         * live response carries institutionName + institutionNumber (verified);
+         * the number identifies the school for API calls and rides in the id
+         * ("ludus:<number>"). The Keycloak realm is a single shared constant
+         * (LudusConfig.REALM), not per-school. */
+        public async GLib.GenericArray<School> fetch_schools (
+            GLib.Cancellable? cancellable = null) throws GLib.Error {
+            var arr = yield new LudusClient ().fetch_schools (cancellable);
+            var list = new GLib.GenericArray<School> ();
+            for (uint i = 0; i < arr.get_length (); i++) {
+                var node = arr.get_element (i);
+                if (node.get_node_type () != Json.NodeType.OBJECT) {
+                    continue;
+                }
+                var obj = node.get_object ();
+                string inst = obj.get_string_member_with_default ("institutionNumber", "");
+                if (inst == "") {
+                    continue;   // no API identity — unusable
+                }
+                string name = obj.get_string_member_with_default ("institutionName", "");
+                if (name == "") {
+                    name = obj.get_string_member_with_default ("name", inst);
+                }
+                list.add (new School ("ludus:" + inst, name, "", "L",
+                                      LudusConfig.API_GATEWAY,
+                                      "1030", LUDUS_ACCENT, 0, 0, 1, "ludus"));
+            }
+            return list;
         }
 
         public SchoolProvider create_provider (School school, string device_name,
                                                string device_id) {
-            assert_not_reached ();   // unavailable — never selected
+            return new LudusProvider (school);   // device_* are UMS-only
         }
     }
 

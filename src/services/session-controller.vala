@@ -49,6 +49,9 @@ namespace Opensprogskole {
         public signal void needs_login (string? username, string? error);
         /* A manual login attempt failed. */
         public signal void login_failed (string message);
+        /* A manual login attempt was cancelled by the user (no error to show —
+         * just drop the busy state). */
+        public signal void login_cancelled ();
         /* A manual login attempt succeeded (Window shows the welcome page). */
         public signal void login_succeeded ();
         /* The session is ready and its first data load is done. */
@@ -174,12 +177,26 @@ namespace Opensprogskole {
         /* Authenticate from the onboarding form. The session secret is always
          * saved; the credentials only with consent (a PASSWORD method). Demo
          * (NONE) persists nothing secret. */
+        // Cancellable for the in-flight manual login, so the user can abort a
+        // browser (OIDC) flow that would otherwise hang forever. Null when no
+        // login is running.
+        private GLib.Cancellable? login_cancellable = null;
+
+        /* Abort an in-flight try_login (the onboarding Cancel button). */
+        public void cancel_login () {
+            if (login_cancellable != null) {
+                login_cancellable.cancel ();
+            }
+        }
+
         public async void try_login (School school, LoginMethod method,
                                      GLib.Variant credentials, bool remember) {
             var family = Families.by_id (school.family_id);
+            var cancellable = new GLib.Cancellable ();
+            login_cancellable = cancellable;
             try {
                 var provider = family.create_provider (school, device_name, device_id);
-                yield provider.authenticate (method, credentials);
+                yield provider.authenticate (method, credentials, cancellable);
 
                 string account = credential (credentials, "username");
                 if (account == "") {
@@ -211,7 +228,16 @@ namespace Opensprogskole {
                     ? _("Invalid username or password.")
                     : _("Login failed: %s").printf (e.message));
             } catch (GLib.Error e) {
-                login_failed (_("Login failed: %s").printf (e.message));
+                // A cancel surfaces as an error (IOError.CANCELLED, or a
+                // provider FLOW abort); it's a user action, not a failure.
+                if (cancellable.is_cancelled ()) {
+                    login_cancelled ();
+                } else {
+                    login_failed (_("Login failed: %s").printf (e.message));
+                }
+            }
+            if (login_cancellable == cancellable) {
+                login_cancellable = null;
             }
         }
 

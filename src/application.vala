@@ -27,7 +27,10 @@ public class Opensprogskole.Application : Adw.Application {
 #if ANDROID
         var app_flags = ApplicationFlags.NON_UNIQUE;
 #else
-        var app_flags = ApplicationFlags.DEFAULT_FLAGS;
+        // HANDLES_OPEN: the OIDC redirect (dk.eg.ludus.mobile://login-callback)
+        // reaches us as an "open this URI" request, routed to the running
+        // instance since we stay single-instance (see open()).
+        var app_flags = ApplicationFlags.HANDLES_OPEN;
 #endif
         Object (
             application_id: "moe.ekusu.sprogskole",
@@ -110,6 +113,25 @@ public class Opensprogskole.Application : Adw.Application {
         // before the process goes away.
         Storage.flush_all ();
         base.shutdown ();
+    }
+
+    /* Custom-scheme handler entry point. The OS hands us the OIDC redirect
+     * URI(s) here; we route callbacks to the waiting LUDUS login and otherwise
+     * just make sure a window exists. Any open request also implies the app
+     * should be running, so fall back to activate()'s window bootstrap. */
+    public override void open (GLib.File[] files, string hint) {
+        if (this.active_window == null) {
+            activate ();
+        }
+        foreach (var file in files) {
+            string uri = file.get_uri ();
+            if (OidcCallbackRouter.is_callback (uri)) {
+                OidcCallbackRouter.get_default ().deliver (uri);
+            }
+        }
+        if (this.active_window != null) {
+            this.active_window.present ();
+        }
     }
 
     public override void activate () {

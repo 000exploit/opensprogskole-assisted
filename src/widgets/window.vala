@@ -64,6 +64,7 @@ public class Opensprogskole.Window : Adw.ApplicationWindow {
             onboarding.set_busy (true);
             controller.try_login.begin (school, method, credentials, remember);
         });
+        onboarding.login_cancel_request.connect (() => controller.cancel_login ());
         onboarding.finished.connect (() => controller.enter ());
 
         // Controller state → screens.
@@ -85,6 +86,9 @@ public class Opensprogskole.Window : Adw.ApplicationWindow {
         controller.login_failed.connect ((message) => {
             onboarding.set_busy (false);
             onboarding.show_error (message);
+        });
+        controller.login_cancelled.connect (() => {
+            onboarding.set_busy (false);   // back to the form, no error banner
         });
         controller.login_succeeded.connect (() => {
             onboarding.set_busy (false);

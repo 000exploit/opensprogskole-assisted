@@ -149,6 +149,18 @@ template $OpensprogskoleOnboardingView: Adw.Bin {
                     "pill",
                   ]
                 }
+
+                // Shown only while a login is in flight (esp. the LUDUS browser
+                // flow, which can otherwise hang forever); aborts it.
+                Button cancel_button {
+                  label: _("Cancel");
+                  hexpand: true;
+                  visible: false;
+
+                  styles [
+                    "pill",
+                  ]
+                }
               }
 
               Label version_label {

@@ -26,11 +26,12 @@ Currently, the application supports the following language schools:
 <details>
 <summary>Dependencies</summary>
 
-- `gio-2.0` >= 2.86
-- `glib-2.0` >= 2.86
+- `gio-2.0` >= 2.84
+- `glib-2.0` >= 2.84
 - `gtk-4` >= 4.22
 - `json-glib-1.0` >= 1.10
-- `libadwaita-1` >= 1.6
+- `libadwaita-1` >= 1.7
+- `libm` ? 
 - `libsecret-1` ?
 - `libsoup-3` >= 3.6
 - `valac` ?

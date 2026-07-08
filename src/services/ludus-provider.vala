@@ -83,10 +83,10 @@ namespace Opensprogskole {
             string url = LudusOidc.authorization_url (
                 realm, state, nonce, LudusOidc.challenge_for (verifier));
 
-            // Hand the authorization URL to the default browser. Gio's launcher
-            // needs no window, keeping this UI-free; the callback returns via
-            // the OS → Application.open → OidcCallbackRouter.
-            yield GLib.AppInfo.launch_default_for_uri_async (url, null, cancel);
+            var launcher = new Gtk.UriLauncher (url);
+            Gtk.Window? parent =
+                (GLib.Application.get_default () as Gtk.Application)?.active_window;
+            yield launcher.launch (parent, cancel);
 
             string? redirect = yield OidcCallbackRouter.get_default ().next (cancel);
             if (redirect == null) {

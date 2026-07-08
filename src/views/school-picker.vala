@@ -44,10 +44,9 @@ namespace Opensprogskole {
         [GtkChild] private unowned Label api_note;
         [GtkChild] private unowned Label custom_note;
         [GtkChild] private unowned Button use_button;
-        [GtkChild] private unowned Button paste_button;
         [GtkChild] private unowned Button copy_button;
-        [GtkChild] private unowned Revealer paste_note_revealer;
-        [GtkChild] private unowned Label paste_note;
+        [GtkChild] private unowned Adw.AlertDialog add_dialog;
+        [GtkChild] private unowned Adw.AlertDialog paste_error_dialog;
         [GtkChild] private unowned Adw.AlertDialog paste_dialog;
 
         // The Blueprint-defined resting strings, captured before code ever
@@ -65,19 +64,25 @@ namespace Opensprogskole {
             new GLib.GenericArray<Adw.ActionRow> ();
 
         construct {
-            default_paste_error = paste_note.label;
+            default_paste_error = paste_error_dialog.body;
             default_copy_label = copy_button.label;
             build_families ();
 
             backend_row.model = new StringList ({ _("UMS (username / password)"),
                                                   _("LUDUS (OIDC / MitID)") });
 
-            custom_button.clicked.connect (() => nav.push_by_tag ("custom"));
+            custom_button.clicked.connect (() => add_dialog.present (this));
+            add_dialog.response.connect ((response) => {
+                switch (response) {
+                    case "paste":  on_paste_config (); break;
+                    case "manual": nav.push_by_tag ("custom"); break;
+                    default:       break;
+                }
+            });
             search_entry.search_changed.connect (filter_schools);
             backend_row.notify["selected"].connect (sync_backend);
             url_row.changed.connect (validate_custom);
             use_button.clicked.connect (on_use_custom);
-            paste_button.clicked.connect (on_paste_config);
             copy_button.clicked.connect (on_copy_config);
             paste_dialog.response.connect ((response) => {
                 if (response == "use" && pasted != null) {
@@ -208,7 +213,6 @@ namespace Opensprogskole {
          * school (name + the URL credentials would go to) before using it.
          * Pasted configs are session-only — nothing is written anywhere. */
         private void on_paste_config () {
-            paste_note_revealer.reveal_child = false;
             var clipboard = get_clipboard ();
             clipboard.read_text_async.begin (null, (obj, res) => {
                 string? text = null;
@@ -252,11 +256,11 @@ namespace Opensprogskole {
             });
         }
 
-        /* Reveal the error note: a dynamic message (parse failure), or with
-         * no argument the label's Blueprint default (empty clipboard). */
+        /* Present the error dialog: a dynamic message (parse failure), or
+         * with no argument its Blueprint default body (empty clipboard). */
         private void show_paste_error (string? message = null) {
-            paste_note.label = message ?? default_paste_error;
-            paste_note_revealer.reveal_child = true;
+            paste_error_dialog.body = message ?? default_paste_error;
+            paste_error_dialog.present (this);
         }
 
         private void choose (School school) {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opensprogskole\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-08 05:48+0200\n"
+"POT-Creation-Date: 2026-07-08 23:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 msgid "OpenSprogskole"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.desktop.in:8
+#: data/moe.ekusu.sprogskole.desktop.in:10
 msgid "GTK;"
 msgstr ""
 
@@ -190,8 +190,7 @@ msgstr ""
 
 #: data/ui/absence-dialog.blp:5 data/ui/absence-dialog.blp:13
 #: data/ui/absence-dialog.blp:376 data/ui/absence-page.blp:39
-#: data/ui/overview-page.blp:50 data/ui/overview-page.blp:226
-#: src/services/ums-endpoints.vala:62
+#: data/ui/dashboard-view.blp:69 src/services/ums-endpoints.vala:62
 msgid "Report absence"
 msgstr ""
 
@@ -199,7 +198,7 @@ msgstr ""
 msgid "When does the absence apply?"
 msgstr ""
 
-#: data/ui/absence-dialog.blp:51 src/views/overview-page.vala:136
+#: data/ui/absence-dialog.blp:51 src/widgets/tile-up-next.vala:213
 msgid "Today"
 msgstr ""
 
@@ -285,7 +284,7 @@ msgstr ""
 #: data/ui/absence-page.blp:26 data/ui/lesson-dialog.blp:105
 #: data/ui/main-view.blp:285 src/services/ums-endpoints.vala:57
 #: src/views/absence-page.vala:138 src/views/absence-page.vala:204
-#: src/views/main-view.vala:76 src/views/main-view.vala:263
+#: src/views/main-view.vala:76 src/views/main-view.vala:266
 msgid "Absence"
 msgstr ""
 
@@ -379,8 +378,24 @@ msgstr ""
 msgid "Copy to Clipboard"
 msgstr ""
 
-#: data/ui/error-details-dialog.blp:69 data/ui/school-picker.blp:255
+#: data/ui/error-details-dialog.blp:69 data/ui/school-picker.blp:266
 msgid "Close"
+msgstr ""
+
+#: data/ui/dashboard-widget.blp:56
+msgid "Change size"
+msgstr ""
+
+#: data/ui/dashboard-widget.blp:69
+msgid "Remove widget"
+msgstr ""
+
+#: data/ui/dashboard-widget.blp:104
+msgid "Not available for this school"
+msgstr ""
+
+#: data/ui/dashboard-widget.blp:105
+msgid "This school's system doesn't provide this data."
 msgstr ""
 
 #: data/ui/grades-page.blp:30
@@ -429,7 +444,7 @@ msgstr ""
 #. valid value to save/restore. Set once the template (and its
 #. layouts) exist.
 #: data/ui/main-view.blp:232 data/ui/main-view.blp:264
-#: src/views/main-view.vala:73 src/views/main-view.vala:265
+#: src/views/main-view.vala:73 src/views/main-view.vala:268
 msgid "Overview"
 msgstr ""
 
@@ -442,12 +457,13 @@ msgid "You're offline"
 msgstr ""
 
 #: data/ui/main-view.blp:271 data/ui/schedule-view.blp:19
-#: src/views/main-view.vala:74 src/views/main-view.vala:261
+#: src/views/main-view.vala:74 src/views/main-view.vala:264
 msgid "Schedule"
 msgstr ""
 
-#: data/ui/main-view.blp:278 src/services/ums-endpoints.vala:56
-#: src/views/main-view.vala:75 src/views/main-view.vala:262
+#: data/ui/main-view.blp:278 src/services/dashboard-registry.vala:124
+#: src/services/ums-endpoints.vala:56 src/views/main-view.vala:75
+#: src/views/main-view.vala:265
 msgid "Grades"
 msgstr ""
 
@@ -464,7 +480,7 @@ msgstr ""
 msgid "News"
 msgstr ""
 
-#: data/ui/main-view.blp:323 data/ui/overview-page.blp:276
+#: data/ui/main-view.blp:323
 msgid "Your school hasn't published any news."
 msgstr ""
 
@@ -505,7 +521,7 @@ msgstr ""
 msgid "_About OpenSprogskole"
 msgstr ""
 
-#: data/ui/onboarding-view.blp:9 data/ui/onboarding-view.blp:171
+#: data/ui/onboarding-view.blp:9 data/ui/onboarding-view.blp:183
 msgid "Welcome"
 msgstr ""
 
@@ -518,7 +534,7 @@ msgid "Get started"
 msgstr ""
 
 #: data/ui/onboarding-view.blp:37 data/ui/onboarding-view.blp:143
-#: src/views/onboarding-view.vala:99
+#: src/views/onboarding-view.vala:103
 msgid "Log in"
 msgstr ""
 
@@ -546,56 +562,50 @@ msgstr ""
 msgid "Remember me"
 msgstr ""
 
-#: data/ui/onboarding-view.blp:182
+#: data/ui/onboarding-view.blp:156 data/ui/school-picker.blp:251
+#: data/ui/school-picker.blp:278 data/ui/window.blp:51
+#: src/views/absence-page.vala:250
+msgid "Cancel"
+msgstr ""
+
+#: data/ui/onboarding-view.blp:194
 msgid "You're all set"
 msgstr ""
 
-#: data/ui/onboarding-view.blp:183
+#: data/ui/onboarding-view.blp:195
 msgid "Your account is connected and your details are saved."
 msgstr ""
 
-#: data/ui/onboarding-view.blp:186
+#: data/ui/onboarding-view.blp:198
 msgid "Continue"
 msgstr ""
 
-#: data/ui/overview-page.blp:85
-msgid "Up next"
+#: data/ui/dashboard-view.blp:83
+msgid "Add widget"
 msgstr ""
 
-#: data/ui/overview-page.blp:107
-msgid "View schedule"
+#: data/ui/dashboard-view.blp:94
+msgid "Edit dashboard"
 msgstr ""
 
-#: data/ui/overview-page.blp:127
-msgid "Loading lessons…"
+#: data/ui/dashboard-view.blp:117
+msgid "Your dashboard is empty"
 msgstr ""
 
-#: data/ui/overview-page.blp:149
-msgid "No more lessons"
+#: data/ui/dashboard-view.blp:118
+msgid "Tap Edit, then Add widget to get started."
 msgstr ""
 
-#: data/ui/overview-page.blp:150
-msgid "You have no upcoming lessons scheduled."
+#: data/ui/dashboard-add-dialog.blp:7
+msgid "Add a widget"
 msgstr ""
 
-#: data/ui/overview-page.blp:170
-msgid "Attendance"
+#: data/ui/dashboard-add-dialog.blp:39
+msgid "No widgets available"
 msgstr ""
 
-#: data/ui/overview-page.blp:185
-msgid "Loading attendance…"
-msgstr ""
-
-#: data/ui/overview-page.blp:241
-msgid "Recent grades"
-msgstr ""
-
-#: data/ui/overview-page.blp:252
-msgid "All grades"
-msgstr ""
-
-#: data/ui/overview-page.blp:275
-msgid "No news right now"
+#: data/ui/dashboard-add-dialog.blp:40
+msgid "This school's system doesn't provide data for any widgets yet."
 msgstr ""
 
 #: data/ui/profile-page.blp:38
@@ -663,86 +673,81 @@ msgstr ""
 msgid "Schools"
 msgstr ""
 
-#: data/ui/school-picker.blp:93
+#: data/ui/school-picker.blp:104
 msgid "Search schools"
 msgstr ""
 
-#: data/ui/school-picker.blp:128 src/services/school-config.vala:98
-#: src/views/school-picker.vala:274
+#: data/ui/school-picker.blp:139 src/services/school-config.vala:98
+#: src/views/school-picker.vala:332
 msgid "Custom school"
 msgstr ""
 
-#: data/ui/school-picker.blp:150
+#: data/ui/school-picker.blp:161
 msgid "Backend"
 msgstr ""
 
-#: data/ui/school-picker.blp:154
+#: data/ui/school-picker.blp:165
 msgid "Display name"
 msgstr ""
 
-#: data/ui/school-picker.blp:158
+#: data/ui/school-picker.blp:169
 msgid "Base URL"
 msgstr ""
 
-#: data/ui/school-picker.blp:162
+#: data/ui/school-picker.blp:173
 msgid "Realm (OIDC)"
 msgstr ""
 
-#: data/ui/school-picker.blp:168
+#: data/ui/school-picker.blp:179
 msgid ""
 "Enter an https:// URL — plain http would send your password unencrypted."
 msgstr ""
 
-#: data/ui/school-picker.blp:180
+#: data/ui/school-picker.blp:191
 msgid "UMS base URLs usually end with “/api” — double-check if sign-in fails."
 msgstr ""
 
-#: data/ui/school-picker.blp:192
+#: data/ui/school-picker.blp:203
 msgid "LUDUS sign-in isn't available yet."
 msgstr ""
 
-#: data/ui/school-picker.blp:203
+#: data/ui/school-picker.blp:214
 msgid "Use this provider"
 msgstr ""
 
-#: data/ui/school-picker.blp:216
+#: data/ui/school-picker.blp:227
 msgid "Copy Config"
 msgstr ""
 
-#: data/ui/school-picker.blp:234
+#: data/ui/school-picker.blp:245
 msgid "Add a Custom School"
 msgstr ""
 
-#: data/ui/school-picker.blp:235
+#: data/ui/school-picker.blp:246
 msgid "Paste a shared school config, or enter the details manually."
 msgstr ""
 
-#: data/ui/school-picker.blp:240 data/ui/school-picker.blp:267
-#: data/ui/window.blp:51 src/views/absence-page.vala:250
-msgid "Cancel"
-msgstr ""
-
-#: data/ui/school-picker.blp:241
+#: data/ui/school-picker.blp:252
 msgid "Paste Config"
 msgstr ""
 
-#: data/ui/school-picker.blp:242
+#: data/ui/school-picker.blp:253
 msgid "Enter Manually"
 msgstr ""
 
-#: data/ui/school-picker.blp:249
+#: data/ui/school-picker.blp:260
 msgid "Couldn't Use the Config"
 msgstr ""
 
-#: data/ui/school-picker.blp:250
+#: data/ui/school-picker.blp:261
 msgid "There is no config on the clipboard."
 msgstr ""
 
-#: data/ui/school-picker.blp:262
+#: data/ui/school-picker.blp:273
 msgid "Use this school?"
 msgstr ""
 
-#: data/ui/school-picker.blp:268
+#: data/ui/school-picker.blp:279
 msgid "Use"
 msgstr ""
 
@@ -776,11 +781,11 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
-#: src/application.vala:140
+#: src/application.vala:162
 msgid "translator-credits"
 msgstr ""
 
-#: src/application.vala:142
+#: src/application.vala:164
 msgid ""
 "View your schedule, grades and homework, and report absence at your Danish "
 "language school.\n"
@@ -790,26 +795,36 @@ msgstr ""
 
 #. The school and its backend vendor; a LUDUS link joins these once
 #. LUDUS sign-in actually works.
-#: src/application.vala:146
+#: src/application.vala:168
 msgid "Sprogcenter Midt"
 msgstr ""
 
-#: src/application.vala:147
+#: src/application.vala:169
 msgid "UMS by Inlogic"
 msgstr ""
 
-#: src/application.vala:153
+#: src/application.vala:175
 msgid "Portions adapted from Tuba"
 msgstr ""
 
 #. The APK bundles the platform stack a desktop OS would provide as
 #. shared libraries; the notice-requiring licenses get a section.
-#: src/application.vala:168
+#: src/application.vala:190
 msgid "Bundled GNOME platform libraries"
 msgstr ""
 
 #: src/services/error-reporter.vala:121
 msgid "… [truncated]"
+msgstr ""
+
+#: src/services/dashboard-registry.vala:114
+msgid "Up next"
+msgstr ""
+
+#. One attendance widget, two looks: a donut when full/half, the
+#. expressive wave gauge when mini (switch via the resize button).
+#: src/services/dashboard-registry.vala:120
+msgid "Attendance"
 msgstr ""
 
 #: src/services/school-config.vala:62
@@ -836,20 +851,24 @@ msgid ""
 "unencrypted."
 msgstr ""
 
+#: src/services/ludus-provider.vala:64
+msgid "Continue to sign-in"
+msgstr ""
+
 #: src/services/schools.vala:45
 msgid "Demo School"
 msgstr ""
 
-#: src/services/session-controller.vala:170
+#: src/services/session-controller.vala:173
 msgid "Couldn't sign you in automatically. Please log in again."
 msgstr ""
 
-#: src/services/session-controller.vala:211
+#: src/services/session-controller.vala:228
 msgid "Invalid username or password."
 msgstr ""
 
-#: src/services/session-controller.vala:212
-#: src/services/session-controller.vala:214
+#: src/services/session-controller.vala:229
+#: src/services/session-controller.vala:236
 #, c-format
 msgid "Login failed: %s"
 msgstr ""
@@ -907,7 +926,7 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
-#: src/services/ums-provider.vala:90
+#: src/services/ums-provider.vala:89
 msgid "SSO"
 msgstr ""
 
@@ -960,11 +979,11 @@ msgstr ""
 msgid "Couldn't save your changes — check your connection."
 msgstr ""
 
-#: src/views/grades-page.vala:58
+#: src/views/grades-page.vala:58 src/widgets/tile-grades.vala:89
 msgid "Couldn't load grades."
 msgstr ""
 
-#: src/views/main-view.vala:77 src/views/main-view.vala:264
+#: src/views/main-view.vala:77 src/views/main-view.vala:267
 msgid "Your information"
 msgstr ""
 
@@ -972,65 +991,33 @@ msgstr ""
 msgid "Offline"
 msgstr ""
 
-#: src/views/onboarding-view.vala:54
+#: src/views/onboarding-view.vala:57
 #, c-format
 msgid "Version %s"
 msgstr ""
 
-#: src/views/onboarding-view.vala:99 src/services/login-method.vala:75
+#: src/views/onboarding-view.vala:103 src/services/login-method.vala:75
 msgid "Enter"
 msgstr ""
 
-#: src/views/overview-page.vala:84
+#: src/views/dashboard-view.vala:105
 #, c-format
 msgid "Good night, %s"
 msgstr ""
 
-#: src/views/overview-page.vala:87
+#: src/views/dashboard-view.vala:108
 #, c-format
 msgid "Good morning, %s"
 msgstr ""
 
-#: src/views/overview-page.vala:90
+#: src/views/dashboard-view.vala:111
 #, c-format
 msgid "Good afternoon, %s"
 msgstr ""
 
-#: src/views/overview-page.vala:92
+#: src/views/dashboard-view.vala:113
 #, c-format
 msgid "Good evening, %s"
-msgstr ""
-
-#: src/views/overview-page.vala:123
-msgid "Couldn't load lessons."
-msgstr ""
-
-#. Translators: a weekday + date, e.g. "Tuesday, 30 June".
-#. Reorder the %A/%-d/%B parts to suit your locale —
-#. see `man strftime` for what each one means.
-#: src/views/overview-page.vala:145
-msgid "%A, %-d %B"
-msgstr ""
-
-#: src/views/overview-page.vala:158
-msgid "Couldn't load attendance."
-msgstr ""
-
-#: src/views/overview-page.vala:168
-msgid "no data"
-msgstr ""
-
-#: src/views/overview-page.vala:169
-msgid "No attendance data"
-msgstr ""
-
-#: src/views/overview-page.vala:183
-msgid "present"
-msgstr ""
-
-#: src/views/overview-page.vala:184
-#, c-format
-msgid "Present %.1f%% · Not approved %.1f%% · Late %.1f%%"
 msgstr ""
 
 #: src/views/profile-page.vala:71
@@ -1097,27 +1084,27 @@ msgstr ""
 msgid "Couldn't save your change — check your connection."
 msgstr ""
 
-#: src/views/profile-page.vala:329
+#: src/views/profile-page.vala:332
 msgid "Choose a profile photo"
 msgstr ""
 
-#: src/views/profile-page.vala:331
+#: src/views/profile-page.vala:334
 msgid "Images"
 msgstr ""
 
-#: src/views/profile-page.vala:360
+#: src/views/profile-page.vala:363
 msgid "Photo uploaded — awaiting approval"
 msgstr ""
 
-#: src/views/profile-page.vala:363
+#: src/views/profile-page.vala:366
 msgid "Couldn't upload the photo — check your connection."
 msgstr ""
 
-#: src/views/profile-page.vala:375
+#: src/views/profile-page.vala:378
 msgid "Pending photo removed"
 msgstr ""
 
-#: src/views/profile-page.vala:378
+#: src/views/profile-page.vala:381
 msgid "Couldn't remove the photo. Please try again."
 msgstr ""
 
@@ -1129,19 +1116,31 @@ msgstr ""
 msgid "LUDUS (OIDC / MitID)"
 msgstr ""
 
-#: src/views/school-picker.vala:128
-msgid "No schools yet"
+#: src/views/school-picker.vala:166
+msgid "Not available yet"
 msgstr ""
 
-#: src/views/school-picker.vala:130
-msgid "This provider has no schools listed."
-msgstr ""
-
-#: src/views/school-picker.vala:131
+#: src/views/school-picker.vala:169
 msgid "Sign-in for this provider isn't available yet."
 msgstr ""
 
-#: src/views/school-picker.vala:248
+#: src/views/school-picker.vala:178
+msgid "No schools yet"
+msgstr ""
+
+#: src/views/school-picker.vala:179
+msgid "This provider has no schools listed."
+msgstr ""
+
+#: src/views/school-picker.vala:205
+msgid "Couldn't load schools"
+msgstr ""
+
+#: src/views/school-picker.vala:206
+msgid "Check your connection and try again."
+msgstr ""
+
+#: src/views/school-picker.vala:306
 msgid "Copied"
 msgstr ""
 
@@ -1188,6 +1187,100 @@ msgstr ""
 msgid "(empty response body)"
 msgstr ""
 
+#: src/widgets/tile-up-next.vala:70
+msgid "View schedule"
+msgstr ""
+
+#: src/widgets/tile-up-next.vala:98
+msgid "Open"
+msgstr ""
+
+#: src/widgets/tile-up-next.vala:126
+msgid "Couldn't load lessons."
+msgstr ""
+
+#: src/widgets/tile-up-next.vala:135
+msgid "No more lessons"
+msgstr ""
+
+#: src/widgets/tile-up-next.vala:136
+msgid "You're all caught up."
+msgstr ""
+
+#: src/widgets/tile-up-next.vala:155 src/widgets/tile-up-next.vala:164
+msgid "NEXT CLASS"
+msgstr ""
+
+#: src/widgets/tile-up-next.vala:156
+msgid "Nothing scheduled"
+msgstr ""
+
+#: src/widgets/tile-up-next.vala:163
+#, c-format
+msgid "NEXT CLASS · IN %s"
+msgstr ""
+
+#: src/widgets/tile-up-next.vala:204
+#, c-format
+msgid "%d MIN"
+msgstr ""
+
+#: src/widgets/tile-up-next.vala:208
+#, c-format
+msgid "%dH %dMIN"
+msgstr ""
+
+#: src/widgets/tile-up-next.vala:208
+#, c-format
+msgid "%dH"
+msgstr ""
+
+#. Translators: a weekday + date, e.g. "Tuesday, 30 June".
+#: src/widgets/tile-up-next.vala:220
+msgid "%A, %-d %B"
+msgstr ""
+
+#: src/widgets/tile-attendance.vala:96
+msgid "Couldn't load attendance."
+msgstr ""
+
+#: src/widgets/tile-attendance.vala:110 src/widgets/tile-attendance.vala:124
+msgid "no data"
+msgstr ""
+
+#: src/widgets/tile-attendance.vala:114
+msgid "Present"
+msgstr ""
+
+#: src/widgets/tile-attendance.vala:125
+msgid "No attendance data"
+msgstr ""
+
+#: src/widgets/tile-attendance.vala:136
+msgid "present"
+msgstr ""
+
+#: src/widgets/tile-attendance.vala:137
+#, c-format
+msgid "Present %.1f%% · Not approved %.1f%% · Late %.1f%%"
+msgstr ""
+
+#: src/widgets/tile-grades.vala:101
+msgid "No grades yet"
+msgstr ""
+
+#: src/widgets/tile-grades.vala:102
+msgid "Grades will appear here once your school posts them."
+msgstr ""
+
+#: src/widgets/tile-grades.vala:124
+msgid "no grades"
+msgstr ""
+
+#: src/widgets/tile-grades.vala:129
+msgid "passed"
+msgstr ""
+
 #: src/widgets/lesson-dialog.vala:111
 msgid "Comment"
 msgstr ""
@@ -1204,24 +1297,20 @@ msgstr ""
 msgid "Teachers"
 msgstr ""
 
-#: src/widgets/window.vala:109
+#: src/widgets/window.vala:113
 msgid "Details"
 msgstr ""
 
-#: src/services/provider-family.vala:49
+#: src/services/provider-family.vala:58
 msgid "UMS schools"
 msgstr ""
 
-#: src/services/provider-family.vala:68
+#: src/services/provider-family.vala:77
 msgid "Demo"
 msgstr ""
 
-#: src/services/provider-family.vala:89
+#: src/services/provider-family.vala:100
 msgid "LUDUS schools"
-msgstr ""
-
-#: src/services/provider-family.vala:92
-msgid "Coming soon"
 msgstr ""
 
 #: src/services/login-method.vala:67

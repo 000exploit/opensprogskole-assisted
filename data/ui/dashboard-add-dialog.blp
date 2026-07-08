@@ -1,0 +1,45 @@
+using Gtk 4.0;
+using Adw 1;
+
+// Picks a widget to add to the dashboard. Rows are built in code from the
+// registry, filtered by provider capability + what's already placed.
+template $OpensprogskoleDashboardAddDialog: Adw.Dialog {
+  title: _("Add a widget");
+  content-width: 400;
+  content-height: 480;
+
+  child: Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
+
+    content: Stack stack {
+      StackPage {
+        name: "list";
+
+        child: ScrolledWindow {
+          hscrollbar-policy: never;
+
+          child: Adw.Clamp {
+            maximum-size: 400;
+            margin-top: 12;
+            margin-bottom: 18;
+            margin-start: 12;
+            margin-end: 12;
+
+            child: Adw.PreferencesGroup group {};
+          };
+        };
+      }
+
+      StackPage {
+        name: "empty";
+
+        child: Adw.StatusPage {
+          icon-name: "view-grid-symbolic";
+          title: _("No widgets available");
+          description: _("This school's system doesn't provide data for any widgets yet.");
+        };
+      }
+    };
+  };
+}

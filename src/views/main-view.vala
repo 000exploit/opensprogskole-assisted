@@ -44,7 +44,7 @@ namespace Opensprogskole {
         [GtkChild] private unowned Button profile_button;
         [GtkChild] private unowned Adw.Avatar profile_avatar;
         [GtkChild] private unowned Label profile_name;
-        [GtkChild] private unowned OverviewPage overview;
+        [GtkChild] private unowned DashboardView overview;
         [GtkChild] private unowned ScheduleView schedule;
         [GtkChild] private unowned AbsencePage absence;
         [GtkChild] private unowned GradesPage grades_page;

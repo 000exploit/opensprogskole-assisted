@@ -20,12 +20,14 @@
     <file preprocess="xml-stripblanks">ui/absence-dialog.ui</file>
     <file preprocess="xml-stripblanks">ui/reason-dialog.ui</file>
     <file preprocess="xml-stripblanks">ui/error-details-dialog.ui</file>
+    <file preprocess="xml-stripblanks">ui/dashboard-widget.ui</file>
     <file preprocess="xml-stripblanks">ui/schedule-view.ui</file>
     <file preprocess="xml-stripblanks">ui/onboarding-view.ui</file>
     <file preprocess="xml-stripblanks">ui/preferences-dialog.ui</file>
     <file preprocess="xml-stripblanks">ui/school-picker.ui</file>
     <file preprocess="xml-stripblanks">ui/main-view.ui</file>
-    <file preprocess="xml-stripblanks">ui/overview-page.ui</file>
+    <file preprocess="xml-stripblanks">ui/dashboard-view.ui</file>
+    <file preprocess="xml-stripblanks">ui/dashboard-add-dialog.ui</file>
     <file preprocess="xml-stripblanks">ui/absence-page.ui</file>
     <file preprocess="xml-stripblanks">ui/links-page.ui</file>
     <file preprocess="xml-stripblanks">ui/grades-page.ui</file>

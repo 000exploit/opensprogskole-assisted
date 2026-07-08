@@ -1,0 +1,139 @@
+using Gtk 4.0;
+using Adw 1;
+
+// The modular overview: a greeting header + action row, then a reflowing
+// WrapBox of widget tiles (built from the per-account saved layout in code).
+template $OpensprogskoleDashboardView: Adw.Bin {
+  child: Adw.BreakpointBin breakpoint_bin {
+    width-request: 300;
+    height-request: 200;
+
+    // Narrow (phone) tuning, declaratively: tighter margins + tile gaps. The
+    // tiles themselves already collapse to one column via their min-widths, and
+    // the Report button stays full-size by design.
+    Adw.Breakpoint {
+      condition ("max-width: 500sp")
+
+      setters {
+        content_clamp.margin-start: 6;
+        content_clamp.margin-end: 6;
+        tiles.child-spacing: 12;
+        tiles.line-spacing: 12;
+        report_button.visible: false;
+        report_button_mobile.visible: true;
+      }
+    }
+
+    child: ScrolledWindow {
+    hscrollbar-policy: never;
+    vexpand: true;
+
+    child: Adw.Clamp content_clamp {
+      maximum-size: 900;
+      margin-top: 18;
+      margin-bottom: 24;
+      margin-start: 12;
+      margin-end: 12;
+
+      child: Box {
+        orientation: vertical;
+        spacing: 18;
+
+        Box {
+          spacing: 12;
+
+          Box {
+            orientation: vertical;
+            spacing: 2;
+            hexpand: true;
+            valign: center;
+
+            Label greeting {
+              halign: start;
+              wrap: true;
+              xalign: 0;
+
+              styles [
+                "title-1",
+              ]
+            }
+
+            Label subtitle {
+              halign: start;
+              wrap: true;
+              xalign: 0;
+
+              styles [
+                "dim-label",
+              ]
+            }
+          }
+
+          // Desktop: Report sits beside the greeting. On narrow it hides and
+          // report_button_mobile (its own full-width line below) takes over.
+          Button report_button {
+            label: _("Report absence");
+            valign: center;
+
+            styles [
+              "warning",
+              "pill",
+            ]
+          }
+
+          Button add_button {
+            icon-name: "list-add-symbolic";
+            tooltip-text: _("Add widget");
+            valign: center;
+            visible: false;
+
+            styles [
+              "circular",
+            ]
+          }
+
+          ToggleButton edit_button {
+            icon-name: "document-edit-symbolic";
+            tooltip-text: _("Edit dashboard");
+            valign: center;
+
+            styles [
+              "circular",
+            ]
+          }
+        }
+
+        Button report_button_mobile {
+          label: _("Report absence");
+          visible: false;
+
+          styles [
+            "warning",
+            "pill",
+          ]
+        }
+
+        Adw.WrapBox tiles {
+          child-spacing: 18;
+          line-spacing: 18;
+          justify: fill;
+
+          styles [
+            "dashboard-tiles",
+          ]
+        }
+
+        // Shown (in code) when the layout is empty — e.g. a school whose
+        // backend serves no supported data yet.
+        Adw.StatusPage empty_page {
+          icon-name: "view-grid-symbolic";
+          title: _("Your dashboard is empty");
+          description: _("Tap Edit, then Add widget to get started.");
+          visible: false;
+          vexpand: true;
+        }
+      };
+    };
+    };
+  };
+}

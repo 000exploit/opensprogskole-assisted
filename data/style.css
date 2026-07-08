@@ -86,3 +86,23 @@ window.android *:not(.title-2):not(.title-1) {
 .time-field { font-size: 1.6em; }
 .time-field text { padding-left: 2px; padding-right: 2px; }
 .time-colon { font-size: 1.6em; font-weight: 700; opacity: 0.55; }
+
+/* Dashboard tiles. Min-widths drive the WrapBox reflow: a full tile needs so
+ * much width that it sits alone on a line (filling it, since justify:fill);
+ * halves pair up on a wide clamp; minis pack several. On a phone the content
+ * clamp is narrower than a half's min-width, so everything is one column. */
+.dashboard-tile { padding: 14px; }
+.dashboard-tile.size-full { min-width: 560px; }
+.dashboard-tile.size-half { min-width: 280px; }
+.dashboard-tile.size-mini { min-width: 150px; }
+.dashboard-tile.editing { outline: 2px dashed alpha(@accent_color, 0.5); outline-offset: -2px; }
+.dashboard-tile.dragging { opacity: 0.3; }
+
+/* The wave-fill attendance mini: the fill colour follows the accent (read in
+ * snapshot() via get_color), and a min height gives the wave room. */
+.attendance-wave {
+  color: @accent_bg_color;
+  min-height: 128px;
+  min-width: 128px;
+}
+.attendance-wave label { color: @window_fg_color; }

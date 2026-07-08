@@ -189,8 +189,11 @@ namespace Opensprogskole {
             if (session == null) {
                 return;
             }
-            var paintable = yield session.load_avatar ();
-            profile_avatar.custom_image = paintable;
+            // May assign twice: the cached picture at once, the revalidated
+            // one when it differs (see AvatarCache).
+            yield session.load_avatar ((paintable) => {
+                profile_avatar.custom_image = paintable;
+            });
         }
 
         /* Bottom bar shows on the tab shell, hides while a secondary page is

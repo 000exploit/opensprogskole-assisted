@@ -20,44 +20,68 @@
 
 namespace Opensprogskole {
 
-    /* Profile-picture loader with an on-disk offline fallback.
+    /* Profile-picture loader, stale-while-revalidate with an on-disk cache.
      *
      * The backend serves avatars from a *stable* per-user URL
      * (getImage.ashx?id=<user-hash>…) whose bytes change in place when the user
-     * uploads a new photo. A URL-keyed cache therefore can't tell a new picture
-     * from the old one, so we fetch network-first and keep the last download
-     * only as a fallback for when the request fails (offline). A failure with no
-     * cached copy yields null and the caller falls back to initials — a missing
-     * avatar is never fatal. */
+     * uploads a new photo, so freshness can only be judged by the bytes
+     * themselves. load() therefore delivers the cached copy immediately (the
+     * backend is slow — seconds per request), revalidates in the background,
+     * and delivers a second time only when the downloaded bytes differ. A
+     * failed fetch with no cached copy delivers null and the caller falls back
+     * to initials — a missing avatar is never fatal. */
     namespace AvatarCache {
 
-        /* Return the current picture at `url` as a paintable. Fetches fresh;
-         * on a failed fetch, returns the last cached copy if there is one, else
-         * null. */
-        public async Gdk.Paintable? load (SchoolProvider provider, string url) {
+        /* Receives the picture at most twice: the cached copy first (when one
+         * exists), then the freshly fetched one only if it changed. Called
+         * with null only when there is neither a cache nor a fetch result. */
+        public delegate void Sink (Gdk.Paintable? paintable);
+
+        /* Deliver the picture at `url` into `sink`, cached copy first. The
+         * async call completes when revalidation is done. */
+        public async void load (SchoolProvider provider, string url, owned Sink sink) {
             var file = cache_file (url);
 
-            /* TODO: stale-while-revalidate — return the cached copy immediately,
-             * fetch in the background and swap the widget's image only if the
-             * bytes changed, to avoid a network GET on every load. */
+            GLib.Bytes? cached = read_bytes (file);
+            bool delivered = false;
+            if (cached != null) {
+                try {
+                    sink (Gdk.Texture.from_bytes (cached));
+                    delivered = true;
+                } catch (GLib.Error e) {
+                    warning ("avatar cache decode failed: %s", e.message);
+                    cached = null;   // corrupt: don't let it veto the fresh copy
+                }
+            }
+
             try {
                 GLib.Bytes? bytes = yield provider.fetch_picture (url);
                 if (bytes != null && bytes.get_size () > 0) {
-                    var texture = Gdk.Texture.from_bytes (bytes);
-                    save (file, bytes);   // refresh the offline fallback
-                    return texture;
+                    if (cached == null || cached.compare (bytes) != 0) {
+                        var texture = Gdk.Texture.from_bytes (bytes);
+                        save (file, bytes);   // refresh the offline fallback
+                        sink (texture);
+                    }
+                    return;   // unchanged: the cached delivery stands
                 }
             } catch (GLib.Error e) {
                 warning ("avatar fetch failed: %s", e.message);
             }
 
-            // Offline or undecodable response: use the previous copy if present.
+            // Offline or undecodable response with nothing shown yet.
+            if (!delivered) {
+                sink (null);
+            }
+        }
+
+        private static GLib.Bytes? read_bytes (GLib.File file) {
             try {
-                if (file.query_exists ()) {
-                    return Gdk.Texture.from_file (file);
+                uint8[] contents;
+                if (file.load_contents (null, out contents, null)) {
+                    return new GLib.Bytes.take ((owned) contents);
                 }
             } catch (GLib.Error e) {
-                warning ("avatar cache read failed: %s", e.message);
+                // No cached copy yet — the common first-run case.
             }
             return null;
         }

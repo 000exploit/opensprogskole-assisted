@@ -314,8 +314,11 @@ namespace Opensprogskole {
                 return;
             }
             // Setting null reverts to initials (e.g. after removing a pending
-            // photo), so assign unconditionally.
-            avatar.custom_image = yield session.load_avatar ();
+            // photo), so assign unconditionally. May assign twice: the cached
+            // picture at once, the revalidated one when it differs.
+            yield session.load_avatar ((paintable) => {
+                avatar.custom_image = paintable;
+            });
         }
 
         private void toast (string text) {

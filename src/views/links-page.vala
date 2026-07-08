@@ -72,10 +72,12 @@ namespace Opensprogskole {
         }
 
         private async void load_icon (Gtk.Image image, string url) {
-            var paintable = yield AvatarCache.load (session.provider, url);
-            if (paintable != null) {
-                image.set_from_paintable (paintable);
-            }
+            // Keep the generic web icon unless a picture actually arrives.
+            yield AvatarCache.load (session.provider, url, (paintable) => {
+                if (paintable != null) {
+                    image.set_from_paintable (paintable);
+                }
+            });
         }
 
         private void open_url (string url) {

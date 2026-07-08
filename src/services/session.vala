@@ -269,13 +269,15 @@ namespace Opensprogskole {
             return ok;
         }
 
-        /* The profile picture as a paintable (downloaded + cached), or null when
-         * there is none — the caller then shows initials. */
-        public async Gdk.Paintable? load_avatar () {
+        /* Deliver the profile picture into `sink` — cached copy immediately,
+         * a fresh one after revalidation if it changed (see AvatarCache), or
+         * null when there is none so the caller shows initials. */
+        public async void load_avatar (owned AvatarCache.Sink sink) {
             if (user_info == null || user_info.best_picture_url == "") {
-                return null;
+                sink (null);
+                return;
             }
-            return yield AvatarCache.load (provider, user_info.best_picture_url);
+            yield AvatarCache.load (provider, user_info.best_picture_url, (owned) sink);
         }
 
         /* Upload a new profile picture; on success re-pull the profile so the

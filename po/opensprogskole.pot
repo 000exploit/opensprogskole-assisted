@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opensprogskole\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-07 21:06+0200\n"
+"POT-Creation-Date: 2026-07-08 05:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -379,7 +379,7 @@ msgstr ""
 msgid "Copy to Clipboard"
 msgstr ""
 
-#: data/ui/error-details-dialog.blp:69
+#: data/ui/error-details-dialog.blp:69 data/ui/school-picker.blp:255
 msgid "Close"
 msgstr ""
 
@@ -667,7 +667,8 @@ msgstr ""
 msgid "Search schools"
 msgstr ""
 
-#: data/ui/school-picker.blp:128 src/views/school-picker.vala:208
+#: data/ui/school-picker.blp:128 src/services/school-config.vala:98
+#: src/views/school-picker.vala:274
 msgid "Custom school"
 msgstr ""
 
@@ -693,11 +694,56 @@ msgid ""
 msgstr ""
 
 #: data/ui/school-picker.blp:180
+msgid "UMS base URLs usually end with “/api” — double-check if sign-in fails."
+msgstr ""
+
+#: data/ui/school-picker.blp:192
 msgid "LUDUS sign-in isn't available yet."
 msgstr ""
 
-#: data/ui/school-picker.blp:191
+#: data/ui/school-picker.blp:203
 msgid "Use this provider"
+msgstr ""
+
+#: data/ui/school-picker.blp:216
+msgid "Copy Config"
+msgstr ""
+
+#: data/ui/school-picker.blp:234
+msgid "Add a Custom School"
+msgstr ""
+
+#: data/ui/school-picker.blp:235
+msgid "Paste a shared school config, or enter the details manually."
+msgstr ""
+
+#: data/ui/school-picker.blp:240 data/ui/school-picker.blp:267
+#: data/ui/window.blp:51 src/views/absence-page.vala:250
+msgid "Cancel"
+msgstr ""
+
+#: data/ui/school-picker.blp:241
+msgid "Paste Config"
+msgstr ""
+
+#: data/ui/school-picker.blp:242
+msgid "Enter Manually"
+msgstr ""
+
+#: data/ui/school-picker.blp:249
+msgid "Couldn't Use the Config"
+msgstr ""
+
+#: data/ui/school-picker.blp:250
+msgid "There is no config on the clipboard."
+msgstr ""
+
+#: data/ui/school-picker.blp:262
+msgid "Use this school?"
+msgstr ""
+
+#: data/ui/school-picker.blp:268
+msgid "Use"
 msgstr ""
 
 #: data/ui/shortcuts-dialog.blp:6
@@ -724,10 +770,6 @@ msgstr ""
 
 #: data/ui/window.blp:46
 msgid "Quit OpenSprogskole?"
-msgstr ""
-
-#: data/ui/window.blp:51 src/views/absence-page.vala:250
-msgid "Cancel"
 msgstr ""
 
 #: data/ui/window.blp:52
@@ -768,6 +810,30 @@ msgstr ""
 
 #: src/services/error-reporter.vala:121
 msgid "… [truncated]"
+msgstr ""
+
+#: src/services/school-config.vala:62
+#, c-format
+msgid "Not a valid school config: %s"
+msgstr ""
+
+#: src/services/school-config.vala:66
+msgid "Not a valid school config (a JSON object was expected)."
+msgstr ""
+
+#: src/services/school-config.vala:75
+#, c-format
+msgid "Sign-in for the “%s” provider isn't available yet."
+msgstr ""
+
+#: src/services/school-config.vala:79
+msgid "The config has no base URL (\"base-url\")."
+msgstr ""
+
+#: src/services/school-config.vala:83
+msgid ""
+"The base URL must use https:// — plain http would send your password "
+"unencrypted."
 msgstr ""
 
 #: src/services/schools.vala:45
@@ -1055,24 +1121,28 @@ msgstr ""
 msgid "Couldn't remove the photo. Please try again."
 msgstr ""
 
-#: src/views/school-picker.vala:59
+#: src/views/school-picker.vala:71
 msgid "UMS (username / password)"
 msgstr ""
 
-#: src/views/school-picker.vala:60
+#: src/views/school-picker.vala:72
 msgid "LUDUS (OIDC / MitID)"
 msgstr ""
 
-#: src/views/school-picker.vala:103
+#: src/views/school-picker.vala:128
 msgid "No schools yet"
 msgstr ""
 
-#: src/views/school-picker.vala:105
+#: src/views/school-picker.vala:130
 msgid "This provider has no schools listed."
 msgstr ""
 
-#: src/views/school-picker.vala:106
+#: src/views/school-picker.vala:131
 msgid "Sign-in for this provider isn't available yet."
+msgstr ""
+
+#: src/views/school-picker.vala:248
+msgid "Copied"
 msgstr ""
 
 #: src/widgets/absence-dialog.vala:91

@@ -37,6 +37,7 @@ src/models/user-info-item.vala
 src/models/user-info-settings.vala
 src/services/avatar-cache.vala
 src/services/error-reporter.vala
+src/services/school-config.vala
 src/services/school-provider.vala
 src/services/schools.vala
 src/services/secret-store.vala

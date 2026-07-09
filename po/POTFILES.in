@@ -42,6 +42,8 @@ src/services/error-reporter.vala
 src/services/dashboard-registry.vala
 src/services/school-config.vala
 src/services/school-provider.vala
+src/services/nav-section.vala
+src/services/ludus-endpoints.vala
 src/services/ludus-provider.vala
 src/services/schools.vala
 src/services/secret-store.vala

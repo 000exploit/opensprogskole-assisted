@@ -137,6 +137,7 @@ namespace Opensprogskole {
             var row = new Adw.ActionRow () {
                 title = item.subject != "" ? item.subject : _("Absence"),
                 subtitle = subtitle,
+                use_markup = false,   // subject + reason are server/user text
                 title_lines = 0,
                 subtitle_lines = 0
             };
@@ -203,6 +204,7 @@ namespace Opensprogskole {
             var row = new Adw.ActionRow () {
                 title = item.reason != "" ? item.reason : _("Absence"),
                 subtitle = item.when_label,
+                use_markup = false,   // reason is user-entered text
                 title_lines = 0,
                 subtitle_lines = 0
             };

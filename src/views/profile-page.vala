@@ -182,6 +182,7 @@ namespace Opensprogskole {
             var row = new Adw.ActionRow () {
                 title = label,
                 subtitle = value,
+                use_markup = false,   // `value` is user profile text
                 subtitle_selectable = true
             };
             row.add_css_class ("property");

@@ -70,7 +70,8 @@ namespace Opensprogskole {
             var row = new Adw.ActionRow () {
                 title = grade.course != "" ? grade.course : grade.grade_scale,
                 subtitle = grade.evaluation_form != ""
-                    ? grade.evaluation_form : grade.grade_scale_description
+                    ? grade.evaluation_form : grade.grade_scale_description,
+                use_markup = false   // server text may contain "&"/"<"
             };
             row.add_prefix (chip);
             row.add_suffix (date);

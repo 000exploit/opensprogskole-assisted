@@ -188,6 +188,7 @@ namespace Opensprogskole {
             };
             var row = new Adw.ActionRow () {
                 title = text.strip (),
+                use_markup = false,   // free-text (reason/note) may contain "&"/"<"
                 title_lines = 0
             };
             group.add (row);

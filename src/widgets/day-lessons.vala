@@ -78,6 +78,9 @@ namespace Opensprogskole {
 
             var row = new Adw.ActionRow () {
                 title = lesson.subject,
+                // Server text may contain "&"/"<"; render it literally so a
+                // Pango markup parse failure can't blank the row.
+                use_markup = false,
                 activatable = true
             };
 

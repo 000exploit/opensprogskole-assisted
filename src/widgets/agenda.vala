@@ -179,6 +179,7 @@ namespace Opensprogskole {
             var row = new Adw.ActionRow () {
                 title = lesson.subject,
                 subtitle = row_subtitle (lesson),
+                use_markup = false,   // server text may contain "&"/"<"
                 activatable = true
             };
 

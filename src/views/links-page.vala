@@ -51,6 +51,8 @@ namespace Opensprogskole {
             var row = new Adw.ActionRow () {
                 title = item.link_text != "" ? item.link_text : item.description,
                 subtitle = item.url,
+                // Link titles/URLs are server text with "&" (query params etc.).
+                use_markup = false,
                 title_lines = 0,
                 subtitle_lines = 0,
                 activatable = true

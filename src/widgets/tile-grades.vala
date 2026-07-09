@@ -69,7 +69,12 @@ namespace Opensprogskole {
                 wave.easing = Adw.Easing.LINEAR;
                 wave.repeat_count = 0;
                 wave.play ();
-                return gauge;
+                // The whole mini is a button → opens the Grades page.
+                var button = new Button () { child = gauge };
+                button.add_css_class ("flat");
+                button.add_css_class ("wave-button");
+                button.clicked.connect (() => navigate ("grades"));
+                return button;
             }
             gauge = null;
             wave = null;

@@ -70,7 +70,12 @@ namespace Opensprogskole {
                 wave.easing = Adw.Easing.LINEAR;
                 wave.repeat_count = 0;   // forever
                 wave.play ();
-                return gauge;
+                // The whole mini is a button → opens the Absence page.
+                var button = new Button () { child = gauge };
+                button.add_css_class ("flat");
+                button.add_css_class ("wave-button");
+                button.clicked.connect (() => navigate ("absence"));
+                return button;
             }
 
             gauge = null;

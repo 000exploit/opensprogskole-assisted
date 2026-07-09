@@ -2,114 +2,125 @@ using Gtk 4.0;
 using Adw 1;
 
 // Shared chrome for every dashboard tile: a card with a header (icon + title +
-// edit-mode remove button) and a content Stack the widget controller drives
-// (loading / content / empty / unavailable). The actual presenter (a Chart,
-// DayLessons, ...) is placed into content_slot from code.
+// an optional controller action) and a content Stack the controller drives
+// (loading / content / empty / unavailable). In edit mode the resize/remove
+// controls float over the tile as an overlay, and the content goes insensitive
+// so its own input can't fire.
 template $OpensprogskoleDashboardTile: Adw.Bin {
-  child: Box tile_box {
-    orientation: vertical;
-    spacing: 10;
+  child: Overlay {
+    child: Box tile_box {
+      orientation: vertical;
+      spacing: 10;
 
-    styles [
-      "card",
-      "dashboard-tile",
-    ]
+      styles [
+        "card",
+        "dashboard-tile",
+      ]
 
-    Box header {
-      spacing: 8;
+      Box header {
+        spacing: 8;
 
-      Image icon_image {
-        visible: false;
-        valign: center;
-      }
-
-      Box {
-        orientation: vertical;
-        hexpand: true;
-        valign: center;
-
-        Label title_label {
-          halign: start;
-          ellipsize: end;
-
-          styles [
-            "heading",
-          ]
-        }
-
-        // Contextual line under the title (e.g. the "Up next" day), set in code.
-        Label subtitle_label {
-          halign: start;
-          ellipsize: end;
+        Image icon_image {
           visible: false;
+          valign: center;
+        }
 
-          styles [
-            "caption",
-            "dim-label",
-          ]
+        Box {
+          orientation: vertical;
+          hexpand: true;
+          valign: center;
+
+          Label title_label {
+            halign: start;
+            ellipsize: end;
+
+            styles [
+              "heading",
+            ]
+          }
+
+          Label subtitle_label {
+            halign: start;
+            ellipsize: end;
+            visible: false;
+
+            styles [
+              "caption",
+              "dim-label",
+            ]
+          }
+        }
+
+        // An optional widget action (e.g. "View schedule"), set by the tile's
+        // controller. Sits top-right, next to the title.
+        Adw.Bin header_action_slot {
+          valign: center;
         }
       }
 
-      // An optional widget action (e.g. "View schedule"), set by the tile's
-      // controller. Sits top-right, next to the title.
-      Adw.Bin header_action_slot {
-        valign: center;
-      }
+      Stack content_stack {
+        transition-type: crossfade;
 
-      // Edit mode: cycle the tile through its widget's supported sizes.
+        StackPage {
+          name: "loading";
+          child: $OpensprogskoleLoadingState loading {};
+        }
+
+        StackPage {
+          name: "content";
+          child: Adw.Bin content_slot {};
+        }
+
+        StackPage {
+          name: "empty";
+          child: Adw.StatusPage empty_page {
+            icon-name: "folder-documents-symbolic";
+          };
+        }
+
+        StackPage {
+          name: "unavailable";
+          child: Adw.StatusPage unavailable_page {
+            icon-name: "dialog-information-symbolic";
+            title: _("Not available for this school");
+            description: _("This school's system doesn't provide this data.");
+          };
+        }
+      }
+    };
+
+    // Edit-mode controls, floating over the tile's top-right corner.
+    [overlay]
+    Box edit_controls {
+      halign: end;
+      valign: start;
+      margin-top: 8;
+      margin-end: 8;
+      spacing: 4;
+      visible: false;
+
+      styles [
+        "osd",
+        "toolbar",
+        "dashboard-edit-controls",
+      ]
+
       Button resize_button {
         icon-name: "view-grid-symbolic";
         tooltip-text: _("Change size");
-        valign: center;
-        visible: false;
 
         styles [
-          "flat",
           "circular",
         ]
       }
 
-      // Edit mode: removes the tile.
       Button remove_button {
         icon-name: "user-trash-symbolic";
         tooltip-text: _("Remove widget");
-        valign: center;
-        visible: false;
 
         styles [
-          "flat",
           "circular",
         ]
-      }
-    }
-
-    Stack content_stack {
-      transition-type: crossfade;
-
-      StackPage {
-        name: "loading";
-        child: $OpensprogskoleLoadingState loading {};
-      }
-
-      StackPage {
-        name: "content";
-        child: Adw.Bin content_slot {};
-      }
-
-      StackPage {
-        name: "empty";
-        child: Adw.StatusPage empty_page {
-          icon-name: "folder-documents-symbolic";
-        };
-      }
-
-      StackPage {
-        name: "unavailable";
-        child: Adw.StatusPage unavailable_page {
-          icon-name: "dialog-information-symbolic";
-          title: _("Not available for this school");
-          description: _("This school's system doesn't provide this data.");
-        };
       }
     }
   };

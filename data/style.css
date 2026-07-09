@@ -106,3 +106,8 @@ window.android *:not(.title-2):not(.title-1) {
   min-width: 128px;
 }
 .attendance-wave label { color: @window_fg_color; }
+/* A mini gauge wrapped in a button (press → open the page): no extra inset,
+ * so the gauge fills the tile. */
+.wave-button { padding: 0; }
+/* Floating edit controls over a tile in edit mode. */
+.dashboard-edit-controls { padding: 2px; border-radius: 12px; }

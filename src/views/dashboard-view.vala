@@ -42,10 +42,10 @@ namespace Opensprogskole {
         [GtkChild] private unowned Adw.WrapBox tiles;
         [GtkChild] private unowned Adw.StatusPage empty_page;
 
-        // Kept for main-view compatibility (drill-in shortcuts).
         public signal void report_absence_requested ();
-        public signal void open_schedule ();
-        public signal void open_grades ();
+        // A tile asked to open a core section ("schedule", "grades",
+        // "absence", ...); main-view switches to it.
+        public signal void section_requested (string tag);
 
         private Session? session = null;
 
@@ -196,13 +196,7 @@ namespace Opensprogskole {
             }
             tile.remove_requested.connect (() => remove_config (cfg));
             tile.size_change_requested.connect (() => resize_tile (cfg));
-            controller.navigate.connect ((section) => {
-                if (section == "schedule") {
-                    open_schedule ();
-                } else if (section == "grades") {
-                    open_grades ();
-                }
-            });
+            controller.navigate.connect ((section) => section_requested (section));
             wire_dnd (tile);
             return tile;
         }

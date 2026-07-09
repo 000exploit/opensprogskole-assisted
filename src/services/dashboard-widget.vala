@@ -46,10 +46,12 @@ namespace Opensprogskole {
     [GtkTemplate (ui = "/moe/ekusu/sprogskole/ui/dashboard-widget.ui")]
     public class DashboardTile : Adw.Bin {
 
+        [GtkChild] private unowned Box tile_box;
         [GtkChild] private unowned Image icon_image;
         [GtkChild] private unowned Label title_label;
         [GtkChild] private unowned Label subtitle_label;
         [GtkChild] private unowned Adw.Bin header_action_slot;
+        [GtkChild] private unowned Box edit_controls;
         [GtkChild] private unowned Button resize_button;
         [GtkChild] private unowned Button remove_button;
         [GtkChild] private unowned Gtk.Stack content_stack;
@@ -94,9 +96,12 @@ namespace Opensprogskole {
             get { return _edit_mode; }
             set {
                 _edit_mode = value;
-                remove_button.visible = value;
-                resize_button.visible = value && can_resize;
-                content_slot.sensitive = !value;
+                // Float the controls over the tile; block the whole card's
+                // input (header action included, not just the content) so a
+                // press starts a drag / hits the edit controls. The edit
+                // controls sit on a separate overlay layer, so they stay live.
+                edit_controls.visible = value;
+                tile_box.sensitive = !value;
                 if (value) {
                     add_css_class ("editing");
                 } else {
@@ -108,7 +113,14 @@ namespace Opensprogskole {
 
         /* Whether the resize button is offered (the widget supports >1 size).
          * Set by the view from the registry. */
-        public bool can_resize { get; set; default = false; }
+        public bool can_resize {
+            get { return _can_resize; }
+            set {
+                _can_resize = value;
+                resize_button.visible = value;
+            }
+        }
+        private bool _can_resize = false;
 
         /* The user tapped the resize control — the view cycles the size. */
         public signal void size_change_requested ();

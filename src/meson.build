@@ -39,6 +39,7 @@ opensprogskole_vala_sources = [
   'services/connectivity.vala',
   'services/storage.vala',
   'services/school-provider.vala',
+  'services/nav-section.vala',
   'services/login-method.vala',
   'services/provider-family.vala',
   'services/demo-provider.vala',

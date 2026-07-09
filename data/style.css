@@ -87,6 +87,37 @@ window.android *:not(.title-2):not(.title-1) {
 .time-field text { padding-left: 2px; padding-right: 2px; }
 .time-colon { font-size: 1.6em; font-weight: 700; opacity: 0.55; }
 
+/* Narrow-layout bottom nav bar (replaces Adw.ViewSwitcherBar). Its buttons are
+ * built in code from the shared section list; this reproduces libadwaita's
+ * bottom view-switcher look by hand: a flat row of contiguous, full-width
+ * vertical icon-over-caption cells with a top separator, the active one tinted
+ * with the accent via the "selected" class. */
+.nav-bar {
+    border-top: 1px solid @borders;
+    background-color: @headerbar_bg_color;
+    padding: 0;
+}
+.nav-bar > button {
+    min-height: 46px;
+    margin: 0;
+    padding: 4px 6px;
+    border-radius: 0;
+    box-shadow: none;
+    color: @window_fg_color;
+    opacity: 0.62;
+}
+.nav-bar > button:hover {
+    background-color: alpha(@window_fg_color, 0.05);
+    opacity: 0.85;
+}
+.nav-bar > button:active { background-color: alpha(@window_fg_color, 0.09); }
+.nav-bar > button.selected {
+    color: @accent_color;
+    opacity: 1;
+}
+.nav-bar > button image { -gtk-icon-size: 18px; }
+.nav-bar > button label { font-size: 0.78em; }
+
 /* Dashboard tiles. Per-size min-widths drive the WrapBox reflow (a full tile
  * takes a wide slot, halves pair, minis pack several); justify:fill then
  * stretches a line's tiles to fill it. Kept below a phone width (~360) so a

@@ -38,6 +38,7 @@ namespace Opensprogskole {
         [GtkChild] private unowned Gtk.ListBox more_list;
         [GtkChild] private unowned Adw.NavigationView content_nav;
         [GtkChild] private unowned Adw.ViewStack view_stack;
+        [GtkChild] private unowned Gtk.Box nav_bar;
         [GtkChild] private unowned Gtk.Revealer bottom_revealer;
         [GtkChild] private unowned Adw.WindowTitle content_title;
         [GtkChild] private unowned Adw.Banner offline_banner;
@@ -70,16 +71,10 @@ namespace Opensprogskole {
             // layouts) exist.
             multi.layout_name = "wide";
 
-            add_nav (nav_list, "view-grid-symbolic", _("Overview"), "overview");
-            add_nav (nav_list, "x-office-calendar-symbolic", _("Schedule"), "schedule");
-            add_nav (nav_list, "starred-symbolic", _("Grades"), "grades");
-            add_nav (nav_list, "appointment-soon-symbolic", _("Absence"), "absence");
-            add_nav (nav_list, "avatar-default-symbolic", _("Your information"), "profile");
-
-            add_nav (more_list, "application-rss+xml-symbolic", _("News"), "news");
-            add_nav (more_list, "folder-documents-symbolic", _("Homework"), "homework");
-            add_nav (more_list, "web-browser-symbolic", _("Links"), "links");
-
+            // Both nav controls (sidebar rows + bottom-bar buttons) are built from
+            // one shared section list in bind(), once the provider is known — see
+            // build_nav(). Their activation is wired here (works for rows/buttons
+            // added later).
             nav_list.row_activated.connect ((row) => navigate (page_of[row]));
             more_list.row_activated.connect ((row) => navigate (page_of[row]));
             profile_button.clicked.connect (() => navigate ("profile"));
@@ -147,6 +142,11 @@ namespace Opensprogskole {
             this.session = session;
             school_label.label = session.school.name;
             school_avatar.text = session.school.short_code;
+
+            // Build both nav controls from the provider's available sections, then
+            // reflect the current tab on the freshly-built rows/buttons.
+            build_nav (session.provider);
+            sync_selection ();
 
             overview.bind (session);
             schedule.use_store (session.timetable);
@@ -233,6 +233,67 @@ namespace Opensprogskole {
             }
         }
 
+        /* The shell's sections, in display order. The single source of truth both
+         * nav controls are built from — filtered per-provider so a school only
+         * offers what it can serve (Overview + Profile always pinned). Kept in the
+         * same order/icons as the .blp ViewStack so nothing shifts on UMS. */
+        private NavSection[] section_defs () {
+            return {
+                new NavSection ("overview", _("Overview"), "view-grid-symbolic",
+                                NavPlacement.PRIMARY, true, NavSection.ALWAYS),
+                new NavSection ("schedule", _("Schedule"), "x-office-calendar-symbolic",
+                                NavPlacement.PRIMARY, false, DataKind.TIMETABLE),
+                new NavSection ("grades", _("Grades"), "starred-symbolic",
+                                NavPlacement.PRIMARY, false, DataKind.GRADES),
+                new NavSection ("absence", _("Absence"), "appointment-soon-symbolic",
+                                NavPlacement.PRIMARY, false, DataKind.ABSENCE),
+                new NavSection ("profile", _("Your information"), "avatar-default-symbolic",
+                                NavPlacement.PRIMARY, true, DataKind.PROFILE, _("You")),
+                new NavSection ("news", _("News"), "application-rss+xml-symbolic",
+                                NavPlacement.SECONDARY, false, DataKind.NEWS),
+                new NavSection ("homework", _("Homework"), "folder-documents-symbolic",
+                                NavPlacement.SECONDARY, false, NavSection.ALWAYS),
+                new NavSection ("links", _("Links"), "web-browser-symbolic",
+                                NavPlacement.SECONDARY, false, DataKind.LINKS),
+            };
+        }
+
+        /* Populate both nav controls from the section list — the "adding cycle".
+         * The sidebar takes every available section (PRIMARY→nav_list, others→
+         * more_list); the bottom bar takes the PRIMARY ones only (parity with the
+         * old ViewSwitcherBar, which mirrored the core ViewStack pages). */
+        private void build_nav (SchoolProvider provider) {
+            foreach (var s in section_defs ()) {
+                if (!s.available_for (provider)) {
+                    continue;
+                }
+                add_nav (s.placement == NavPlacement.PRIMARY ? nav_list : more_list,
+                         s.icon_name, s.title, s.tag);
+                if (s.placement == NavPlacement.PRIMARY) {
+                    add_bar_button (s);
+                }
+            }
+        }
+
+        /* One bottom-bar button, mirroring an Adw.ViewSwitcherBar item: a flat
+         * vertical icon-over-caption that drives the same navigate(). The tag
+         * rides on the widget name so sync_selection() can highlight it. */
+        private void add_bar_button (NavSection s) {
+            var box = new Gtk.Box (Gtk.Orientation.VERTICAL, 2) { valign = Gtk.Align.CENTER };
+            box.append (new Gtk.Image.from_icon_name (s.icon_name));
+            box.append (new Gtk.Label (s.short_title) {
+                ellipsize = Pango.EllipsizeMode.END,
+                single_line_mode = true
+            });
+
+            var button = new Gtk.Button () {
+                child = box, hexpand = true, name = s.tag
+            };
+            button.add_css_class ("flat");
+            button.clicked.connect (() => navigate (s.tag));
+            nav_bar.append (button);
+        }
+
         private void add_nav (Gtk.ListBox list, string icon, string label, string page) {
             var box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 12) {
                 margin_top = 6, margin_bottom = 6, margin_start = 6, margin_end = 6
@@ -255,8 +316,22 @@ namespace Opensprogskole {
 
             select_row_for_tag (nav_list, tag);
             select_row_for_tag (more_list, tag);
+            select_button_for_tag (tag);
             if (tag in TABS) {
                 content_title.title = tab_title (tag);
+            }
+        }
+
+        /* The bottom bar's active-item highlight (the "selected" class), mirroring
+         * the sidebar's row selection. The tag rides on each button's name. */
+        private void select_button_for_tag (string tag) {
+            for (var child = nav_bar.get_first_child (); child != null;
+                 child = child.get_next_sibling ()) {
+                if (child.name == tag) {
+                    child.add_css_class ("selected");
+                } else {
+                    child.remove_css_class ("selected");
+                }
             }
         }
 

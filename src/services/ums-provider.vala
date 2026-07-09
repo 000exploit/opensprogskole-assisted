@@ -50,6 +50,12 @@ namespace Opensprogskole {
             this.storage = storage;   // the session's shared per-account store
         }
 
+        /* UMS serves all of these; TODO: gate individual ids if a school's API
+         * turns out to lack one (the view already drops unsupported ones). */
+        public string[] default_widget_ids () {
+            return { "up-next", "attendance", "recent-grades" };
+        }
+
         /* When the token expires (unix seconds), or 0 if unknown. */
         public int64 token_expires_at { get { return client.token_expires_at; } }
 

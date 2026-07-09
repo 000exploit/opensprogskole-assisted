@@ -64,6 +64,15 @@ namespace Opensprogskole {
             return true;
         }
 
+        /* The dashboard widget type-ids this backend suggests on a fresh
+         * dashboard, in order. Empty by default — each provider defines its own
+         * starter set to match what it actually serves (a backend with no data,
+         * like LUDUS today, keeps this empty → an empty dashboard + add prompt).
+         * The view also filters by supports() as a safety net. */
+        public virtual string[] default_widget_ids () {
+            return {};
+        }
+
         /* The ways to sign in to this school/instance. Static for now (no UMS
          * discovery API), but async so a future backend may probe. Default: a
          * plain username/password method. */

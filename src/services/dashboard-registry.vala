@@ -125,6 +125,14 @@ namespace Opensprogskole {
                 "starred-symbolic", DataKind.GRADES,
                 typeof (RecentGradesWidget),
                 { WidgetSize.FULL, WidgetSize.MINI }));
+            register (new WidgetInfo ("lessons-today", _("Lessons today"),
+                "appointment-soon-symbolic", DataKind.TIMETABLE,
+                typeof (LessonsTodayWidget),
+                { WidgetSize.MINI, WidgetSize.HALF }));
+            register (new WidgetInfo ("average-grade", _("Average grade"),
+                "starred-symbolic", DataKind.GRADES,
+                typeof (AverageGradeWidget),
+                { WidgetSize.MINI, WidgetSize.HALF }));
         }
     }
 }

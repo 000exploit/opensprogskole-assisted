@@ -37,6 +37,11 @@ namespace Opensprogskole {
         // --- Auth: nothing to do ------------------------------------------------
         public void use_account (string username, Storage storage) {}   // canned data
 
+        /* Demo has canned timetable/grades/absence, so show the full set. */
+        public string[] default_widget_ids () {
+            return { "up-next", "attendance", "recent-grades" };
+        }
+
         public async GLib.GenericArray<LoginMethod> login_methods () throws GLib.Error {
             var list = new GLib.GenericArray<LoginMethod> ();
             list.add (LoginMethod.none ());

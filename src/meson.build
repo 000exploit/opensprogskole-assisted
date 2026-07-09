@@ -83,6 +83,7 @@ opensprogskole_vala_sources = [
   'widgets/tile-attendance.vala',
   'widgets/tile-grades.vala',
   'widgets/tile-attendance-wave.vala',
+  'widgets/tile-stats.vala',
   'gvdb-glue.vapi',
   'gvdb-glue.c',
 ]

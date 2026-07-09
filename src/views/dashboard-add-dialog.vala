@@ -23,16 +23,26 @@ using Gtk;
 namespace Opensprogskole {
 
     /* The add-widget picker: registry widgets not already placed, filtered to
-     * what this school's provider can fill. Emits widget_chosen(type_id). */
+     * what this school's provider can fill. Selecting one shows a live preview
+     * (a real, bound tile) with a separate "Add" button; confirm emits
+     * widget_chosen(type_id). */
     [GtkTemplate (ui = "/moe/ekusu/sprogskole/ui/dashboard-add-dialog.ui")]
     public class DashboardAddDialog : Adw.Dialog {
 
+        [GtkChild] private unowned Adw.NavigationView nav;
         [GtkChild] private unowned Gtk.Stack stack;
         [GtkChild] private unowned Adw.PreferencesGroup group;
+        [GtkChild] private unowned Adw.Bin preview_slot;
+        [GtkChild] private unowned Button add_confirm;
 
         public signal void widget_chosen (string type_id);
 
+        private Session session;
+        private string? pending = null;
+
         public DashboardAddDialog (Session session, GLib.GenericArray<string> taken) {
+            this.session = session;
+
             var all = DashboardWidgetRegistry.get_default ().all ();
             int shown = 0;
             for (uint i = 0; i < all.length; i++) {
@@ -50,14 +60,54 @@ namespace Opensprogskole {
                 row.add_prefix (new Image.from_icon_name (info.icon_name));
                 row.add_suffix (new Image.from_icon_name ("go-next-symbolic"));
                 string id = info.type_id;
-                row.activated.connect (() => {
-                    widget_chosen (id);
-                    close ();
-                });
+                row.activated.connect (() => show_preview (id));
                 group.add (row);
                 shown++;
             }
             stack.visible_child_name = shown > 0 ? "list" : "empty";
+
+            add_confirm.clicked.connect (() => {
+                if (pending != null) {
+                    widget_chosen (pending);
+                    close ();
+                }
+            });
+        }
+
+        private void show_preview (string type_id) {
+            pending = type_id;
+            preview_slot.child = build_preview (type_id);
+            nav.push_by_tag ("preview");
+        }
+
+        /* A real, bound tile at the widget's default size, for the preview page.
+         * NOTE: it binds to the live session; its signal subscriptions keep it
+         * alive until the session ends — acceptable for a transient picker
+         * (only the handful of widget types, opened occasionally). */
+        private Gtk.Widget build_preview (string type_id) {
+            var registry = DashboardWidgetRegistry.get_default ();
+            var info = registry.lookup (type_id);
+            var controller = registry.create (type_id);
+            if (info == null || controller == null) {
+                return new Adw.Bin ();
+            }
+            var tile = new DashboardTile (new DashboardTileConfig (type_id, info.default_size)) {
+                title = info.title,
+                icon_name = info.icon_name,
+                controller = controller,
+                // A preview is look-only: skip the whole tile for pointer events
+                // (so its buttons/rows can't open dialogs or navigate) while
+                // still rendering live — unlike `sensitive = false`, which would
+                // grey it out.
+                can_target = false
+            };
+            tile.set_content (controller.build (tile));
+            if (session.provider.supports (info.required_capability)) {
+                controller.bind (session, tile);
+            } else {
+                tile.show_unavailable ();
+            }
+            return tile;
         }
 
         private static bool has_id (GLib.GenericArray<string> arr, string needle) {

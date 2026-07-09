@@ -1,45 +1,93 @@
 using Gtk 4.0;
 using Adw 1;
 
-// Picks a widget to add to the dashboard. Rows are built in code from the
-// registry, filtered by provider capability + what's already placed.
+// Picks a widget to add: a list (built in code from the registry, filtered by
+// provider capability + what's already placed), then a live preview page with
+// a separate "Add" button.
 template $OpensprogskoleDashboardAddDialog: Adw.Dialog {
   title: _("Add a widget");
-  content-width: 400;
-  content-height: 480;
+  content-width: 420;
+  content-height: 560;
 
-  child: Adw.ToolbarView {
-    [top]
-    Adw.HeaderBar {}
+  child: Adw.NavigationView nav {
+    Adw.NavigationPage {
+      tag: "list";
+      title: _("Add a widget");
 
-    content: Stack stack {
-      StackPage {
-        name: "list";
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {}
 
-        child: ScrolledWindow {
-          hscrollbar-policy: never;
+        content: Stack stack {
+          StackPage {
+            name: "list";
 
-          child: Adw.Clamp {
-            maximum-size: 400;
-            margin-top: 12;
-            margin-bottom: 18;
-            margin-start: 12;
-            margin-end: 12;
+            child: ScrolledWindow {
+              hscrollbar-policy: never;
 
-            child: Adw.PreferencesGroup group {};
+              child: Adw.Clamp {
+                maximum-size: 400;
+                margin-top: 12;
+                margin-bottom: 18;
+                margin-start: 12;
+                margin-end: 12;
+
+                child: Adw.PreferencesGroup group {};
+              };
+            };
+          }
+
+          StackPage {
+            name: "empty";
+
+            child: Adw.StatusPage {
+              icon-name: "view-grid-symbolic";
+              title: _("No widgets available");
+              description: _("This school's system doesn't provide data for any widgets yet.");
+            };
+          }
+        };
+      };
+    }
+
+    Adw.NavigationPage {
+      tag: "preview";
+      title: _("Preview");
+
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {}
+
+        content: Adw.Clamp {
+          maximum-size: 380;
+          margin-top: 18;
+          margin-bottom: 18;
+          margin-start: 18;
+          margin-end: 18;
+
+          child: Adw.Bin preview_slot {
+            valign: center;
           };
         };
-      }
 
-      StackPage {
-        name: "empty";
+        [bottom]
+        Box {
+          margin-top: 12;
+          margin-bottom: 12;
+          margin-start: 18;
+          margin-end: 18;
 
-        child: Adw.StatusPage {
-          icon-name: "view-grid-symbolic";
-          title: _("No widgets available");
-          description: _("This school's system doesn't provide data for any widgets yet.");
-        };
-      }
-    };
+          Button add_confirm {
+            label: _("Add to dashboard");
+            hexpand: true;
+
+            styles [
+              "suggested-action",
+              "pill",
+            ]
+          }
+        }
+      };
+    }
   };
 }

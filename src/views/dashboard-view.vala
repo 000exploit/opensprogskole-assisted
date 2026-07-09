@@ -405,17 +405,17 @@ namespace Opensprogskole {
             return result;
         }
 
-        /* The out-of-the-box layout: every built-in widget the provider can
-         * actually fill (so LUDUS gets an empty dashboard + prompt, not a wall
-         * of unavailable cards). */
+        /* The starter layout: the provider's suggested widgets (the rest are
+         * opt-in via Add), each dropped if the provider can't actually fill it
+         * — so a limited backend (LUDUS) gets an empty dashboard + prompt
+         * rather than a wall of unavailable cards. */
         private GLib.GenericArray<DashboardTileConfig> default_configs () {
             var result = new GLib.GenericArray<DashboardTileConfig> ();
             var registry = DashboardWidgetRegistry.get_default ();
-            var all = registry.all ();
-            for (uint i = 0; i < all.length; i++) {
-                var info = all[i];
-                if (session.provider.supports (info.required_capability)) {
-                    result.add (new DashboardTileConfig (info.type_id, info.default_size));
+            foreach (string type_id in session.provider.default_widget_ids ()) {
+                var info = registry.lookup (type_id);
+                if (info != null && session.provider.supports (info.required_capability)) {
+                    result.add (new DashboardTileConfig (type_id, info.default_size));
                 }
             }
             return result;

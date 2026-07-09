@@ -75,8 +75,8 @@ namespace Opensprogskole {
                 }
             });
             tiles.add_controller (long_press);
-            // Column count follows the allocated width (DashboardLayout); the
-            // Blueprint narrow_bp handles the report button + margins.
+            // Reflow is the WrapBox's job (tiles carry per-size min-widths);
+            // the Blueprint narrow_bp handles the report button + margins.
         }
 
         public void bind (Session session) {
@@ -129,18 +129,17 @@ namespace Opensprogskole {
             rebuild_from_model ();
         }
 
-        /* The only place the grid structure is written. Reuses cached tiles,
-         * builds+binds a tile the first time its config appears, then packs
-         * them into rows of `units_per_row` by span. The last tile of a partial
-         * row is stretched to fill the remaining units (no trailing gap). */
         // Set true for one rebuild by a user action (reorder/resize/add/remove)
         // so surviving tiles slide (FLIP) to their new spots; false for the
         // initial load, where nothing should animate.
         private bool animate_reflow = false;
 
+        /* The only place the tile container is written. Reuses cached tiles,
+         * builds+binds a tile the first time its config appears, then appends
+         * them in model order for the WrapBox to reflow. */
         private void rebuild_from_model () {
             // FLIP "First": record where the currently-placed tiles are, before
-            // we tear the grid down.
+            // we tear the container down.
             GLib.HashTable<DashboardTile, Graphene.Point?>? old_pos = null;
             if (animate_reflow) {
                 old_pos = new GLib.HashTable<DashboardTile, Graphene.Point?> (
@@ -158,7 +157,7 @@ namespace Opensprogskole {
                 });
             }
 
-            clear_grid ();
+            clear_tiles ();
 
             var packed = new GLib.GenericArray<DashboardTile> ();
             uint n = layout.get_n_items ();
@@ -179,8 +178,7 @@ namespace Opensprogskole {
             empty_page.visible = packed.length == 0;
             tiles.visible = packed.length > 0;
 
-            // Append in model order; DashboardLayout does the span-packing and
-            // picks the column count from the actual allocated width.
+            // Append in model order; the WrapBox reflows by the tiles' min-widths.
             for (uint j = 0; j < packed.length; j++) {
                 tiles.append (packed[j]);
             }
@@ -192,7 +190,7 @@ namespace Opensprogskole {
             }
         }
 
-        /* FLIP "Last/Invert/Play": once the grid has re-laid-out (next idle),
+        /* FLIP "Last/Invert/Play": once the container has re-laid-out (next idle),
          * for each surviving tile that moved, offset it back to its old spot and
          * spring the offset to 0 — so it slides from where it was to where it
          * now is. */
@@ -226,7 +224,7 @@ namespace Opensprogskole {
             });
         }
 
-        private void clear_grid () {
+        private void clear_tiles () {
             tiles.remove_all ();   // cache keeps the tiles alive
         }
 

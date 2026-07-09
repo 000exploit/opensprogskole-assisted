@@ -48,6 +48,7 @@ opensprogskole_vala_sources = [
   'services/ums-provider.vala',
   'services/oidc-callback-router.vala',
   'services/ludus-client.vala',
+  'services/ludus-endpoints.vala',
   'services/ludus-provider.vala',
   'services/session.vala',
   'services/session-controller.vala',

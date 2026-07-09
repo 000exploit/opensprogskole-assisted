@@ -43,6 +43,9 @@ namespace Opensprogskole {
         };
 
         public string access_token { get; set; default = ""; }
+        // The chosen school's institution number, sent on authed requests to
+        // scope them (header name is a best guess — see docs/ludus-api.md).
+        public string institution_number { get; set; default = ""; }
 
         /* The Soup.Session, shared with LudusOidc so token calls reuse the same
          * connection pool and timeout. */
@@ -76,6 +79,9 @@ namespace Opensprogskole {
             var msg = new Soup.Message ("GET", LudusConfig.API_GATEWAY + path);
             if (access_token != "") {
                 msg.request_headers.append ("Authorization", "Bearer " + access_token);
+            }
+            if (institution_number != "") {
+                msg.request_headers.append ("InstitutionNumber", institution_number);
             }
             var bytes = yield session.send_and_read_async (msg, Priority.DEFAULT,
                                                            cancellable);

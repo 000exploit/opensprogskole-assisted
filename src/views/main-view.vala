@@ -39,6 +39,7 @@ namespace Opensprogskole {
         [GtkChild] private unowned Adw.NavigationView content_nav;
         [GtkChild] private unowned Adw.ViewStack view_stack;
         [GtkChild] private unowned NavBar nav_bar;
+        [GtkChild] private unowned Gtk.MenuButton menu_button;
         [GtkChild] private unowned Gtk.Revealer bottom_revealer;
         [GtkChild] private unowned Adw.WindowTitle content_title;
         [GtkChild] private unowned Adw.Banner offline_banner;
@@ -241,6 +242,9 @@ namespace Opensprogskole {
          * ViewSwitcherBar, which mirrored the core ViewStack pages). */
         private void build_nav (SchoolProvider provider) {
             var bar_sections = new GLib.GenericArray<NavSection> ();
+            // The narrow header menu's secondary section, built from the same
+            // catalog so it lists exactly the sidebar's "More" entries.
+            var secondary_menu = new GLib.Menu ();
             foreach (var s in NavSection.catalog ()) {
                 if (!s.available_for (provider)) {
                     continue;
@@ -250,9 +254,20 @@ namespace Opensprogskole {
                     bar_sections.add (s);
                 } else {
                     add_nav (more_list, s.icon_name, s.title, s.tag);
+                    // "nav.section::<tag>" — the string-target detailed action.
+                    secondary_menu.append (s.title, @"nav.section::$(s.tag)");
                 }
             }
             nav_bar.set_sections (bar_sections);
+            // Prepend as the header menu's first section — only when the school
+            // actually has any (LUDUS has none → no empty separator). The menu is
+            // the mutable GMenu built from primary_menu in the .blp.
+            if (secondary_menu.get_n_items () > 0) {
+                var menu = menu_button.menu_model as GLib.Menu;
+                if (menu != null) {
+                    menu.prepend_section (null, secondary_menu);
+                }
+            }
         }
 
         private void add_nav (Gtk.ListBox list, string icon, string label, string page) {

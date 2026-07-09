@@ -359,26 +359,9 @@ template $OpensprogskoleMainView: Adw.Bin {
 }
 
 menu primary_menu {
-  section {
-    item {
-      label: _("_News");
-      action: "nav.section";
-      target: "news";
-    }
-
-    item {
-      label: _("_Homework");
-      action: "nav.section";
-      target: "homework";
-    }
-
-    item {
-      label: _("_Links");
-      action: "nav.section";
-      target: "links";
-    }
-  }
-
+  // The secondary-section items (News/Homework/Links) are prepended in code from
+  // the shared NavSection catalog, filtered per-provider — see MainView.build_nav
+  // — so this menu only carries the static app actions below.
   section {
     item {
       label: _("_Edit information");

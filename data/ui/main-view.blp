@@ -211,17 +211,11 @@ template $OpensprogskoleMainView: Adw.Bin {
             transition-duration: 250;
             reveal-child: true;
 
-            // A custom bottom bar (was Adw.ViewSwitcherBar): its buttons are built
-            // in code from the same shared section list that drives the sidebar,
-            // so both controls stay in step. Each button calls navigate(); the
-            // active one gets a "selected" class from sync_selection().
-            child: Box nav_bar {
-              homogeneous: true;
-
-              styles [
-                "nav-bar",
-              ]
-            };
+            // A custom bottom bar (was Adw.ViewSwitcherBar): NavBar builds its
+            // buttons from the same shared section list that drives the sidebar,
+            // so both controls stay in step. It emits section_activated (→
+            // navigate); sync_selection() calls nav_bar.select() to highlight.
+            child: $OpensprogskoleNavBar nav_bar {};
           }
         };
       }

@@ -69,5 +69,30 @@ namespace Opensprogskole {
         public bool available_for (SchoolProvider provider) {
             return pinned || capability == ALWAYS || provider.supports (capability);
         }
+
+        /* The shell's full section list, in display order — the single catalog
+         * both nav controls (sidebar + bottom bar) are built from. Kept in the
+         * same order/icons as the .blp ViewStack so nothing shifts on UMS. Filter
+         * it per-provider with available_for(). */
+        public static NavSection[] catalog () {
+            return {
+                new NavSection ("overview", _("Overview"), "view-grid-symbolic",
+                                NavPlacement.PRIMARY, true, ALWAYS),
+                new NavSection ("schedule", _("Schedule"), "x-office-calendar-symbolic",
+                                NavPlacement.PRIMARY, false, DataKind.TIMETABLE),
+                new NavSection ("grades", _("Grades"), "starred-symbolic",
+                                NavPlacement.PRIMARY, false, DataKind.GRADES),
+                new NavSection ("absence", _("Absence"), "appointment-soon-symbolic",
+                                NavPlacement.PRIMARY, false, DataKind.ABSENCE),
+                new NavSection ("profile", _("Your information"), "avatar-default-symbolic",
+                                NavPlacement.PRIMARY, true, DataKind.PROFILE, _("You")),
+                new NavSection ("news", _("News"), "application-rss+xml-symbolic",
+                                NavPlacement.SECONDARY, false, DataKind.NEWS),
+                new NavSection ("homework", _("Homework"), "folder-documents-symbolic",
+                                NavPlacement.SECONDARY, false, DataKind.HOMEWORK),
+                new NavSection ("links", _("Links"), "web-browser-symbolic",
+                                NavPlacement.SECONDARY, false, DataKind.LINKS),
+            };
+        }
     }
 }

@@ -101,7 +101,9 @@ window.android *:not(.title-2):not(.title-1) {
     min-height: 46px;
     margin: 0;
     padding: 4px 6px;
-    border-radius: 0;
+    /* Rounded like the ViewSwitcherBar, but the fill only shows on hover/press;
+     * the transparent idle button keeps the cell full-height. */
+    border-radius: 9px;
     box-shadow: none;
     color: @window_fg_color;
     opacity: 0.62;

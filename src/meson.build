@@ -69,6 +69,7 @@ opensprogskole_vala_sources = [
   'views/profile-page.vala',
   'views/edit-profile-page.vala',
   'widgets/window.vala',
+  'widgets/nav-bar.vala',
   'widgets/styles.vala',
   'widgets/loading-state.vala',
   'widgets/chart.vala',

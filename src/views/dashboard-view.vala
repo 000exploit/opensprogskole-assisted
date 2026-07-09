@@ -152,7 +152,31 @@ namespace Opensprogskole {
          * builds+binds a tile the first time its config appears, then packs
          * them into rows of `units_per_row` by span. The last tile of a partial
          * row is stretched to fill the remaining units (no trailing gap). */
+        // Set true for one rebuild by a user action (reorder/resize/add/remove)
+        // so surviving tiles slide (FLIP) to their new spots; false for the
+        // initial load, where nothing should animate.
+        private bool animate_reflow = false;
+
         private void rebuild_from_model () {
+            // FLIP "First": record where the currently-placed tiles are, before
+            // we tear the grid down.
+            GLib.HashTable<DashboardTile, Graphene.Point?>? old_pos = null;
+            if (animate_reflow) {
+                old_pos = new GLib.HashTable<DashboardTile, Graphene.Point?> (
+                    direct_hash, direct_equal);
+                var origin = Graphene.Point ();
+                origin.init (0, 0);
+                tiles_by_config.foreach ((cfg, tile) => {
+                    if (tile.get_parent () != tiles) {
+                        return;
+                    }
+                    Graphene.Point p;
+                    if (tile.compute_point (tiles, origin, out p)) {
+                        old_pos.set (tile, p);
+                    }
+                });
+            }
+
             clear_grid ();
 
             var packed = new GLib.GenericArray<DashboardTile> ();
@@ -203,6 +227,45 @@ namespace Opensprogskole {
                 row++;
             }
             prune_cache ();
+
+            if (old_pos != null) {
+                animate_reflow = false;
+                schedule_flip (old_pos);
+            }
+        }
+
+        /* FLIP "Last/Invert/Play": once the grid has re-laid-out (next idle),
+         * for each surviving tile that moved, offset it back to its old spot and
+         * spring the offset to 0 — so it slides from where it was to where it
+         * now is. */
+        private void schedule_flip (GLib.HashTable<DashboardTile, Graphene.Point?> old_pos) {
+            Idle.add (() => {
+                var origin = Graphene.Point ();
+                origin.init (0, 0);
+                old_pos.foreach ((tile, old) => {
+                    if (tile.get_parent () != tiles) {
+                        return;
+                    }
+                    Graphene.Point now;
+                    if (!tile.compute_point (tiles, origin, out now)) {
+                        return;
+                    }
+                    double dx = old.x - now.x;
+                    double dy = old.y - now.y;
+                    if (dx.abs () < 1.0 && dy.abs () < 1.0) {
+                        return;   // didn't move
+                    }
+                    var target = new Adw.CallbackAnimationTarget ((v) => {
+                        tile.offset_x = dx * v;
+                        tile.offset_y = dy * v;
+                    });
+                    var spring = new Adw.SpringAnimation (tile, 1.0, 0.0,
+                        new Adw.SpringParams (0.86, 1.0, 240.0), target);
+                    spring.epsilon = 0.5;
+                    spring.play ();
+                });
+                return Source.REMOVE;
+            });
         }
 
         /* Column span of a tile at the current width: full row / half / one. */
@@ -278,11 +341,12 @@ namespace Opensprogskole {
             }
             var cfg = new DashboardTileConfig (type_id, info.default_size);
             layout.append (cfg);
+            animate_reflow = true;   // existing tiles slide to make room
             rebuild_from_model ();
             persist ();
             var tile = tiles_by_config.lookup (cfg);
             if (tile != null) {
-                pop_in (tile);
+                pop_in (tile);       // the new one pops in
             }
         }
 
@@ -315,9 +379,10 @@ namespace Opensprogskole {
             if (tile.controller != null) {
                 tile.controller.relayout (tile);   // donut ↔ wave etc.
             }
+            animate_reflow = true;                 // others slide as the span changes
             rebuild_from_model ();                 // re-pack: the span changed
             persist ();
-            pop_in (tile);
+            pop_in (tile);                         // the resized tile pops
         }
 
         private void do_remove (DashboardTileConfig cfg) {
@@ -325,6 +390,7 @@ namespace Opensprogskole {
             if (layout.find (cfg, out pos)) {
                 layout.remove (pos);
             }
+            animate_reflow = true;   // remaining tiles slide to close the gap
             rebuild_from_model ();
             persist ();
         }
@@ -342,12 +408,9 @@ namespace Opensprogskole {
                 insert_at = layout.get_n_items ();
             }
             layout.insert (insert_at, moved);
+            animate_reflow = true;   // the moved tile + shifted tiles fly to place
             rebuild_from_model ();
             persist ();
-            var tile = tiles_by_config.lookup (moved);
-            if (tile != null) {
-                pop_in (tile);
-            }
             return true;
         }
 

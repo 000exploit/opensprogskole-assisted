@@ -129,6 +129,12 @@ namespace Opensprogskole {
          * disturbs layout) — the SpringAnimation "pop" on add/drop writes it. */
         public double scale { get; set; default = 1.0; }
 
+        /* A paint-only translation (also snapshot(), no layout effect) — the
+         * FLIP "fly to place" animation writes these: a moved tile is drawn at
+         * its old position, then the offset springs to 0 so it slides home. */
+        public double offset_x { get; set; default = 0.0; }
+        public double offset_y { get; set; default = 0.0; }
+
         // Pointer offset inside the tile where a drag began, so the drag icon
         // (a WidgetPaintable of this tile) lines up under the cursor.
         public int drag_hotspot_x = 0;
@@ -145,6 +151,8 @@ namespace Opensprogskole {
             remove_button.clicked.connect (() => remove_requested ());
             resize_button.clicked.connect (() => size_change_requested ());
             notify["scale"].connect (queue_draw);
+            notify["offset-x"].connect (queue_draw);
+            notify["offset-y"].connect (queue_draw);
         }
 
         /* Re-apply the CSS width class after config.size changes (on resize). */
@@ -194,6 +202,9 @@ namespace Opensprogskole {
         }
 
         public override void snapshot (Gtk.Snapshot snapshot) {
+            if (offset_x != 0.0 || offset_y != 0.0) {
+                snapshot.translate ({ (float) offset_x, (float) offset_y });
+            }
             if (scale == 1.0) {
                 base.snapshot (snapshot);
                 return;

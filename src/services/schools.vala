@@ -30,7 +30,7 @@ namespace Opensprogskole {
             return new School (
                 "scm",
                 "Sprogcenter Midt",
-                "Horsens",
+                "Herning, Horsens, Skanderborg",
                 "SM",
                 "https://ums.sprogcentermidt.dk/api",
                 "1030",            // language (UMS passes this literally)

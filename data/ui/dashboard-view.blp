@@ -8,17 +8,18 @@ template $OpensprogskoleDashboardView: Adw.Bin {
     width-request: 300;
     height-request: 200;
 
-    // Narrow (phone) tuning, declaratively: tighter margins + tile gaps. The
-    // tiles themselves already collapse to one column via their min-widths, and
-    // the Report button stays full-size by design.
-    Adw.Breakpoint {
-      condition ("max-width: 500sp")
+    // The single narrow (phone) breakpoint — AdwBreakpointBin only applies one
+    // at a time, so everything narrow lives here: tighter margins/gaps, Report
+    // moves to its own line, and the code hooks apply/unapply to drop the grid
+    // to 2 columns (see construct).
+    Adw.Breakpoint narrow_bp {
+      condition ("max-width: 550sp")
 
       setters {
         content_clamp.margin-start: 6;
         content_clamp.margin-end: 6;
-        tiles.child-spacing: 12;
-        tiles.line-spacing: 12;
+        tiles.row-spacing: 12;
+        tiles.column-spacing: 12;
         report_button.visible: false;
         report_button_mobile.visible: true;
       }
@@ -113,10 +114,14 @@ template $OpensprogskoleDashboardView: Adw.Bin {
           ]
         }
 
-        Adw.WrapBox tiles {
-          child-spacing: 18;
-          line-spacing: 18;
-          justify: fill;
+        // A column-span grid: each tile spans 1..N units by its size, packed
+        // into rows of `units_per_row` (set in code by width). Not column-
+        // homogeneous — that would multiply the widest tile's per-column
+        // minimum across every column and overflow narrow widths; hexpand tiles
+        // still share slack evenly, so columns stay ~equal wherever there's room.
+        Grid tiles {
+          row-spacing: 18;
+          column-spacing: 18;
 
           styles [
             "dashboard-tiles",

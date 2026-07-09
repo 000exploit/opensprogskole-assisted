@@ -60,6 +60,10 @@ template $OpensprogskoleDashboardTile: Adw.Bin {
 
       Stack content_stack {
         transition-type: crossfade;
+        // Size to the visible page only — otherwise the (wide) empty/
+        // unavailable StatusPage pages force every tile to their minimum width.
+        hhomogeneous: false;
+        vhomogeneous: false;
 
         StackPage {
           name: "loading";

@@ -39,8 +39,15 @@ namespace Opensprogskole {
         [GtkChild] private unowned Button report_button_mobile;
         [GtkChild] private unowned Button add_button;
         [GtkChild] private unowned ToggleButton edit_button;
-        [GtkChild] private unowned Adw.WrapBox tiles;
+        [GtkChild] private unowned Adw.Breakpoint narrow_bp;
+        [GtkChild] private unowned Gtk.Grid tiles;
         [GtkChild] private unowned Adw.StatusPage empty_page;
+
+        // Column units per row (grid width): a full tile spans all of them, a
+        // half spans 2, a mini 1. Switched by width via a breakpoint.
+        private const int UNITS_WIDE = 4;
+        private const int UNITS_NARROW = 2;
+        private int units_per_row = UNITS_WIDE;
 
         public signal void report_absence_requested ();
         // A tile asked to open a core section ("schedule", "grades",
@@ -75,8 +82,20 @@ namespace Opensprogskole {
                 }
             });
             tiles.add_controller (long_press);
-            // The narrow-width header/spacing adjustments live in the Blueprint
-            // (an Adw.Breakpoint on breakpoint_bin) — no responsive code here.
+
+            // Same narrow breakpoint as the Blueprint report/margin setters
+            // (Adw applies only one breakpoint at a time, so they must share
+            // one): drop the grid to 2 columns and repack.
+            narrow_bp.apply.connect (() => set_units (UNITS_NARROW));
+            narrow_bp.unapply.connect (() => set_units (UNITS_WIDE));
+        }
+
+        private void set_units (int units) {
+            if (units_per_row == units) {
+                return;
+            }
+            units_per_row = units;
+            rebuild_from_model ();
         }
 
         public void bind (Session session) {
@@ -129,14 +148,15 @@ namespace Opensprogskole {
             rebuild_from_model ();
         }
 
-        /* The only place the WrapBox structure is written. Reuses cached tiles;
-         * builds+binds a tile the first time its config appears. */
+        /* The only place the grid structure is written. Reuses cached tiles,
+         * builds+binds a tile the first time its config appears, then packs
+         * them into rows of `units_per_row` by span. The last tile of a partial
+         * row is stretched to fill the remaining units (no trailing gap). */
         private void rebuild_from_model () {
-            tiles.remove_all ();
-            uint n = layout.get_n_items ();
-            empty_page.visible = n == 0;
-            tiles.visible = n > 0;
+            clear_grid ();
 
+            var packed = new GLib.GenericArray<DashboardTile> ();
+            uint n = layout.get_n_items ();
             for (uint i = 0; i < n; i++) {
                 var cfg = (DashboardTileConfig) layout.get_item (i);
                 var tile = tiles_by_config.lookup (cfg);
@@ -148,9 +168,57 @@ namespace Opensprogskole {
                     tiles_by_config.insert (cfg, tile);
                 }
                 tile.edit_mode = editing;
-                tiles.append (tile);
+                packed.add (tile);
+            }
+
+            empty_page.visible = packed.length == 0;
+            tiles.visible = packed.length > 0;
+
+            int row = 0;
+            uint i = 0;
+            while (i < packed.length) {
+                // Greedily fill a row up to units_per_row.
+                uint start = i;
+                int used = 0;
+                while (i < packed.length
+                       && used + span_of (packed[i]) <= units_per_row) {
+                    used += span_of (packed[i]);
+                    i++;
+                }
+                if (i == start) {   // a single tile wider than a row (shouldn't happen)
+                    i++;
+                    used = units_per_row;
+                }
+                int leftover = units_per_row - used;
+                int col = 0;
+                for (uint j = start; j < i; j++) {
+                    int span = span_of (packed[j]);
+                    if (j == i - 1) {
+                        span += leftover;   // last tile fills the row
+                    }
+                    packed[j].hexpand = true;
+                    tiles.attach (packed[j], col, row, span, 1);
+                    col += span;
+                }
+                row++;
             }
             prune_cache ();
+        }
+
+        /* Column span of a tile at the current width: full row / half / one. */
+        private int span_of (DashboardTile tile) {
+            switch (tile.config.size) {
+                case WidgetSize.FULL: return units_per_row;
+                case WidgetSize.HALF: return int.min (2, units_per_row);
+                default:              return 1;
+            }
+        }
+
+        private void clear_grid () {
+            Gtk.Widget? child;
+            while ((child = tiles.get_first_child ()) != null) {
+                tiles.remove (child);   // cache keeps the tile alive
+            }
         }
 
         /* Drop cached tiles whose config is no longer in the layout (removed),
@@ -245,8 +313,9 @@ namespace Opensprogskole {
             cfg.size = info.next_size (cfg.size);
             tile.apply_size_class ();
             if (tile.controller != null) {
-                tile.controller.relayout (tile);
+                tile.controller.relayout (tile);   // donut ↔ wave etc.
             }
+            rebuild_from_model ();                 // re-pack: the span changed
             persist ();
             pop_in (tile);
         }

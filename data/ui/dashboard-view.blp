@@ -18,8 +18,8 @@ template $OpensprogskoleDashboardView: Adw.Bin {
       setters {
         content_clamp.margin-start: 6;
         content_clamp.margin-end: 6;
-        tiles.row-spacing: 12;
-        tiles.column-spacing: 12;
+        tiles.child-spacing: 12;
+        tiles.line-spacing: 12;
         report_button.visible: false;
         report_button_mobile.visible: true;
       }
@@ -114,14 +114,14 @@ template $OpensprogskoleDashboardView: Adw.Bin {
           ]
         }
 
-        // A column-span grid: each tile spans 1..N units by its size, packed
-        // into rows of `units_per_row` (set in code by width). Not column-
-        // homogeneous — that would multiply the widest tile's per-column
-        // minimum across every column and overflow narrow widths; hexpand tiles
-        // still share slack evenly, so columns stay ~equal wherever there's room.
-        Grid tiles {
-          row-spacing: 18;
-          column-spacing: 18;
+        // Reflowing tiles: WrapBox packs them by their CSS min-widths (per
+        // size) and fills each line. overflow:hidden clips a FLIP-animated
+        // tile's translated snapshot so it can't paint outside (stray artifacts).
+        Adw.WrapBox tiles {
+          child-spacing: 18;
+          line-spacing: 18;
+          justify: fill;
+          overflow: hidden;
 
           styles [
             "dashboard-tiles",

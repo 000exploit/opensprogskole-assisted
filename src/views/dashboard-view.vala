@@ -39,15 +39,8 @@ namespace Opensprogskole {
         [GtkChild] private unowned Button report_button_mobile;
         [GtkChild] private unowned Button add_button;
         [GtkChild] private unowned ToggleButton edit_button;
-        [GtkChild] private unowned Adw.Breakpoint narrow_bp;
-        [GtkChild] private unowned Gtk.Grid tiles;
+        [GtkChild] private unowned Adw.WrapBox tiles;
         [GtkChild] private unowned Adw.StatusPage empty_page;
-
-        // Column units per row (grid width): a full tile spans all of them, a
-        // half spans 2, a mini 1. Switched by width via a breakpoint.
-        private const int UNITS_WIDE = 4;
-        private const int UNITS_NARROW = 2;
-        private int units_per_row = UNITS_WIDE;
 
         public signal void report_absence_requested ();
         // A tile asked to open a core section ("schedule", "grades",
@@ -82,20 +75,8 @@ namespace Opensprogskole {
                 }
             });
             tiles.add_controller (long_press);
-
-            // Same narrow breakpoint as the Blueprint report/margin setters
-            // (Adw applies only one breakpoint at a time, so they must share
-            // one): drop the grid to 2 columns and repack.
-            narrow_bp.apply.connect (() => set_units (UNITS_NARROW));
-            narrow_bp.unapply.connect (() => set_units (UNITS_WIDE));
-        }
-
-        private void set_units (int units) {
-            if (units_per_row == units) {
-                return;
-            }
-            units_per_row = units;
-            rebuild_from_model ();
+            // Column count follows the allocated width (DashboardLayout); the
+            // Blueprint narrow_bp handles the report button + margins.
         }
 
         public void bind (Session session) {
@@ -198,33 +179,10 @@ namespace Opensprogskole {
             empty_page.visible = packed.length == 0;
             tiles.visible = packed.length > 0;
 
-            int row = 0;
-            uint i = 0;
-            while (i < packed.length) {
-                // Greedily fill a row up to units_per_row.
-                uint start = i;
-                int used = 0;
-                while (i < packed.length
-                       && used + span_of (packed[i]) <= units_per_row) {
-                    used += span_of (packed[i]);
-                    i++;
-                }
-                if (i == start) {   // a single tile wider than a row (shouldn't happen)
-                    i++;
-                    used = units_per_row;
-                }
-                int leftover = units_per_row - used;
-                int col = 0;
-                for (uint j = start; j < i; j++) {
-                    int span = span_of (packed[j]);
-                    if (j == i - 1) {
-                        span += leftover;   // last tile fills the row
-                    }
-                    packed[j].hexpand = true;
-                    tiles.attach (packed[j], col, row, span, 1);
-                    col += span;
-                }
-                row++;
+            // Append in model order; DashboardLayout does the span-packing and
+            // picks the column count from the actual allocated width.
+            for (uint j = 0; j < packed.length; j++) {
+                tiles.append (packed[j]);
             }
             prune_cache ();
 
@@ -268,20 +226,8 @@ namespace Opensprogskole {
             });
         }
 
-        /* Column span of a tile at the current width: full row / half / one. */
-        private int span_of (DashboardTile tile) {
-            switch (tile.config.size) {
-                case WidgetSize.FULL: return units_per_row;
-                case WidgetSize.HALF: return int.min (2, units_per_row);
-                default:              return 1;
-            }
-        }
-
         private void clear_grid () {
-            Gtk.Widget? child;
-            while ((child = tiles.get_first_child ()) != null) {
-                tiles.remove (child);   // cache keeps the tile alive
-            }
+            tiles.remove_all ();   // cache keeps the tiles alive
         }
 
         /* Drop cached tiles whose config is no longer in the layout (removed),

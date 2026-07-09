@@ -87,10 +87,14 @@ window.android *:not(.title-2):not(.title-1) {
 .time-field text { padding-left: 2px; padding-right: 2px; }
 .time-colon { font-size: 1.6em; font-weight: 700; opacity: 0.55; }
 
-/* Dashboard tiles. Width is driven by the grid's column spans (see
- * DashboardView), not CSS, so no per-size min-width here — that would fight the
- * grid and force horizontal overflow in narrow columns. */
+/* Dashboard tiles. Per-size min-widths drive the WrapBox reflow (a full tile
+ * takes a wide slot, halves pair, minis pack several); justify:fill then
+ * stretches a line's tiles to fill it. Kept below a phone width (~360) so a
+ * full tile never forces horizontal overflow — its content ellipsizes to fit. */
 .dashboard-tile { padding: 14px; }
+.dashboard-tile.size-full { min-width: 320px; }
+.dashboard-tile.size-half { min-width: 240px; }
+.dashboard-tile.size-mini { min-width: 140px; }
 .dashboard-tile.editing { outline: 2px dashed alpha(@accent_color, 0.5); outline-offset: -2px; }
 .dashboard-tile.dragging { opacity: 0.3; }
 

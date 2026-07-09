@@ -151,8 +151,19 @@ namespace Opensprogskole {
             remove_button.clicked.connect (() => remove_requested ());
             resize_button.clicked.connect (() => size_change_requested ());
             notify["scale"].connect (queue_draw);
-            notify["offset-x"].connect (queue_draw);
-            notify["offset-y"].connect (queue_draw);
+            notify["offset-x"].connect (invalidate_moved);
+            notify["offset-y"].connect (invalidate_moved);
+        }
+
+        /* An offset makes us paint outside our allocation, so invalidating just
+         * ourselves leaves ghosts where we drew — repaint the parent (the grid)
+         * too, which covers both the old and new spots. */
+        private void invalidate_moved () {
+            queue_draw ();
+            var parent = get_parent ();
+            if (parent != null) {
+                parent.queue_draw ();
+            }
         }
 
         /* Re-apply the CSS width class after config.size changes (on resize). */

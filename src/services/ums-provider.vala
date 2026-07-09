@@ -56,6 +56,14 @@ namespace Opensprogskole {
             return { "up-next", "attendance", "recent-grades" };
         }
 
+        /* Both are disabled server-side and can't be implemented right now */
+        public bool supports (DataKind data) {
+            if (data == DataKind.NEWS || data == DataKind.HOMEWORK)
+                return false;
+            else
+                return true;
+        }
+
         /* When the token expires (unix seconds), or 0 if unknown. */
         public int64 token_expires_at { get { return client.token_expires_at; } }
 

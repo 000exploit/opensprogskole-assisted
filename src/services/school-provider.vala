@@ -34,7 +34,7 @@ namespace Opensprogskole {
      * widgets a school can offer (see SchoolProvider.supports): UMS/Demo serve
      * everything, LUDUS almost nothing yet. */
     public enum DataKind {
-        TIMETABLE, ABSENCE, GRADES, PROFILE, FUTURE_ABSENCE, LINKS, NEWS
+        TIMETABLE, ABSENCE, GRADES, HOMEWORK, PROFILE, FUTURE_ABSENCE, LINKS, NEWS
     }
 
     /* The contract every language school's backend must satisfy.

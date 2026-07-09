@@ -252,7 +252,7 @@ namespace Opensprogskole {
                 new NavSection ("news", _("News"), "application-rss+xml-symbolic",
                                 NavPlacement.SECONDARY, false, DataKind.NEWS),
                 new NavSection ("homework", _("Homework"), "folder-documents-symbolic",
-                                NavPlacement.SECONDARY, false, NavSection.ALWAYS),
+                                NavPlacement.SECONDARY, false, DataKind.HOMEWORK),
                 new NavSection ("links", _("Links"), "web-browser-symbolic",
                                 NavPlacement.SECONDARY, false, DataKind.LINKS),
             };

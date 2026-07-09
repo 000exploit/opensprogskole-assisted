@@ -49,7 +49,7 @@ namespace Opensprogskole {
 
         public override void bind (Session session, DashboardTile tile) {
             this.session = session;
-            session.absence_updated.connect (() => render (tile));
+            track (session, session.absence_updated.connect (() => render (tile)));
             render (tile);
         }
 

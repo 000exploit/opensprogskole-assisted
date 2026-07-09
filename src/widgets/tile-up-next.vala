@@ -49,8 +49,8 @@ namespace Opensprogskole {
 
         public override void bind (Session session, DashboardTile tile) {
             this.session = session;
-            session.timetable_updated.connect (() => render (tile));
-            session.updated.connect (() => render (tile));
+            track (session, session.timetable_updated.connect (() => render (tile)));
+            track (session, session.updated.connect (() => render (tile)));
             render (tile);
         }
 

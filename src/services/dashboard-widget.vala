@@ -256,5 +256,34 @@ namespace Opensprogskole {
          * is a no-op for size-agnostic widgets; size-switching widgets (e.g.
          * attendance donut ↔ wave) override it. */
         public virtual void relayout (DashboardTile tile) {}
+
+        // Session-signal connections made in bind(), so unbind() can drop them.
+        private GLib.GenericArray<Subscription> subs =
+            new GLib.GenericArray<Subscription> ();
+
+        /* Register a signal connection so it's torn down on unbind(). Bind()
+         * should wrap every Session subscription in this. */
+        protected void track (GLib.Object emitter, ulong handler) {
+            subs.add (new Subscription (emitter, handler));
+        }
+
+        /* Drop all tracked subscriptions — for a transient tile (the add
+         * dialog's preview) so it doesn't outlive the session via its handlers.
+         * Placed tiles live for the session and never need this. */
+        public void unbind () {
+            for (uint i = 0; i < subs.length; i++) {
+                subs[i].emitter.disconnect (subs[i].handler);
+            }
+            subs = new GLib.GenericArray<Subscription> ();
+        }
+
+        private class Subscription {
+            public GLib.Object emitter;
+            public ulong handler;
+            public Subscription (GLib.Object emitter, ulong handler) {
+                this.emitter = emitter;
+                this.handler = handler;
+            }
+        }
     }
 }

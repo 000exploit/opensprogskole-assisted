@@ -39,6 +39,7 @@ namespace Opensprogskole {
 
         private Session session;
         private string? pending = null;
+        private DashboardTile? preview_tile = null;
 
         public DashboardAddDialog (Session session, GLib.GenericArray<string> taken) {
             this.session = session;
@@ -72,24 +73,38 @@ namespace Opensprogskole {
                     close ();
                 }
             });
+            // Tear down the preview tile's session subscriptions on close.
+            closed.connect (drop_preview);
         }
 
         private void show_preview (string type_id) {
+            drop_preview ();
+            preview_tile = build_preview (type_id);
+            if (preview_tile == null) {
+                return;
+            }
             pending = type_id;
-            preview_slot.child = build_preview (type_id);
+            preview_slot.child = preview_tile;
             nav.push_by_tag ("preview");
+        }
+
+        private void drop_preview () {
+            if (preview_tile != null && preview_tile.controller != null) {
+                preview_tile.controller.unbind ();
+            }
+            preview_tile = null;
         }
 
         /* A real, bound tile at the widget's default size, for the preview page.
          * NOTE: it binds to the live session; its signal subscriptions keep it
          * alive until the session ends — acceptable for a transient picker
          * (only the handful of widget types, opened occasionally). */
-        private Gtk.Widget build_preview (string type_id) {
+        private DashboardTile? build_preview (string type_id) {
             var registry = DashboardWidgetRegistry.get_default ();
             var info = registry.lookup (type_id);
             var controller = registry.create (type_id);
             if (info == null || controller == null) {
-                return new Adw.Bin ();
+                return null;
             }
             var tile = new DashboardTile (new DashboardTileConfig (type_id, info.default_size)) {
                 title = info.title,

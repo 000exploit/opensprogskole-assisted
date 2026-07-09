@@ -102,8 +102,8 @@ namespace Opensprogskole {
         protected override string open_section { get { return "schedule"; } }
 
         protected override void subscribe (Session session, DashboardTile tile) {
-            session.timetable_updated.connect (() => render (tile));
-            session.updated.connect (() => render (tile));
+            track (session, session.timetable_updated.connect (() => render (tile)));
+            track (session, session.updated.connect (() => render (tile)));
         }
 
         protected override bool compute (out string value, out string caption,
@@ -128,8 +128,8 @@ namespace Opensprogskole {
         protected override string open_section { get { return "grades"; } }
 
         protected override void subscribe (Session session, DashboardTile tile) {
-            session.grades.items_changed.connect (() => render (tile));
-            session.updated.connect (() => render (tile));
+            track (session.grades, session.grades.items_changed.connect (() => render (tile)));
+            track (session, session.updated.connect (() => render (tile)));
         }
 
         protected override bool compute (out string value, out string caption,

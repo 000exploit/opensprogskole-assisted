@@ -4,8 +4,10 @@
 # builds need no network; it is maintained as its own project, and once that
 # is published this can become a [wrap-git] pointing at
 # https://github.com/000exploit/proxy-libintl
-[wrap-file]
-directory = proxy-libintl
+[wrap-git]
+url = https://github.com/000exploit/proxy-libintl.git
+revision = main
+depth = 1
 
 [provide]
 dependency_names = intl

@@ -11,6 +11,11 @@ template $OpensprogskolePreferencesDialog: Adw.PreferencesDialog {
       title: _("Appearance");
 
       // models (translated) set in code.
+      Adw.ComboRow language_row {
+        title: _("Language");
+        subtitle: _("Override the system language for this app");
+      }
+
       Adw.ComboRow color_scheme_row {
         title: _("Color scheme");
         subtitle: _("Override the system light/dark setting");

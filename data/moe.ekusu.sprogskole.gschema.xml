@@ -30,6 +30,11 @@
 			<default>'ums'</default>
 			<summary>Provider family of a hand-entered (Custom) school</summary>
 		</key>
+		<key name="language" type="s">
+			<default>''</default>
+			<summary>Forced UI language</summary>
+			<description>Language code (e.g. 'da') forcing the app's interface language regardless of the system locale, via the LANGUAGE env var. '' follows the system. Applied at startup (see Localization.apply); a change takes full effect on restart.</description>
+		</key>
 		<key name="color-scheme" type="i">
 			<default>0</default>
 			<range min="0" max="2"/>

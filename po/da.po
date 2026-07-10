@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opensprogskole\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 02:05+0200\n"
-"PO-Revision-Date: 2026-06-29 02:03+0200\n"
+"POT-Creation-Date: 2026-07-10 08:31+0200\n"
+"PO-Revision-Date: 2026-07-10 12:00+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: da\n"
@@ -18,882 +18,1518 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: data/moe.ekusu.sprogskole.desktop.in:2
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:7 data/ui/main-view.blp:15
-#: data/ui/main-view.blp:180 data/ui/onboarding-view.blp:19
-#: data/ui/onboarding-view.blp:73 data/ui/window.blp:5
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:7 data/ui/main-view.blp:26
+#: data/ui/main-view.blp:189 data/ui/main-view.blp:227
+#: data/ui/onboarding-view.blp:19 data/ui/onboarding-view.blp:73
+#: data/ui/window.blp:5
 msgid "OpenSprogskole"
-msgstr ""
+msgstr "OpenSprogskole"
 
-#: data/moe.ekusu.sprogskole.desktop.in:8
+#: data/moe.ekusu.sprogskole.desktop.in:10
 msgid "GTK;"
-msgstr ""
+msgstr "GTK;"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:6
 msgid "Stable per-install device identifier"
-msgstr ""
+msgstr "Stabilt enheds-id pr. installation"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:7
 msgid "Random id generated on first run and sent to UMS as DeviceId."
 msgstr ""
+"Tilfældigt id genereret ved første start og sendt til UMS som DeviceId."
 
 #: data/moe.ekusu.sprogskole.gschema.xml:11
 msgid "Id of the currently connected school"
-msgstr ""
+msgstr "Id for den aktuelt forbundne skole"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:15
 msgid "Username of the saved account (secret lives in the keyring)"
-msgstr ""
+msgstr "Brugernavn for den gemte konto (hemmeligheden ligger i nøgleringen)"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:19
 msgid "Id of the login method used for the saved account"
-msgstr ""
+msgstr "Id for loginmetoden brugt til den gemte konto"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:23
 msgid "Display name of a hand-entered (Custom) school"
-msgstr ""
+msgstr "Visningsnavn for en manuelt indtastet (tilpasset) skole"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:27
 msgid "Base URL of a hand-entered (Custom) school"
-msgstr ""
+msgstr "Basis-URL for en manuelt indtastet (tilpasset) skole"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:31
 msgid "Provider family of a hand-entered (Custom) school"
-msgstr ""
+msgstr "Udbyderfamilie for en manuelt indtastet (tilpasset) skole"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:35
-msgid "Unix time (seconds) the saved session token is valid until"
-msgstr ""
+msgid "Forced UI language"
+msgstr "Tvunget grænsefladesprog"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:36
+msgid ""
+"Language code (e.g. 'da') forcing the app's interface language regardless of "
+"the system locale, via the LANGUAGE env var. '' follows the system. Applied "
+"at startup (see Localization.apply); a change takes full effect on restart."
+msgstr ""
+"Sprogkode (f.eks. 'da'), der tvinger appens grænsefladesprog uanset systemets"
+" locale via miljøvariablen LANGUAGE. '' følger systemet. Anvendes ved opstart"
+" (se Localization.apply); en ændring træder fuldt i kraft efter genstart."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:41
+msgid "Preferred color scheme"
+msgstr "Foretrukket farveskema"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:42
+msgid "0 = follow system, 1 = light, 2 = dark. Applied via AdwStyleManager."
+msgstr "0 = følg systemet, 1 = lys, 2 = mørk. Anvendes via AdwStyleManager."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:47
+msgid "Preferred accent color"
+msgstr "Foretrukket accentfarve"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:48
+msgid ""
+"0 = follow system; 1–9 = AdwAccentColor (blue, teal, green, yellow, orange, "
+"red, pink, purple, slate). Overridden via a CSS provider since "
+"AdwStyleManager's accent is read-only."
+msgstr ""
+"0 = følg systemet; 1–9 = AdwAccentColor (blå, blågrøn, grøn, gul, orange, "
+"rød, lyserød, lilla, skifer). Tilsidesættes via en CSS-udbyder, da "
+"AdwStyleManagers accent er skrivebeskyttet."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:53
+msgid "Day the calendar week starts on"
+msgstr "Dagen kalenderugen starter på"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:54
+msgid "0 = use the school's default; 1–7 = ISO weekday (1 Monday … 7 Sunday)."
+msgstr "0 = brug skolens standard; 1–7 = ISO-ugedag (1 mandag … 7 søndag)."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:58
+msgid "Unix time (seconds) the saved session token is valid until"
+msgstr "Unix-tid (sekunder) som det gemte sessionstoken er gyldigt indtil"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:59
 msgid ""
 "From the JWT 'exp' claim. 0 means unknown (no expiry claim); the token is "
 "still tried."
 msgstr ""
+"Fra JWT-'exp'-claimet. 0 betyder ukendt (intet udløbs-claim); tokenet prøves "
+"alligevel."
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:3
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:18
+msgid "moe.ekusu.sprogskole"
+msgstr "moe.ekusu.sprogskole"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:4
+msgid "CC0-1.0"
+msgstr "CC0-1.0"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:5
+msgid "GPL-3.0-or-later"
+msgstr "GPL-3.0-or-later"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:8
-msgid "Keep the summary shorter, between 10 and 35 characters"
-msgstr ""
+msgid "Your language school life"
+msgstr "Dit sprogskoleliv"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:10
-msgid "No description"
+msgid ""
+"View your schedule, grades, homework and report when you are sick or "
+"unavailable."
 msgstr ""
+"Se dit skema, dine karakterer og lektier, og meld når du er syg eller "
+"forhindret."
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:52
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:56
-msgid "A caption"
-msgstr ""
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:14
+msgid "000exploit"
+msgstr "000exploit"
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:64
-msgid "Release description"
-msgstr ""
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:21
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:22
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:25
+msgid "https://github.com/000exploit/opensprogskole-assisted"
+msgstr "https://github.com/000exploit/opensprogskole-assisted"
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:66
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:67
-msgid "List of changes"
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:23
+msgid "https://github.com/000exploit/opensprogskole-assisted/issues"
+msgstr "https://github.com/000exploit/opensprogskole-assisted/issues"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:24
+msgid ""
+"https://github.com/000exploit/opensprogskole-assisted/blob/main/README.md"
 msgstr ""
+"https://github.com/000exploit/opensprogskole-assisted/blob/main/README.md"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:27
+msgid "opensprogskole"
+msgstr "opensprogskole"
+
+#. All graphical applications having a desktop file must have this tag in the
+#. MetaInfo.
+#. If this is present, appstreamcli compose will pull icons, keywords and
+#. categories from the desktop file.
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:30
+msgid "moe.ekusu.sprogskole.desktop"
+msgstr "moe.ekusu.sprogskole.desktop"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:32
+msgid "mild"
+msgstr "mild"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:38
+msgid "#ff00ff"
+msgstr "#ff00ff"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:39
+msgid "#993d3d"
+msgstr "#993d3d"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:44
+msgid ""
+"https://raw.githubusercontent.com/000exploit/opensprogskole-"
+"assisted/refs/heads/main/data/screenshots/greetings.png"
+msgstr ""
+"https://raw.githubusercontent.com/000exploit/opensprogskole-"
+"assisted/refs/heads/main/data/screenshots/greetings.png"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:45
+msgid "Greetings"
+msgstr "Velkomst"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:50
+msgid "always"
+msgstr "always"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:55
+msgid "https://example.org/changelog.html#version_1.0.1"
+msgstr "https://example.org/changelog.html#version_1.0.1"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:57
+msgid "Early release v0.9.9"
+msgstr "Tidlig udgivelse v0.9.9"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:59
+msgid "Initial android port"
+msgstr "Første Android-port"
 
 #: data/ui/absence-dialog.blp:5 data/ui/absence-dialog.blp:13
 #: data/ui/absence-dialog.blp:376 data/ui/absence-page.blp:39
-#: data/ui/overview-page.blp:50 data/ui/overview-page.blp:226
+#: data/ui/dashboard-view.blp:76 data/ui/dashboard-view.blp:108
+#: src/services/ludus-endpoints.vala:62 src/services/ums-endpoints.vala:62
 msgid "Report absence"
-msgstr ""
+msgstr "Meld fravær"
 
 #: data/ui/absence-dialog.blp:32
 msgid "When does the absence apply?"
-msgstr ""
+msgstr "Hvornår gælder fraværet?"
 
-#: data/ui/absence-dialog.blp:51 src/views/overview-page.vala:136
+#: data/ui/absence-dialog.blp:51 src/widgets/tile-up-next.vala:211
 msgid "Today"
-msgstr ""
+msgstr "I dag"
 
 #: data/ui/absence-dialog.blp:60
 msgid "Report absence for the whole of today."
-msgstr ""
+msgstr "Meld fravær for hele dagen i dag."
 
 #: data/ui/absence-dialog.blp:82
 msgid "Earlier"
-msgstr ""
+msgstr "Tidligere"
 
 #: data/ui/absence-dialog.blp:91
 msgid "Edit or remove a reported absence."
-msgstr ""
+msgstr "Redigér eller fjern et meldt fravær."
 
 #: data/ui/absence-dialog.blp:113
 msgid "Future"
-msgstr ""
+msgstr "Fremtidig"
 
 #: data/ui/absence-dialog.blp:122
 msgid "Plan an absence ahead of time."
-msgstr ""
+msgstr "Planlæg et fravær på forhånd."
 
 #: data/ui/absence-dialog.blp:143
 msgid "Future absence"
-msgstr ""
+msgstr "Fremtidigt fravær"
 
 #: data/ui/absence-dialog.blp:169 data/ui/absence-dialog.blp:422
 #: data/ui/reason-dialog.blp:37 data/ui/lesson-dialog.blp:109
 msgid "Reason"
-msgstr ""
+msgstr "Årsag"
 
 #: data/ui/absence-dialog.blp:187
 msgid "Date"
-msgstr ""
+msgstr "Dato"
 
 #: data/ui/absence-dialog.blp:190 data/ui/schedule-view.blp:45
 msgid "Month"
-msgstr ""
+msgstr "Måned"
 
 #: data/ui/absence-dialog.blp:194
 msgid "Day"
-msgstr ""
+msgstr "Dag"
 
 #: data/ui/absence-dialog.blp:205
 msgid "Year"
-msgstr ""
+msgstr "År"
 
 #: data/ui/absence-dialog.blp:217
 msgid "Time"
-msgstr ""
+msgstr "Tidspunkt"
 
 #: data/ui/absence-dialog.blp:234
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #: data/ui/absence-dialog.blp:301
 msgid "End"
-msgstr ""
+msgstr "Slut"
 
 #: data/ui/absence-dialog.blp:392 data/ui/absence-dialog.blp:438
+#: src/services/ums-endpoints.vala:60
 msgid "Call in sick"
-msgstr ""
+msgstr "Sygemeld dig"
 
 #: data/ui/absence-dialog.blp:410
 msgid "Report that you're absent for the rest of today."
-msgstr ""
+msgstr "Meld at du er fraværende resten af dagen."
 
-#: data/ui/reason-dialog.blp:5
+#: data/ui/reason-dialog.blp:5 src/services/ums-endpoints.vala:59
 msgid "Absence reason"
-msgstr ""
+msgstr "Fraværsårsag"
 
 #: data/ui/reason-dialog.blp:43
 msgid "Whole day"
-msgstr ""
+msgstr "Hele dagen"
 
 #: data/ui/reason-dialog.blp:61 data/ui/edit-profile-page.blp:112
-#: src/views/absence-page.vala:168
+#: src/views/absence-page.vala:169
 msgid "Save"
-msgstr ""
+msgstr "Gem"
 
 #: data/ui/absence-page.blp:26 data/ui/lesson-dialog.blp:105
-#: data/ui/main-view.blp:217 src/views/absence-page.vala:138
-#: src/views/absence-page.vala:204 src/views/main-view.vala:61
+#: data/ui/main-view.blp:286 src/services/nav-section.vala:85
+#: src/services/ludus-endpoints.vala:55 src/services/ludus-endpoints.vala:56
+#: src/services/ums-endpoints.vala:57 src/views/absence-page.vala:138
+#: src/views/absence-page.vala:205 src/views/main-view.vala:305
 msgid "Absence"
-msgstr ""
+msgstr "Fravær"
 
 #: data/ui/absence-page.blp:55
 msgid "Planned"
-msgstr ""
+msgstr "Planlagt"
 
 #: data/ui/absence-page.blp:65
 msgid "Reported"
-msgstr ""
+msgstr "Meldt"
 
 #: data/ui/absence-page.blp:78
 msgid "Loading absences…"
-msgstr ""
+msgstr "Indlæser fravær…"
 
-#: data/ui/absence-page.blp:99
+#: data/ui/absence-page.blp:102
 msgid "No reported absences yet."
-msgstr ""
+msgstr "Ingen meldte fravær endnu."
 
 #: data/ui/links-page.blp:35
 msgid "No links"
-msgstr ""
+msgstr "Ingen links"
 
 #: data/ui/links-page.blp:36
 msgid "Your school hasn't shared any links."
-msgstr ""
+msgstr "Din skole har ikke delt nogen links."
 
 #: data/ui/calendar.blp:23
 msgid "Previous month"
-msgstr ""
+msgstr "Forrige måned"
 
 #: data/ui/calendar.blp:33
 msgid "Next month"
-msgstr ""
+msgstr "Næste måned"
 
 #: data/ui/day-lessons.blp:14
 msgid "Selected day"
-msgstr ""
+msgstr "Valgt dag"
 
 #: data/ui/day-lessons.blp:68
 msgid "No lessons this day"
-msgstr ""
+msgstr "Ingen lektioner denne dag"
 
 #: data/ui/edit-profile-page.blp:5 data/ui/profile-page.blp:76
 msgid "Edit information"
-msgstr ""
+msgstr "Redigér oplysninger"
 
 #: data/ui/edit-profile-page.blp:46
 msgid ""
 "Only the fields your school lets you change are shown here. If you need to "
 "change anything else, contact the language school reception."
 msgstr ""
+"Kun de felter, din skole lader dig ændre, vises her. Har du brug for at ændre"
+" andet, så kontakt sprogskolens reception."
 
 #: data/ui/edit-profile-page.blp:58 data/ui/profile-page.blp:97
 msgid "Contact"
-msgstr ""
+msgstr "Kontakt"
 
-#: data/ui/edit-profile-page.blp:61 src/views/profile-page.vala:132
+#: data/ui/edit-profile-page.blp:61 src/views/profile-page.vala:167
 msgid "Phone"
-msgstr ""
+msgstr "Telefon"
 
-#: data/ui/edit-profile-page.blp:67 src/views/profile-page.vala:133
+#: data/ui/edit-profile-page.blp:67 src/views/profile-page.vala:168
 msgid "Mobile"
-msgstr ""
+msgstr "Mobil"
 
-#: data/ui/edit-profile-page.blp:73 src/views/profile-page.vala:134
+#: data/ui/edit-profile-page.blp:73 src/views/profile-page.vala:169
 msgid "Work phone"
-msgstr ""
+msgstr "Arbejdstelefon"
 
-#: data/ui/edit-profile-page.blp:79 src/views/profile-page.vala:135
+#: data/ui/edit-profile-page.blp:79 src/views/profile-page.vala:170
 msgid "Work mobile"
-msgstr ""
+msgstr "Arbejdsmobil"
 
-#: data/ui/edit-profile-page.blp:85 src/views/profile-page.vala:136
+#: data/ui/edit-profile-page.blp:85 src/views/profile-page.vala:171
 msgid "Email"
-msgstr ""
+msgstr "E-mail"
 
-#: data/ui/edit-profile-page.blp:91 src/views/profile-page.vala:137
+#: data/ui/edit-profile-page.blp:91 src/views/profile-page.vala:172
 msgid "Work email"
-msgstr ""
+msgstr "Arbejds-e-mail"
 
 #: data/ui/edit-profile-page.blp:101
 msgid "Other information"
-msgstr ""
+msgstr "Andre oplysninger"
+
+#: data/ui/error-details-dialog.blp:10
+msgid "Request Failed"
+msgstr "Forespørgsel mislykkedes"
+
+#: data/ui/error-details-dialog.blp:34
+msgid "Copy to Clipboard"
+msgstr "Kopiér til udklipsholder"
+
+#: data/ui/error-details-dialog.blp:69 data/ui/school-picker.blp:266
+msgid "Close"
+msgstr "Luk"
+
+#: data/ui/dashboard-widget.blp:94
+msgid "Not available for this school"
+msgstr "Ikke tilgængelig for denne skole"
+
+#: data/ui/dashboard-widget.blp:95
+msgid "This school's system doesn't provide this data."
+msgstr "Denne skoles system leverer ikke disse data."
+
+#: data/ui/dashboard-widget.blp:119
+msgid "Change size"
+msgstr "Skift størrelse"
+
+#: data/ui/dashboard-widget.blp:128
+msgid "Remove widget"
+msgstr "Fjern widget"
 
 #: data/ui/grades-page.blp:30
 msgid "Loading grades…"
-msgstr ""
+msgstr "Indlæser karakterer…"
 
 #: data/ui/grades-page.blp:47
 msgid "No grades"
-msgstr ""
+msgstr "Ingen karakterer"
 
 #: data/ui/grades-page.blp:48
 msgid "Grades will appear here once your school registers them."
-msgstr ""
+msgstr "Karakterer vises her, når din skole registrerer dem."
 
 #: data/ui/lesson-dialog.blp:5
 msgid "Lesson"
-msgstr ""
+msgstr "Lektion"
 
 #: data/ui/lesson-dialog.blp:78
 msgid "It's not recommended to skip this lesson."
-msgstr ""
+msgstr "Det anbefales ikke at springe denne lektion over."
 
-#: data/ui/main-view.blp:23
+#: data/ui/main-view.blp:37 data/ui/main-view.blp:241
 msgid "Refresh"
-msgstr ""
+msgstr "Opdatér"
 
-#: data/ui/main-view.blp:57 src/views/main-view.vala:127
+#: data/ui/main-view.blp:72 src/views/main-view.vala:168
 msgid "Connected"
-msgstr ""
+msgstr "Forbundet"
 
-#: data/ui/main-view.blp:84
+#: data/ui/main-view.blp:99
 msgid "More"
-msgstr ""
+msgstr "Mere"
 
-#: data/ui/main-view.blp:147
+#: data/ui/main-view.blp:160
 msgid "Student"
-msgstr ""
+msgstr "Kursist"
 
-#: data/ui/main-view.blp:163
+#: data/ui/main-view.blp:176
 msgid "Account menu"
-msgstr ""
+msgstr "Kontomenu"
 
-#: data/ui/main-view.blp:185 src/views/main-view.vala:58
+#: data/ui/main-view.blp:233 data/ui/main-view.blp:265
+#: src/services/nav-section.vala:79 src/views/main-view.vala:307
 msgid "Overview"
-msgstr ""
+msgstr "Oversigt"
 
-#: data/ui/main-view.blp:194
+#: data/ui/main-view.blp:250
 msgid "Main Menu"
-msgstr ""
+msgstr "Hovedmenu"
 
-#: data/ui/main-view.blp:205 data/ui/schedule-view.blp:19
-#: src/views/main-view.vala:59
+#: data/ui/main-view.blp:258
+msgid "You're offline"
+msgstr "Du er offline"
+
+#: data/ui/main-view.blp:272 data/ui/preferences-dialog.blp:31
+#: data/ui/schedule-view.blp:19 src/services/nav-section.vala:81
+#: src/views/main-view.vala:303
 msgid "Schedule"
-msgstr ""
+msgstr "Skema"
 
-#: data/ui/main-view.blp:229 src/views/main-view.vala:62
-msgid "Your information"
-msgstr ""
-
-#: data/ui/main-view.blp:241 src/views/main-view.vala:60
+#: data/ui/main-view.blp:279 src/services/dashboard-registry.vala:124
+#: src/services/nav-section.vala:83 src/services/ums-endpoints.vala:56
+#: src/views/main-view.vala:304
 msgid "Grades"
-msgstr ""
+msgstr "Karakterer"
 
-#: data/ui/main-view.blp:253 data/ui/main-view.blp:261
-#: src/views/main-view.vala:64
-msgid "News"
-msgstr ""
+#: data/ui/main-view.blp:293 src/services/nav-section.vala:88
+msgid "You"
+msgstr "Dig"
 
-#: data/ui/main-view.blp:262 data/ui/overview-page.blp:276
-msgid "Your school hasn't published any news."
-msgstr ""
-
-#: data/ui/main-view.blp:269 data/ui/main-view.blp:277
-#: src/views/main-view.vala:65 src/widgets/lesson-dialog.vala:108
-msgid "Homework"
-msgstr ""
-
-#: data/ui/main-view.blp:278
-msgid "Coming soon."
-msgstr ""
-
-#: data/ui/main-view.blp:285 src/views/main-view.vala:66
+#: data/ui/main-view.blp:303 src/services/nav-section.vala:93
 msgid "Links"
-msgstr ""
+msgstr "Links"
 
-#: data/ui/main-view.blp:311 data/ui/main-view.blp:336
-msgid "_Log out"
-msgstr ""
+#: data/ui/main-view.blp:315 data/ui/main-view.blp:323
+#: src/services/nav-section.vala:89
+msgid "News"
+msgstr "Nyheder"
 
-#: data/ui/main-view.blp:318
-msgid "_About OpenSprogskole"
-msgstr ""
+#: data/ui/main-view.blp:324
+msgid "Your school hasn't published any news."
+msgstr "Din skole har ikke offentliggjort nogen nyheder."
 
-#: data/ui/main-view.blp:329
+#: data/ui/main-view.blp:331 data/ui/main-view.blp:339
+#: src/services/nav-section.vala:91 src/widgets/lesson-dialog.vala:108
+msgid "Homework"
+msgstr "Lektier"
+
+#: data/ui/main-view.blp:340
+msgid "Coming soon."
+msgstr "Kommer snart."
+
+#: data/ui/main-view.blp:367 data/ui/main-view.blp:395
 msgid "_Edit information"
-msgstr ""
+msgstr "_Redigér oplysninger"
 
-#: data/ui/onboarding-view.blp:9 data/ui/onboarding-view.blp:171
+#: data/ui/main-view.blp:374 data/ui/main-view.blp:402
+msgid "_Preferences"
+msgstr "_Indstillinger"
+
+#: data/ui/main-view.blp:381 data/ui/main-view.blp:409
+msgid "_Log out"
+msgstr "_Log ud"
+
+#: data/ui/main-view.blp:386 data/ui/main-view.blp:414
+msgid "_About OpenSprogskole"
+msgstr "_Om OpenSprogskole"
+
+#: data/ui/onboarding-view.blp:9 data/ui/onboarding-view.blp:184
 msgid "Welcome"
-msgstr ""
+msgstr "Velkommen"
 
 #: data/ui/onboarding-view.blp:20
 msgid "Your language school — schedule, attendance and grades in one place."
-msgstr ""
+msgstr "Din sprogskole — skema, fremmøde og karakterer ét sted."
 
 #: data/ui/onboarding-view.blp:23
 msgid "Get started"
-msgstr ""
+msgstr "Kom i gang"
 
-#: data/ui/onboarding-view.blp:37 data/ui/onboarding-view.blp:143
-#: src/views/onboarding-view.vala:96
+#: data/ui/onboarding-view.blp:37 data/ui/onboarding-view.blp:144
+#: src/views/onboarding-view.vala:103
 msgid "Log in"
-msgstr ""
+msgstr "Log ind"
 
 #: data/ui/onboarding-view.blp:82
 msgid "Sign in to continue"
-msgstr ""
+msgstr "Log ind for at fortsætte"
 
 #: data/ui/onboarding-view.blp:97
 msgid "School"
-msgstr ""
+msgstr "Skole"
 
 #: data/ui/onboarding-view.blp:98
 msgid "Choose…"
-msgstr ""
+msgstr "Vælg…"
 
-#: data/ui/onboarding-view.blp:119 src/services/login-method.vala:68
+#: data/ui/onboarding-view.blp:120 src/services/login-method.vala:68
 msgid "Username"
-msgstr ""
+msgstr "Brugernavn"
 
-#: data/ui/onboarding-view.blp:123 src/services/login-method.vala:69
+#: data/ui/onboarding-view.blp:124 src/services/login-method.vala:69
 msgid "Password"
-msgstr ""
+msgstr "Adgangskode"
 
-#: data/ui/onboarding-view.blp:127
+#: data/ui/onboarding-view.blp:128
 msgid "Remember me"
-msgstr ""
+msgstr "Husk mig"
 
-#: data/ui/onboarding-view.blp:182
+#: data/ui/onboarding-view.blp:157 data/ui/school-picker.blp:251
+#: data/ui/school-picker.blp:278 data/ui/window.blp:51
+#: src/views/absence-page.vala:252
+msgid "Cancel"
+msgstr "Annullér"
+
+#: data/ui/onboarding-view.blp:195
 msgid "You're all set"
-msgstr ""
+msgstr "Du er klar"
 
-#: data/ui/onboarding-view.blp:183
+#: data/ui/onboarding-view.blp:196
 msgid "Your account is connected and your details are saved."
-msgstr ""
+msgstr "Din konto er forbundet, og dine oplysninger er gemt."
 
-#: data/ui/onboarding-view.blp:186
+#: data/ui/onboarding-view.blp:199
 msgid "Continue"
-msgstr ""
+msgstr "Fortsæt"
 
-#: data/ui/overview-page.blp:85
-msgid "Up next"
-msgstr ""
+#: data/ui/dashboard-view.blp:87
+msgid "Add widget"
+msgstr "Tilføj widget"
 
-#: data/ui/overview-page.blp:107
-msgid "View schedule"
-msgstr ""
+#: data/ui/dashboard-view.blp:98
+msgid "Edit dashboard"
+msgstr "Redigér dashboard"
 
-#: data/ui/overview-page.blp:127
-msgid "Loading lessons…"
-msgstr ""
+#: data/ui/dashboard-view.blp:135
+msgid "Your dashboard is empty"
+msgstr "Dit dashboard er tomt"
 
-#: data/ui/overview-page.blp:149
-msgid "No more lessons"
-msgstr ""
+#: data/ui/dashboard-view.blp:136
+msgid "Tap Edit, then Add widget to get started."
+msgstr "Tryk på Redigér og derefter Tilføj widget for at komme i gang."
 
-#: data/ui/overview-page.blp:150
-msgid "You have no upcoming lessons scheduled."
-msgstr ""
+#: data/ui/dashboard-add-dialog.blp:8 data/ui/dashboard-add-dialog.blp:15
+msgid "Add a widget"
+msgstr "Tilføj en widget"
 
-#: data/ui/overview-page.blp:170
-msgid "Attendance"
-msgstr ""
+#: data/ui/dashboard-add-dialog.blp:45
+msgid "No widgets available"
+msgstr "Ingen widgets tilgængelige"
 
-#: data/ui/overview-page.blp:185
-msgid "Loading attendance…"
-msgstr ""
+#: data/ui/dashboard-add-dialog.blp:46
+msgid "This school's system doesn't provide data for any widgets yet."
+msgstr "Denne skoles system leverer endnu ikke data til nogen widgets."
 
-#: data/ui/overview-page.blp:241
-msgid "Recent grades"
-msgstr ""
+#: data/ui/dashboard-add-dialog.blp:55
+msgid "Preview"
+msgstr "Forhåndsvisning"
 
-#: data/ui/overview-page.blp:252
-msgid "All grades"
-msgstr ""
+#: data/ui/dashboard-add-dialog.blp:81
+msgid "Add to dashboard"
+msgstr "Tilføj til dashboard"
 
-#: data/ui/overview-page.blp:275
-msgid "No news right now"
+#: data/ui/preferences-dialog.blp:7
+msgid "Preferences"
+msgstr "Indstillinger"
+
+#: data/ui/preferences-dialog.blp:11
+msgid "Appearance"
+msgstr "Udseende"
+
+#: data/ui/preferences-dialog.blp:15
+msgid "Language"
+msgstr "Sprog"
+
+#: data/ui/preferences-dialog.blp:16
+msgid "Override the system language for this app"
+msgstr "Tilsidesæt systemsproget for denne app"
+
+#: data/ui/preferences-dialog.blp:20
+msgid "Color scheme"
+msgstr "Farveskema"
+
+#: data/ui/preferences-dialog.blp:21
+msgid "Override the system light/dark setting"
+msgstr "Tilsidesæt systemets lys/mørk-indstilling"
+
+#: data/ui/preferences-dialog.blp:25
+msgid "Accent color"
+msgstr "Accentfarve"
+
+#: data/ui/preferences-dialog.blp:26
+msgid "Override the system accent"
+msgstr "Tilsidesæt systemets accentfarve"
+
+#: data/ui/preferences-dialog.blp:34
+msgid "First day of week"
+msgstr "Ugens første dag"
+
+#: data/ui/preferences-dialog.blp:39
+msgid "Data"
+msgstr "Data"
+
+#: data/ui/preferences-dialog.blp:42
+msgid "Cached data"
+msgstr "Mellemlagrede data"
+
+#: data/ui/preferences-dialog.blp:43
+msgid ""
+"Schedule, grades and photos saved for offline use. Clearing re-downloads them"
+" when needed."
 msgstr ""
+"Skema, karakterer og billeder gemt til offlinebrug. Rydning henter dem igen "
+"efter behov."
+
+#: data/ui/preferences-dialog.blp:57
+msgid "Clear"
+msgstr "Ryd"
 
 #: data/ui/profile-page.blp:38
 msgid "Change profile photo"
-msgstr ""
+msgstr "Skift profilbillede"
 
 #: data/ui/profile-page.blp:87
 msgid "Profile photo awaiting approval"
-msgstr ""
+msgstr "Profilbillede afventer godkendelse"
 
 #: data/ui/profile-page.blp:88
 msgid "Remove"
-msgstr ""
+msgstr "Fjern"
 
 #: data/ui/profile-page.blp:93
 msgid "About"
-msgstr ""
-
-#: data/ui/profile-page.blp:103
-msgid "Preferences"
-msgstr ""
+msgstr "Om"
 
 #: data/ui/profile-page.blp:107
-msgid "Receive SMS reminders"
-msgstr ""
+msgid "Account"
+msgstr "Konto"
 
-#: data/ui/profile-page.blp:108
-msgid "Texts about exams, appointments and schedule changes"
-msgstr ""
+#: data/ui/profile-page.blp:134
+msgid "SMS reminders"
+msgstr "SMS-påmindelser"
 
-#: data/ui/profile-page.blp:116
+#: data/ui/profile-page.blp:135 src/views/profile-page.vala:233
+msgid "Reminders about lessons and absence, sent to your phone"
+msgstr "Påmindelser om lektioner og fravær sendt til din telefon"
+
+#: data/ui/profile-page.blp:142
 msgid "Why this matters"
-msgstr ""
+msgstr "Hvorfor det er vigtigt"
 
-#: data/ui/profile-page.blp:125
+#: data/ui/profile-page.blp:151
 msgid ""
 "SMS reminders are off. You could miss an exam or an important appointment."
 msgstr ""
+"SMS-påmindelser er slået fra. Du kan gå glip af en eksamen eller en vigtig "
+"aftale."
 
-#: data/ui/profile-page.blp:138
-msgid "Picture visibility"
-msgstr ""
+#: data/ui/profile-page.blp:164
+msgid "Profile photo visibility"
+msgstr "Profilbilledets synlighed"
+
+#: data/ui/profile-page.blp:165 src/views/profile-page.vala:243
+msgid "Who can see your photo"
+msgstr "Hvem kan se dit billede"
 
 #: data/ui/schedule-view.blp:101
 msgid "Agenda"
-msgstr ""
+msgstr "Agenda"
 
 #: data/ui/school-picker.blp:5 data/ui/school-picker.blp:15
 msgid "Choose your school"
-msgstr ""
+msgstr "Vælg din skole"
 
 #: data/ui/school-picker.blp:46
 msgid "Can't find your school?"
-msgstr ""
+msgstr "Kan du ikke finde din skole?"
 
 #: data/ui/school-picker.blp:56
 msgid "Enter it manually"
-msgstr ""
+msgstr "Indtast den manuelt"
 
 #: data/ui/school-picker.blp:72
 msgid "Schools"
-msgstr ""
+msgstr "Skoler"
 
-#: data/ui/school-picker.blp:93
+#: data/ui/school-picker.blp:104
 msgid "Search schools"
-msgstr ""
+msgstr "Søg efter skoler"
 
-#: data/ui/school-picker.blp:128 src/views/school-picker.vala:156
+#: data/ui/school-picker.blp:139 src/services/school-config.vala:98
+#: src/views/school-picker.vala:332
 msgid "Custom school"
-msgstr ""
+msgstr "Tilpasset skole"
 
-#: data/ui/school-picker.blp:150
+#: data/ui/school-picker.blp:161
 msgid "Backend"
-msgstr ""
+msgstr "Backend"
 
-#: data/ui/school-picker.blp:154
+#: data/ui/school-picker.blp:165
 msgid "Display name"
-msgstr ""
+msgstr "Visningsnavn"
 
-#: data/ui/school-picker.blp:158
+#: data/ui/school-picker.blp:169
 msgid "Base URL"
-msgstr ""
+msgstr "Basis-URL"
 
-#: data/ui/school-picker.blp:162
+#: data/ui/school-picker.blp:173
 msgid "Realm (OIDC)"
-msgstr ""
-
-#: data/ui/school-picker.blp:168
-msgid "LUDUS sign-in isn't available yet."
-msgstr ""
+msgstr "Realm (OIDC)"
 
 #: data/ui/school-picker.blp:179
-msgid "Use this provider"
+msgid ""
+"Enter an https:// URL — plain http would send your password unencrypted."
 msgstr ""
+"Indtast en https://-URL — almindelig http ville sende din adgangskode "
+"ukrypteret."
+
+#: data/ui/school-picker.blp:191
+msgid "UMS base URLs usually end with “/api” — double-check if sign-in fails."
+msgstr ""
+"UMS-basis-URL'er ender normalt på “/api” — dobbelttjek hvis login fejler."
+
+#: data/ui/school-picker.blp:203
+msgid "LUDUS sign-in isn't available yet."
+msgstr "LUDUS-login er ikke tilgængeligt endnu."
+
+#: data/ui/school-picker.blp:214
+msgid "Use this provider"
+msgstr "Brug denne udbyder"
+
+#: data/ui/school-picker.blp:227
+msgid "Copy Config"
+msgstr "Kopiér konfiguration"
+
+#: data/ui/school-picker.blp:245
+msgid "Add a Custom School"
+msgstr "Tilføj en tilpasset skole"
+
+#: data/ui/school-picker.blp:246
+msgid "Paste a shared school config, or enter the details manually."
+msgstr ""
+"Indsæt en delt skolekonfiguration, eller indtast oplysningerne manuelt."
+
+#: data/ui/school-picker.blp:252
+msgid "Paste Config"
+msgstr "Indsæt konfiguration"
+
+#: data/ui/school-picker.blp:253
+msgid "Enter Manually"
+msgstr "Indtast manuelt"
+
+#: data/ui/school-picker.blp:260
+msgid "Couldn't Use the Config"
+msgstr "Kunne ikke bruge konfigurationen"
+
+#: data/ui/school-picker.blp:261
+msgid "There is no config on the clipboard."
+msgstr "Der er ingen konfiguration i udklipsholderen."
+
+#: data/ui/school-picker.blp:273
+msgid "Use this school?"
+msgstr "Brug denne skole?"
+
+#: data/ui/school-picker.blp:279
+msgid "Use"
+msgstr "Brug"
 
 #: data/ui/shortcuts-dialog.blp:6
 msgid "Shortcuts"
-msgstr ""
+msgstr "Genveje"
 
 #: data/ui/shortcuts-dialog.blp:9
 msgctxt "shortcut window"
 msgid "Show Shortcuts"
-msgstr ""
+msgstr "Vis genveje"
 
 #: data/ui/shortcuts-dialog.blp:14
 msgctxt "shortcut window"
 msgid "Quit"
-msgstr ""
+msgstr "Afslut"
 
-#: data/ui/window.blp:21
+#: data/ui/window.blp:24
 msgid "Updating information…"
-msgstr ""
+msgstr "Opdaterer oplysninger…"
 
-#: data/ui/window.blp:22
+#: data/ui/window.blp:25
 msgid "Fetching your latest schedule, grades and absence."
-msgstr ""
+msgstr "Henter dit nyeste skema, karakterer og fravær."
 
-#: src/application.vala:66
+#: data/ui/window.blp:46
+msgid "Quit OpenSprogskole?"
+msgstr "Afslut OpenSprogskole?"
+
+#: data/ui/window.blp:52
+msgid "Quit"
+msgstr "Afslut"
+
+#: src/application.vala:162
 msgid "translator-credits"
 msgstr ""
 
+#: src/application.vala:164
+msgid ""
+"View your schedule, grades and homework, and report absence at your Danish language school.\n"
+"\n"
+"This app is not affiliated with Sprogcenter Midt or Inlogic."
+msgstr ""
+"Se dit skema, dine karakterer og lektier, og meld fravær på din danske sprogskole.\n"
+"\n"
+"Denne app er ikke tilknyttet Sprogcenter Midt eller Inlogic."
+
+#. The school and its backend vendor; a LUDUS link joins these once
+#. LUDUS sign-in actually works.
+#: src/application.vala:168
+msgid "Sprogcenter Midt"
+msgstr "Sprogcenter Midt"
+
+#: src/application.vala:169
+msgid "UMS by Inlogic"
+msgstr "UMS by Inlogic"
+
+#: src/application.vala:175
+msgid "Portions adapted from Tuba"
+msgstr "Dele tilpasset fra Tuba"
+
+#. The APK bundles the platform stack a desktop OS would provide as
+#. shared libraries; the notice-requiring licenses get a section.
+#: src/application.vala:190
+msgid "Bundled GNOME platform libraries"
+msgstr "Medfølgende GNOME-platformsbiblioteker"
+
+#: src/services/error-reporter.vala:121
+msgid "… [truncated]"
+msgstr "… [afkortet]"
+
+#: src/services/dashboard-registry.vala:114
+msgid "Up next"
+msgstr "Næste"
+
+#. One attendance widget, two looks: a donut when full/half, the
+#. expressive wave gauge when mini (switch via the resize button).
+#: src/services/dashboard-registry.vala:120
+msgid "Attendance"
+msgstr "Fremmøde"
+
+#: src/services/dashboard-registry.vala:128
+msgid "Lessons today"
+msgstr "Lektioner i dag"
+
+#: src/services/dashboard-registry.vala:132
+msgid "Average grade"
+msgstr "Karaktergennemsnit"
+
+#: src/services/school-config.vala:62
+#, c-format
+msgid "Not a valid school config: %s"
+msgstr "Ikke en gyldig skolekonfiguration: %s"
+
+#: src/services/school-config.vala:66
+msgid "Not a valid school config (a JSON object was expected)."
+msgstr "Ikke en gyldig skolekonfiguration (et JSON-objekt var forventet)."
+
+#: src/services/school-config.vala:75
+#, c-format
+msgid "Sign-in for the “%s” provider isn't available yet."
+msgstr "Login for udbyderen “%s” er ikke tilgængeligt endnu."
+
+#: src/services/school-config.vala:79
+msgid "The config has no base URL (\"base-url\")."
+msgstr "Konfigurationen har ingen basis-URL (\"base-url\")."
+
+#: src/services/school-config.vala:83
+msgid ""
+"The base URL must use https:// — plain http would send your password "
+"unencrypted."
+msgstr ""
+"Basis-URL'en skal bruge https:// — almindelig http ville sende din "
+"adgangskode ukrypteret."
+
+#: src/services/nav-section.vala:87 src/views/main-view.vala:306
+msgid "Your information"
+msgstr "Dine oplysninger"
+
+#: src/services/ludus-endpoints.vala:53 src/services/ums-endpoints.vala:55
+msgid "Timetable"
+msgstr "Skema"
+
+#: src/services/ludus-endpoints.vala:54
+msgid "Absence reasons"
+msgstr "Fraværsårsager"
+
+#: src/services/ludus-endpoints.vala:57
+msgid "Assignments"
+msgstr "Opgaver"
+
+#: src/services/ludus-endpoints.vala:58
+msgid "Messages"
+msgstr "Beskeder"
+
+#: src/services/ludus-endpoints.vala:59 src/services/ums-endpoints.vala:69
+msgid "Profile"
+msgstr "Profil"
+
+#: src/services/ludus-endpoints.vala:60
+msgid "Profile picture"
+msgstr "Profilbillede"
+
+#: src/services/ludus-endpoints.vala:61
+msgid "Configuration"
+msgstr "Konfiguration"
+
+#: src/services/ludus-provider.vala:72
+msgid "Continue to sign-in"
+msgstr "Fortsæt til login"
+
 #: src/services/schools.vala:45
 msgid "Demo School"
-msgstr ""
+msgstr "Demoskole"
 
-#: src/services/session-controller.vala:167
+#: src/services/session-controller.vala:173
 msgid "Couldn't sign you in automatically. Please log in again."
-msgstr ""
+msgstr "Kunne ikke logge dig ind automatisk. Log venligst ind igen."
 
-#: src/services/session-controller.vala:208
+#: src/services/session-controller.vala:228
 msgid "Invalid username or password."
-msgstr ""
+msgstr "Ugyldigt brugernavn eller adgangskode."
 
-#: src/services/session-controller.vala:209
-#: src/services/session-controller.vala:211
+#: src/services/session-controller.vala:229
+#: src/services/session-controller.vala:236
 #, c-format
 msgid "Login failed: %s"
-msgstr ""
+msgstr "Login mislykkedes: %s"
 
-#: src/services/ums-provider.vala:90
+#: src/services/ums-client.vala:108 src/services/ums-client.vala:113
+#: src/services/ums-client.vala:176 src/services/ums-client.vala:231
+msgid "Malformed response"
+msgstr "Ugyldigt svar"
+
+#: src/services/ums-endpoints.vala:53
+msgid "Login"
+msgstr "Login"
+
+#: src/services/ums-endpoints.vala:54
+msgid "Logout"
+msgstr "Log ud"
+
+#: src/services/ums-endpoints.vala:58
+msgid "Absence settings"
+msgstr "Fraværsindstillinger"
+
+#: src/services/ums-endpoints.vala:61
+msgid "Reported absences"
+msgstr "Meldte fravær"
+
+#: src/services/ums-endpoints.vala:63
+msgid "Update reported absence"
+msgstr "Opdatér meldt fravær"
+
+#: src/services/ums-endpoints.vala:64
+msgid "Delete reported absence"
+msgstr "Slet meldt fravær"
+
+#: src/services/ums-endpoints.vala:65
+msgid "Profile settings"
+msgstr "Profilindstillinger"
+
+#: src/services/ums-endpoints.vala:66
+msgid "Save profile"
+msgstr "Gem profil"
+
+#: src/services/ums-endpoints.vala:67
+msgid "Upload profile picture"
+msgstr "Upload profilbillede"
+
+#: src/services/ums-endpoints.vala:68
+msgid "Remove pending picture"
+msgstr "Fjern afventende billede"
+
+#: src/services/ums-provider.vala:103
 msgid "SSO"
-msgstr ""
+msgstr "SSO"
 
 #: src/views/absence-page.vala:79
 msgid "Couldn't load absences."
-msgstr ""
+msgstr "Kunne ikke indlæse fravær."
 
 #: src/views/absence-page.vala:109
 #, c-format
 msgid "Show %u more"
-msgstr ""
+msgstr "Vis %u flere"
 
-#: src/views/absence-page.vala:151 src/views/absence-page.vala:167
+#: src/views/absence-page.vala:152 src/views/absence-page.vala:168
 msgid "Edit reason"
-msgstr ""
+msgstr "Redigér årsag"
 
-#: src/views/absence-page.vala:151 src/views/absence-page.vala:167
+#: src/views/absence-page.vala:152 src/views/absence-page.vala:168
 msgid "Describe absence"
-msgstr ""
+msgstr "Beskriv fravær"
 
-#: src/views/absence-page.vala:174
+#: src/views/absence-page.vala:175
 msgid "Apply to all absent lessons this day"
-msgstr ""
+msgstr "Anvend på alle fraværslektioner denne dag"
 
-#: src/views/absence-page.vala:195 src/widgets/lesson-dialog.vala:133
+#: src/views/absence-page.vala:196 src/widgets/lesson-dialog.vala:133
 msgid "Couldn't save reason — check your connection."
-msgstr ""
+msgstr "Kunne ikke gemme årsagen — tjek din forbindelse."
 
-#: src/views/absence-page.vala:219
+#: src/views/absence-page.vala:221
 msgid "Edit"
-msgstr ""
+msgstr "Redigér"
 
-#: src/views/absence-page.vala:227 src/views/absence-page.vala:251
+#: src/views/absence-page.vala:229 src/views/absence-page.vala:253
 msgid "Delete"
-msgstr ""
-
-#: src/views/absence-page.vala:248
-msgid "Delete this absence?"
-msgstr ""
-
-#: src/views/absence-page.vala:249
-msgid "The reported absence will be removed."
-msgstr ""
+msgstr "Slet"
 
 #: src/views/absence-page.vala:250
-msgid "Cancel"
-msgstr ""
+msgid "Delete this absence?"
+msgstr "Slet dette fravær?"
 
-#: src/views/absence-page.vala:272
+#: src/views/absence-page.vala:251
+msgid "The reported absence will be removed."
+msgstr "Det meldte fravær fjernes."
+
+#: src/views/absence-page.vala:274
 msgid "Couldn't delete absence — check your connection."
-msgstr ""
+msgstr "Kunne ikke slette fraværet — tjek din forbindelse."
 
 #: src/views/edit-profile-page.vala:106
 msgid "Couldn't save your changes — check your connection."
-msgstr ""
+msgstr "Kunne ikke gemme dine ændringer — tjek din forbindelse."
 
-#: src/views/grades-page.vala:58
+#: src/views/grades-page.vala:58 src/widgets/tile-grades.vala:94
 msgid "Couldn't load grades."
-msgstr ""
+msgstr "Kunne ikke indlæse karakterer."
 
-#: src/views/main-view.vala:127
+#: src/views/main-view.vala:168 src/views/profile-page.vala:124
 msgid "Offline"
-msgstr ""
+msgstr "Offline"
 
-#: src/views/onboarding-view.vala:54
+#: src/views/onboarding-view.vala:57
 #, c-format
 msgid "Version %s"
-msgstr ""
+msgstr "Version %s"
 
-#: src/views/onboarding-view.vala:96 src/services/login-method.vala:75
+#: src/views/onboarding-view.vala:103 src/services/login-method.vala:75
 msgid "Enter"
-msgstr ""
+msgstr "Gå ind"
 
-#: src/views/overview-page.vala:84
+#: src/views/dashboard-view.vala:108
 #, c-format
 msgid "Good night, %s"
-msgstr ""
+msgstr "Godnat, %s"
 
-#: src/views/overview-page.vala:87
+#: src/views/dashboard-view.vala:111
 #, c-format
 msgid "Good morning, %s"
-msgstr ""
+msgstr "Godmorgen, %s"
 
-#: src/views/overview-page.vala:90
+#: src/views/dashboard-view.vala:114
 #, c-format
 msgid "Good afternoon, %s"
-msgstr ""
+msgstr "God eftermiddag, %s"
 
-#: src/views/overview-page.vala:92
+#: src/views/dashboard-view.vala:116
 #, c-format
 msgid "Good evening, %s"
-msgstr ""
+msgstr "Godaften, %s"
 
-#: src/views/overview-page.vala:123
-msgid "Couldn't load lessons."
-msgstr ""
+#. Accent: index 0 = follow system, 1–9 = AdwAccentColor. Index is the
+#. stored value; Application applies it via a CSS override.
+#: src/views/preferences-dialog.vala:58 src/views/preferences-dialog.vala:71
+#: src/views/preferences-dialog.vala:102
+msgid "Follow system"
+msgstr "Følg systemet"
 
-#. Translators: a weekday + date, e.g. "Tuesday, 30 June".
-#. Reorder the %A/%-d/%B parts to suit your locale —
-#. see `man strftime` for what each one means.
-#: src/views/overview-page.vala:145
-msgid "%A, %-d %B"
-msgstr ""
+#: src/views/preferences-dialog.vala:58
+msgid "Light"
+msgstr "Lys"
 
-#: src/views/overview-page.vala:158
-msgid "Couldn't load attendance."
-msgstr ""
+#: src/views/preferences-dialog.vala:58
+msgid "Dark"
+msgstr "Mørk"
 
-#: src/views/overview-page.vala:168
-msgid "no data"
-msgstr ""
+#: src/views/preferences-dialog.vala:60
+msgid "Use school default"
+msgstr "Brug skolens standard"
 
-#: src/views/overview-page.vala:169
-msgid "No attendance data"
-msgstr ""
+#: src/views/preferences-dialog.vala:60 src/views/preferences-dialog.vala:146
+msgid "Monday"
+msgstr "Mandag"
 
-#: src/views/overview-page.vala:183
-msgid "present"
-msgstr ""
+#: src/views/preferences-dialog.vala:60 src/views/preferences-dialog.vala:152
+msgid "Sunday"
+msgstr "Søndag"
 
-#: src/views/overview-page.vala:184
+#: src/views/preferences-dialog.vala:60 src/views/preferences-dialog.vala:151
+msgid "Saturday"
+msgstr "Lørdag"
+
+#: src/views/preferences-dialog.vala:71
+msgid "Blue"
+msgstr "Blå"
+
+#: src/views/preferences-dialog.vala:71
+msgid "Teal"
+msgstr "Blågrøn"
+
+#: src/views/preferences-dialog.vala:71
+msgid "Green"
+msgstr "Grøn"
+
+#: src/views/preferences-dialog.vala:71
+msgid "Yellow"
+msgstr "Gul"
+
+#: src/views/preferences-dialog.vala:72
+msgid "Orange"
+msgstr "Orange"
+
+#: src/views/preferences-dialog.vala:72
+msgid "Red"
+msgstr "Rød"
+
+#: src/views/preferences-dialog.vala:72
+msgid "Pink"
+msgstr "Lyserød"
+
+#: src/views/preferences-dialog.vala:72
+msgid "Purple"
+msgstr "Lilla"
+
+#: src/views/preferences-dialog.vala:72
+msgid "Slate"
+msgstr "Skifer"
+
+#: src/views/preferences-dialog.vala:112
+msgid "The language changes when you restart the app."
+msgstr "Sproget skifter, når du genstarter appen."
+
+#: src/views/preferences-dialog.vala:141
 #, c-format
-msgid "Present %.1f%% · Not approved %.1f%% · Late %.1f%%"
-msgstr ""
+msgid "Currently %s"
+msgstr "I øjeblikket %s"
 
-#: src/views/profile-page.vala:65
+#: src/views/preferences-dialog.vala:147
+msgid "Tuesday"
+msgstr "Tirsdag"
+
+#: src/views/preferences-dialog.vala:148
+msgid "Wednesday"
+msgstr "Onsdag"
+
+#: src/views/preferences-dialog.vala:149
+msgid "Thursday"
+msgstr "Torsdag"
+
+#: src/views/preferences-dialog.vala:150
+msgid "Friday"
+msgstr "Fredag"
+
+#: src/views/preferences-dialog.vala:166
+msgid "Cached data cleared"
+msgstr "Mellemlagrede data ryddet"
+
+#: src/views/profile-page.vala:71
 msgid "Everyone"
-msgstr ""
+msgstr "Alle"
 
-#: src/views/profile-page.vala:65
+#: src/views/profile-page.vala:71
 msgid "School only"
-msgstr ""
+msgstr "Kun skolen"
 
-#: src/views/profile-page.vala:65
-msgid "Nobody"
-msgstr ""
+#: src/views/profile-page.vala:71
+msgid "No one"
+msgstr "Ingen"
 
 #: src/views/profile-page.vala:121
+msgid "Saving…"
+msgstr "Gemmer…"
+
+#: src/views/profile-page.vala:127
+msgid "Synced"
+msgstr "Synkroniseret"
+
+#: src/views/profile-page.vala:156
 msgid "Name"
-msgstr ""
-
-#: src/views/profile-page.vala:122
-msgid "Date of birth"
-msgstr ""
-
-#: src/views/profile-page.vala:123
-msgid "Address"
-msgstr ""
-
-#: src/views/profile-page.vala:125
-msgid "Department"
-msgstr ""
-
-#: src/views/profile-page.vala:126
-msgid "Course length"
-msgstr ""
-
-#: src/views/profile-page.vala:128
-msgid "Card number"
-msgstr ""
+msgstr "Navn"
 
 #: src/views/profile-page.vala:157
+msgid "Date of birth"
+msgstr "Fødselsdato"
+
+#: src/views/profile-page.vala:158
+msgid "Address"
+msgstr "Adresse"
+
+#: src/views/profile-page.vala:160
+msgid "Department"
+msgstr "Afdeling"
+
+#: src/views/profile-page.vala:161
+msgid "Course length"
+msgstr "Kursuslængde"
+
+#: src/views/profile-page.vala:163
+msgid "Card number"
+msgstr "Kortnummer"
+
+#: src/views/profile-page.vala:193
 msgid "Copy"
-msgstr ""
+msgstr "Kopiér"
 
-#: src/views/profile-page.vala:162
+#: src/views/profile-page.vala:198
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "Kopieret til udklipsholderen"
 
-#: src/views/profile-page.vala:228
+#: src/views/profile-page.vala:234 src/views/profile-page.vala:244
+msgid "Managed by your school"
+msgstr "Administreres af din skole"
+
+#: src/views/profile-page.vala:274
 msgid "SMS reminders are off — you may miss reminders."
-msgstr ""
+msgstr "SMS-påmindelser er slået fra — du kan gå glip af påmindelser."
 
-#: src/views/profile-page.vala:257
+#: src/views/profile-page.vala:304
 msgid "Couldn't save your change — check your connection."
-msgstr ""
+msgstr "Kunne ikke gemme din ændring — tjek din forbindelse."
 
-#: src/views/profile-page.vala:282
+#: src/views/profile-page.vala:333
 msgid "Choose a profile photo"
-msgstr ""
+msgstr "Vælg et profilbillede"
 
-#: src/views/profile-page.vala:284
+#: src/views/profile-page.vala:335
 msgid "Images"
-msgstr ""
+msgstr "Billeder"
 
-#: src/views/profile-page.vala:313
+#: src/views/profile-page.vala:364
 msgid "Photo uploaded — awaiting approval"
-msgstr ""
+msgstr "Billede uploadet — afventer godkendelse"
 
-#: src/views/profile-page.vala:316
+#: src/views/profile-page.vala:367
 msgid "Couldn't upload the photo — check your connection."
-msgstr ""
+msgstr "Kunne ikke uploade billedet — tjek din forbindelse."
 
-#: src/views/profile-page.vala:328
+#: src/views/profile-page.vala:379
 msgid "Pending photo removed"
-msgstr ""
+msgstr "Afventende billede fjernet"
 
-#: src/views/profile-page.vala:331
+#: src/views/profile-page.vala:382
 msgid "Couldn't remove the photo. Please try again."
-msgstr ""
+msgstr "Kunne ikke fjerne billedet. Prøv igen."
 
-#: src/views/school-picker.vala:58
+#: src/views/school-picker.vala:71
 msgid "UMS (username / password)"
-msgstr ""
+msgstr "UMS (brugernavn/adgangskode)"
 
-#: src/views/school-picker.vala:59
+#: src/views/school-picker.vala:72
 msgid "LUDUS (OIDC / MitID)"
-msgstr ""
+msgstr "LUDUS (OIDC / MitID)"
 
-#: src/views/school-picker.vala:100
-msgid "No schools yet"
-msgstr ""
+#: src/views/school-picker.vala:166
+msgid "Not available yet"
+msgstr "Ikke tilgængelig endnu"
 
-#: src/views/school-picker.vala:102
-msgid "This provider has no schools listed."
-msgstr ""
-
-#: src/views/school-picker.vala:103
+#: src/views/school-picker.vala:169
 msgid "Sign-in for this provider isn't available yet."
-msgstr ""
+msgstr "Login for denne udbyder er ikke tilgængeligt endnu."
+
+#: src/views/school-picker.vala:178
+msgid "No schools yet"
+msgstr "Ingen skoler endnu"
+
+#: src/views/school-picker.vala:179
+msgid "This provider has no schools listed."
+msgstr "Denne udbyder har ingen skoler på listen."
+
+#: src/views/school-picker.vala:205
+msgid "Couldn't load schools"
+msgstr "Kunne ikke indlæse skoler"
+
+#: src/views/school-picker.vala:206
+msgid "Check your connection and try again."
+msgstr "Tjek din forbindelse, og prøv igen."
+
+#: src/views/school-picker.vala:306
+msgid "Copied"
+msgstr "Kopieret"
 
 #: src/widgets/absence-dialog.vala:91
 msgid "Edit absence"
-msgstr ""
+msgstr "Redigér fravær"
 
 #: src/widgets/absence-dialog.vala:92
 msgid "Save changes"
-msgstr ""
+msgstr "Gem ændringer"
 
 #: src/widgets/absence-dialog.vala:94
 #, c-format
 msgid "Last updated %s"
-msgstr ""
+msgstr "Senest opdateret %s"
 
 #: src/widgets/absence-dialog.vala:143
 msgid "You can only call in sick before 20:30."
-msgstr ""
+msgstr "Du kan kun sygemelde dig før 20.30."
 
 #: src/widgets/absence-dialog.vala:152 src/widgets/absence-dialog.vala:208
 #: src/widgets/reason-dialog.vala:67
 msgid "Please enter a reason."
-msgstr ""
+msgstr "Indtast venligst en årsag."
 
 #: src/widgets/absence-dialog.vala:174
 msgid "Couldn't call in sick — check your connection."
-msgstr ""
+msgstr "Kunne ikke sygemelde — tjek din forbindelse."
 
 #: src/widgets/absence-dialog.vala:229
 msgid "Couldn't save absence — check your connection."
-msgstr ""
+msgstr "Kunne ikke gemme fraværet — tjek din forbindelse."
 
 #: src/widgets/agenda.vala:110
 msgid "No lessons"
-msgstr ""
+msgstr "Ingen lektioner"
 
-#: src/widgets/agenda.vala:205 src/widgets/day-lessons.vala:128
+#: src/widgets/agenda.vala:206 src/widgets/day-lessons.vala:131
 #, c-format
 msgid "Room %s"
-msgstr ""
+msgstr "Lokale %s"
+
+#: src/widgets/error-details-dialog.vala:53
+msgid "(empty response body)"
+msgstr "(tom svartekst)"
+
+#: src/widgets/tile-up-next.vala:70
+msgid "View schedule"
+msgstr "Se skema"
+
+#: src/widgets/tile-up-next.vala:96
+msgid "Open"
+msgstr "Åbn"
+
+#: src/widgets/tile-up-next.vala:124
+msgid "Couldn't load lessons."
+msgstr "Kunne ikke indlæse lektioner."
+
+#: src/widgets/tile-up-next.vala:133
+msgid "No more lessons"
+msgstr "Ikke flere lektioner"
+
+#: src/widgets/tile-up-next.vala:134
+msgid "You're all caught up."
+msgstr "Du er helt ajour."
+
+#: src/widgets/tile-up-next.vala:153 src/widgets/tile-up-next.vala:162
+msgid "NEXT CLASS"
+msgstr "NÆSTE LEKTION"
+
+#: src/widgets/tile-up-next.vala:154
+msgid "Nothing scheduled"
+msgstr "Intet planlagt"
+
+#: src/widgets/tile-up-next.vala:161
+#, c-format
+msgid "NEXT CLASS · IN %s"
+msgstr "NÆSTE LEKTION · OM %s"
+
+#: src/widgets/tile-up-next.vala:202
+#, c-format
+msgid "%d MIN"
+msgstr "%d MIN"
+
+#: src/widgets/tile-up-next.vala:206
+#, c-format
+msgid "%dH %dMIN"
+msgstr "%dT %dMIN"
+
+#: src/widgets/tile-up-next.vala:206
+#, c-format
+msgid "%dH"
+msgstr "%dT"
+
+#. Translators: a weekday + date, e.g. "Tuesday, 30 June".
+#: src/widgets/tile-up-next.vala:218
+msgid "%A, %-d %B"
+msgstr "%A, %-d %B"
+
+#: src/widgets/tile-attendance.vala:101
+msgid "Couldn't load attendance."
+msgstr "Kunne ikke indlæse fremmøde."
+
+#: src/widgets/tile-attendance.vala:115 src/widgets/tile-attendance.vala:129
+msgid "no data"
+msgstr "ingen data"
+
+#: src/widgets/tile-attendance.vala:119
+msgid "Present"
+msgstr "Til stede"
+
+#: src/widgets/tile-attendance.vala:130
+msgid "No attendance data"
+msgstr "Ingen fremmødedata"
+
+#: src/widgets/tile-attendance.vala:141
+msgid "present"
+msgstr "til stede"
+
+#: src/widgets/tile-attendance.vala:142
+#, c-format
+msgid "Present %.1f%% · Not approved %.1f%% · Late %.1f%%"
+msgstr "Til stede %.1f%% · Ikke godkendt %.1f%% · For sent %.1f%%"
+
+#: src/widgets/tile-grades.vala:106
+msgid "No grades yet"
+msgstr "Ingen karakterer endnu"
+
+#: src/widgets/tile-grades.vala:107
+msgid "Grades will appear here once your school posts them."
+msgstr "Karakterer vises her, når din skole offentliggør dem."
+
+#: src/widgets/tile-grades.vala:129
+msgid "no grades"
+msgstr "ingen karakterer"
+
+#: src/widgets/tile-grades.vala:134
+msgid "passed"
+msgstr "bestået"
 
 #: src/widgets/lesson-dialog.vala:111
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar"
 
 #: src/widgets/lesson-dialog.vala:129
 msgid "Reason saved."
-msgstr ""
+msgstr "Årsag gemt."
 
 #: src/widgets/lesson-dialog.vala:141
 msgid "Rooms"
-msgstr ""
+msgstr "Lokaler"
 
 #: src/widgets/lesson-dialog.vala:174
 msgid "Teachers"
-msgstr ""
+msgstr "Lærere"
 
-#: src/services/provider-family.vala:49
+#: src/widgets/window.vala:113
+msgid "Details"
+msgstr "Detaljer"
+
+#: src/services/provider-family.vala:58
 msgid "UMS schools"
-msgstr ""
+msgstr "UMS-skoler"
 
-#: src/services/provider-family.vala:68
+#: src/services/provider-family.vala:77
 msgid "Demo"
-msgstr ""
+msgstr "Demo"
 
-#: src/services/provider-family.vala:89
+#: src/services/provider-family.vala:100
 msgid "LUDUS schools"
-msgstr ""
-
-#: src/services/provider-family.vala:92
-msgid "Coming soon"
-msgstr ""
+msgstr "LUDUS-skoler"
 
 #: src/services/login-method.vala:67
 msgid "Username & password"
-msgstr ""
+msgstr "Brugernavn og adgangskode"
 
-#: src/services/demo-provider.vala:158
+#: src/services/demo-provider.vala:163
 msgid "Reported — see you soon."
-msgstr ""
+msgstr "Meldt — vi ses snart."

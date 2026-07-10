@@ -56,6 +56,13 @@ int main (string[] args) {
         g_io_openssl_load (null);
     #endif
 
+    // Force the user's pinned UI language, if any, before the first string is
+    // translated (empty = follow the system). Read straight from GSettings —
+    // after the Android block above, which points GSETTINGS_SCHEMA_DIR at the
+    // bundled schemas.
+    Opensprogskole.Localization.apply (
+        new GLib.Settings (Config.APP_ID).get_string ("language"));
+
     var app = new Opensprogskole.Application ();
     return app.run (args);
 }

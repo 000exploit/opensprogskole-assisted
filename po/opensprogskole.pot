@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opensprogskole\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-10 00:11+0200\n"
+"POT-Creation-Date: 2026-07-10 08:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,38 +61,49 @@ msgstr ""
 msgid "Provider family of a hand-entered (Custom) school"
 msgstr ""
 
+#: data/moe.ekusu.sprogskole.gschema.xml:35
+msgid "Forced UI language"
+msgstr ""
+
 #: data/moe.ekusu.sprogskole.gschema.xml:36
+msgid ""
+"Language code (e.g. 'da') forcing the app's interface language regardless of "
+"the system locale, via the LANGUAGE env var. '' follows the system. Applied "
+"at startup (see Localization.apply); a change takes full effect on restart."
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.gschema.xml:41
 msgid "Preferred color scheme"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.gschema.xml:37
+#: data/moe.ekusu.sprogskole.gschema.xml:42
 msgid "0 = follow system, 1 = light, 2 = dark. Applied via AdwStyleManager."
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.gschema.xml:42
+#: data/moe.ekusu.sprogskole.gschema.xml:47
 msgid "Preferred accent color"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.gschema.xml:43
+#: data/moe.ekusu.sprogskole.gschema.xml:48
 msgid ""
 "0 = follow system; 1–9 = AdwAccentColor (blue, teal, green, yellow, orange, "
 "red, pink, purple, slate). Overridden via a CSS provider since "
 "AdwStyleManager's accent is read-only."
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.gschema.xml:48
+#: data/moe.ekusu.sprogskole.gschema.xml:53
 msgid "Day the calendar week starts on"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.gschema.xml:49
+#: data/moe.ekusu.sprogskole.gschema.xml:54
 msgid "0 = use the school's default; 1–7 = ISO weekday (1 Monday … 7 Sunday)."
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.gschema.xml:53
+#: data/moe.ekusu.sprogskole.gschema.xml:58
 msgid "Unix time (seconds) the saved session token is valid until"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.gschema.xml:54
+#: data/moe.ekusu.sprogskole.gschema.xml:59
 msgid ""
 "From the JWT 'exp' claim. 0 means unknown (no expiry claim); the token is "
 "still tried."
@@ -453,8 +464,9 @@ msgstr ""
 msgid "You're offline"
 msgstr ""
 
-#: data/ui/main-view.blp:272 data/ui/schedule-view.blp:19
-#: src/services/nav-section.vala:81 src/views/main-view.vala:303
+#: data/ui/main-view.blp:272 data/ui/preferences-dialog.blp:31
+#: data/ui/schedule-view.blp:19 src/services/nav-section.vala:81
+#: src/views/main-view.vala:303
 msgid "Schedule"
 msgstr ""
 
@@ -599,6 +611,60 @@ msgstr ""
 
 #: data/ui/dashboard-add-dialog.blp:81
 msgid "Add to dashboard"
+msgstr ""
+
+#: data/ui/preferences-dialog.blp:7
+msgid "Preferences"
+msgstr ""
+
+#: data/ui/preferences-dialog.blp:11
+msgid "Appearance"
+msgstr ""
+
+#: data/ui/preferences-dialog.blp:15
+msgid "Language"
+msgstr ""
+
+#: data/ui/preferences-dialog.blp:16
+msgid "Override the system language for this app"
+msgstr ""
+
+#: data/ui/preferences-dialog.blp:20
+msgid "Color scheme"
+msgstr ""
+
+#: data/ui/preferences-dialog.blp:21
+msgid "Override the system light/dark setting"
+msgstr ""
+
+#: data/ui/preferences-dialog.blp:25
+msgid "Accent color"
+msgstr ""
+
+#: data/ui/preferences-dialog.blp:26
+msgid "Override the system accent"
+msgstr ""
+
+#: data/ui/preferences-dialog.blp:34
+msgid "First day of week"
+msgstr ""
+
+#: data/ui/preferences-dialog.blp:39
+msgid "Data"
+msgstr ""
+
+#: data/ui/preferences-dialog.blp:42
+msgid "Cached data"
+msgstr ""
+
+#: data/ui/preferences-dialog.blp:43
+msgid ""
+"Schedule, grades and photos saved for offline use. Clearing re-downloads "
+"them when needed."
+msgstr ""
+
+#: data/ui/preferences-dialog.blp:57
+msgid "Clear"
 msgstr ""
 
 #: data/ui/profile-page.blp:38
@@ -1039,6 +1105,102 @@ msgstr ""
 #: src/views/dashboard-view.vala:116
 #, c-format
 msgid "Good evening, %s"
+msgstr ""
+
+#. Accent: index 0 = follow system, 1–9 = AdwAccentColor. Index is the
+#. stored value; Application applies it via a CSS override.
+#: src/views/preferences-dialog.vala:58 src/views/preferences-dialog.vala:71
+#: src/views/preferences-dialog.vala:102
+msgid "Follow system"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:58
+msgid "Light"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:58
+msgid "Dark"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:60
+msgid "Use school default"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:60 src/views/preferences-dialog.vala:146
+msgid "Monday"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:60 src/views/preferences-dialog.vala:152
+msgid "Sunday"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:60 src/views/preferences-dialog.vala:151
+msgid "Saturday"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:71
+msgid "Blue"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:71
+msgid "Teal"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:71
+msgid "Green"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:71
+msgid "Yellow"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:72
+msgid "Orange"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:72
+msgid "Red"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:72
+msgid "Pink"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:72
+msgid "Purple"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:72
+msgid "Slate"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:112
+msgid "The language changes when you restart the app."
+msgstr ""
+
+#: src/views/preferences-dialog.vala:141
+#, c-format
+msgid "Currently %s"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:147
+msgid "Tuesday"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:148
+msgid "Wednesday"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:149
+msgid "Thursday"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:150
+msgid "Friday"
+msgstr ""
+
+#: src/views/preferences-dialog.vala:166
+msgid "Cached data cleared"
 msgstr ""
 
 #: src/views/profile-page.vala:71

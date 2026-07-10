@@ -7,894 +7,1535 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opensprogskole\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-29 02:05+0200\n"
-"PO-Revision-Date: 2026-06-29 02:05+0200\n"
+"POT-Creation-Date: 2026-07-10 08:31+0200\n"
+"PO-Revision-Date: 2026-07-10 12:00+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: data/moe.ekusu.sprogskole.desktop.in:2
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:7 data/ui/main-view.blp:15
-#: data/ui/main-view.blp:180 data/ui/onboarding-view.blp:19
-#: data/ui/onboarding-view.blp:73 data/ui/window.blp:5
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:7 data/ui/main-view.blp:26
+#: data/ui/main-view.blp:189 data/ui/main-view.blp:227
+#: data/ui/onboarding-view.blp:19 data/ui/onboarding-view.blp:73
+#: data/ui/window.blp:5
 msgid "OpenSprogskole"
-msgstr ""
+msgstr "OpenSprogskole"
 
-#: data/moe.ekusu.sprogskole.desktop.in:8
+#: data/moe.ekusu.sprogskole.desktop.in:10
 msgid "GTK;"
-msgstr ""
+msgstr "GTK;"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:6
 msgid "Stable per-install device identifier"
-msgstr ""
+msgstr "Стабільний ідентифікатор пристрою для кожного встановлення"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:7
 msgid "Random id generated on first run and sent to UMS as DeviceId."
 msgstr ""
+"Випадковий ідентифікатор, створений під час першого запуску й надісланий до "
+"UMS як DeviceId."
 
 #: data/moe.ekusu.sprogskole.gschema.xml:11
 msgid "Id of the currently connected school"
-msgstr ""
+msgstr "Ідентифікатор поточної під'єднаної школи"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:15
 msgid "Username of the saved account (secret lives in the keyring)"
 msgstr ""
+"Ім'я користувача збереженого облікового запису (секрет зберігається у в'язці "
+"ключів)"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:19
 msgid "Id of the login method used for the saved account"
-msgstr ""
+msgstr "Ідентифікатор способу входу збереженого облікового запису"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:23
 msgid "Display name of a hand-entered (Custom) school"
-msgstr ""
+msgstr "Показуване ім'я школи, введеної вручну"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:27
 msgid "Base URL of a hand-entered (Custom) school"
-msgstr ""
+msgstr "Базова URL-адреса школи, введеної вручну"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:31
 msgid "Provider family of a hand-entered (Custom) school"
-msgstr ""
+msgstr "Сімейство провайдера школи, введеної вручну"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:35
-msgid "Unix time (seconds) the saved session token is valid until"
-msgstr ""
+msgid "Forced UI language"
+msgstr "Примусова мова інтерфейсу"
 
 #: data/moe.ekusu.sprogskole.gschema.xml:36
+msgid ""
+"Language code (e.g. 'da') forcing the app's interface language regardless of "
+"the system locale, via the LANGUAGE env var. '' follows the system. Applied "
+"at startup (see Localization.apply); a change takes full effect on restart."
+msgstr ""
+"Код мови (наприклад, 'da'), що примусово задає мову інтерфейсу застосунку "
+"незалежно від системної локалі через змінну середовища LANGUAGE. '' — "
+"слідувати системі. Застосовується під час запуску (див. Localization.apply); "
+"зміна повністю набуває чинності після перезапуску."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:41
+msgid "Preferred color scheme"
+msgstr "Бажана колірна схема"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:42
+msgid "0 = follow system, 1 = light, 2 = dark. Applied via AdwStyleManager."
+msgstr ""
+"0 = як у системі, 1 = світла, 2 = темна. Застосовується через "
+"AdwStyleManager."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:47
+msgid "Preferred accent color"
+msgstr "Бажаний акцентний колір"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:48
+msgid ""
+"0 = follow system; 1–9 = AdwAccentColor (blue, teal, green, yellow, orange, "
+"red, pink, purple, slate). Overridden via a CSS provider since "
+"AdwStyleManager's accent is read-only."
+msgstr ""
+"0 = як у системі; 1–9 = AdwAccentColor (синій, бірюзовий, зелений, жовтий, "
+"помаранчевий, червоний, рожевий, фіолетовий, сіро-синій). Перевизначається "
+"через CSS-провайдер, оскільки акцент AdwStyleManager доступний лише для "
+"читання."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:53
+msgid "Day the calendar week starts on"
+msgstr "День, з якого починається календарний тиждень"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:54
+msgid "0 = use the school's default; 1–7 = ISO weekday (1 Monday … 7 Sunday)."
+msgstr "0 = стандарт школи; 1–7 = день тижня за ISO (1 понеділок … 7 неділя)."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:58
+msgid "Unix time (seconds) the saved session token is valid until"
+msgstr "Час Unix (у секундах), до якого дійсний збережений токен сесії"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:59
 msgid ""
 "From the JWT 'exp' claim. 0 means unknown (no expiry claim); the token is "
 "still tried."
 msgstr ""
+"З твердження 'exp' JWT. 0 — невідомо (немає твердження про строк); токен усе "
+"одно пробується."
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:3
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:18
+msgid "moe.ekusu.sprogskole"
+msgstr "moe.ekusu.sprogskole"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:4
+msgid "CC0-1.0"
+msgstr "CC0-1.0"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:5
+msgid "GPL-3.0-or-later"
+msgstr "GPL-3.0-or-later"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:8
-msgid "Keep the summary shorter, between 10 and 35 characters"
-msgstr ""
+msgid "Your language school life"
+msgstr "Ваше життя в мовній школі"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:10
-msgid "No description"
+msgid ""
+"View your schedule, grades, homework and report when you are sick or "
+"unavailable."
 msgstr ""
+"Переглядайте розклад, оцінки, домашні завдання та повідомляйте, коли ви хворі"
+" або недоступні."
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:52
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:56
-msgid "A caption"
-msgstr ""
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:14
+msgid "000exploit"
+msgstr "000exploit"
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:64
-msgid "Release description"
-msgstr ""
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:21
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:22
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:25
+msgid "https://github.com/000exploit/opensprogskole-assisted"
+msgstr "https://github.com/000exploit/opensprogskole-assisted"
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:66
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:67
-msgid "List of changes"
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:23
+msgid "https://github.com/000exploit/opensprogskole-assisted/issues"
+msgstr "https://github.com/000exploit/opensprogskole-assisted/issues"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:24
+msgid ""
+"https://github.com/000exploit/opensprogskole-assisted/blob/main/README.md"
 msgstr ""
+"https://github.com/000exploit/opensprogskole-assisted/blob/main/README.md"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:27
+msgid "opensprogskole"
+msgstr "opensprogskole"
+
+#. All graphical applications having a desktop file must have this tag in the
+#. MetaInfo.
+#. If this is present, appstreamcli compose will pull icons, keywords and
+#. categories from the desktop file.
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:30
+msgid "moe.ekusu.sprogskole.desktop"
+msgstr "moe.ekusu.sprogskole.desktop"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:32
+msgid "mild"
+msgstr "mild"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:38
+msgid "#ff00ff"
+msgstr "#ff00ff"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:39
+msgid "#993d3d"
+msgstr "#993d3d"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:44
+msgid ""
+"https://raw.githubusercontent.com/000exploit/opensprogskole-"
+"assisted/refs/heads/main/data/screenshots/greetings.png"
+msgstr ""
+"https://raw.githubusercontent.com/000exploit/opensprogskole-"
+"assisted/refs/heads/main/data/screenshots/greetings.png"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:45
+msgid "Greetings"
+msgstr "Привітання"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:50
+msgid "always"
+msgstr "always"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:55
+msgid "https://example.org/changelog.html#version_1.0.1"
+msgstr "https://example.org/changelog.html#version_1.0.1"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:57
+msgid "Early release v0.9.9"
+msgstr "Ранній випуск v0.9.9"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:59
+msgid "Initial android port"
+msgstr "Перший порт на Android"
 
 #: data/ui/absence-dialog.blp:5 data/ui/absence-dialog.blp:13
 #: data/ui/absence-dialog.blp:376 data/ui/absence-page.blp:39
-#: data/ui/overview-page.blp:50 data/ui/overview-page.blp:226
+#: data/ui/dashboard-view.blp:76 data/ui/dashboard-view.blp:108
+#: src/services/ludus-endpoints.vala:62 src/services/ums-endpoints.vala:62
 msgid "Report absence"
-msgstr ""
+msgstr "Повідомити про відсутність"
 
 #: data/ui/absence-dialog.blp:32
 msgid "When does the absence apply?"
-msgstr ""
+msgstr "Коли ви будете відсутні?"
 
-#: data/ui/absence-dialog.blp:51 src/views/overview-page.vala:136
+#: data/ui/absence-dialog.blp:51 src/widgets/tile-up-next.vala:211
 msgid "Today"
-msgstr ""
+msgstr "Сьогодні"
 
 #: data/ui/absence-dialog.blp:60
 msgid "Report absence for the whole of today."
-msgstr ""
+msgstr "Повідомити про відсутність на весь сьогоднішній день."
 
 #: data/ui/absence-dialog.blp:82
 msgid "Earlier"
-msgstr ""
+msgstr "Раніше"
 
 #: data/ui/absence-dialog.blp:91
 msgid "Edit or remove a reported absence."
-msgstr ""
+msgstr "Змінити або видалити заявлену відсутність."
 
 #: data/ui/absence-dialog.blp:113
 msgid "Future"
-msgstr ""
+msgstr "Майбутнє"
 
 #: data/ui/absence-dialog.blp:122
 msgid "Plan an absence ahead of time."
-msgstr ""
+msgstr "Запланувати відсутність заздалегідь."
 
 #: data/ui/absence-dialog.blp:143
 msgid "Future absence"
-msgstr ""
+msgstr "Майбутня відсутність"
 
 #: data/ui/absence-dialog.blp:169 data/ui/absence-dialog.blp:422
 #: data/ui/reason-dialog.blp:37 data/ui/lesson-dialog.blp:109
 msgid "Reason"
-msgstr ""
+msgstr "Причина"
 
 #: data/ui/absence-dialog.blp:187
 msgid "Date"
-msgstr ""
+msgstr "Дата"
 
 #: data/ui/absence-dialog.blp:190 data/ui/schedule-view.blp:45
 msgid "Month"
-msgstr ""
+msgstr "Місяць"
 
 #: data/ui/absence-dialog.blp:194
 msgid "Day"
-msgstr ""
+msgstr "День"
 
 #: data/ui/absence-dialog.blp:205
 msgid "Year"
-msgstr ""
+msgstr "Рік"
 
 #: data/ui/absence-dialog.blp:217
 msgid "Time"
-msgstr ""
+msgstr "Час"
 
 #: data/ui/absence-dialog.blp:234
 msgid "Start"
-msgstr ""
+msgstr "Початок"
 
 #: data/ui/absence-dialog.blp:301
 msgid "End"
-msgstr ""
+msgstr "Кінець"
 
 #: data/ui/absence-dialog.blp:392 data/ui/absence-dialog.blp:438
+#: src/services/ums-endpoints.vala:60
 msgid "Call in sick"
-msgstr ""
+msgstr "Повідомити про хворобу"
 
 #: data/ui/absence-dialog.blp:410
 msgid "Report that you're absent for the rest of today."
-msgstr ""
+msgstr "Повідомити, що ви відсутні до кінця дня."
 
-#: data/ui/reason-dialog.blp:5
+#: data/ui/reason-dialog.blp:5 src/services/ums-endpoints.vala:59
 msgid "Absence reason"
-msgstr ""
+msgstr "Причина відсутності"
 
 #: data/ui/reason-dialog.blp:43
 msgid "Whole day"
-msgstr ""
+msgstr "Увесь день"
 
 #: data/ui/reason-dialog.blp:61 data/ui/edit-profile-page.blp:112
-#: src/views/absence-page.vala:168
+#: src/views/absence-page.vala:169
 msgid "Save"
-msgstr ""
+msgstr "Зберегти"
 
 #: data/ui/absence-page.blp:26 data/ui/lesson-dialog.blp:105
-#: data/ui/main-view.blp:217 src/views/absence-page.vala:138
-#: src/views/absence-page.vala:204 src/views/main-view.vala:61
+#: data/ui/main-view.blp:286 src/services/nav-section.vala:85
+#: src/services/ludus-endpoints.vala:55 src/services/ludus-endpoints.vala:56
+#: src/services/ums-endpoints.vala:57 src/views/absence-page.vala:138
+#: src/views/absence-page.vala:205 src/views/main-view.vala:305
 msgid "Absence"
-msgstr ""
+msgstr "Відсутності"
 
 #: data/ui/absence-page.blp:55
 msgid "Planned"
-msgstr ""
+msgstr "Заплановані"
 
 #: data/ui/absence-page.blp:65
 msgid "Reported"
-msgstr ""
+msgstr "Заявлені"
 
 #: data/ui/absence-page.blp:78
 msgid "Loading absences…"
-msgstr ""
+msgstr "Завантаження відсутностей…"
 
-#: data/ui/absence-page.blp:99
+#: data/ui/absence-page.blp:102
 msgid "No reported absences yet."
-msgstr ""
+msgstr "Заявлених відсутностей поки немає."
 
 #: data/ui/links-page.blp:35
 msgid "No links"
-msgstr ""
+msgstr "Немає посилань"
 
 #: data/ui/links-page.blp:36
 msgid "Your school hasn't shared any links."
-msgstr ""
+msgstr "Ваша школа не поділилася посиланнями."
 
 #: data/ui/calendar.blp:23
 msgid "Previous month"
-msgstr ""
+msgstr "Попередній місяць"
 
 #: data/ui/calendar.blp:33
 msgid "Next month"
-msgstr ""
+msgstr "Наступний місяць"
 
 #: data/ui/day-lessons.blp:14
 msgid "Selected day"
-msgstr ""
+msgstr "Вибраний день"
 
 #: data/ui/day-lessons.blp:68
 msgid "No lessons this day"
-msgstr ""
+msgstr "Цього дня занять немає"
 
 #: data/ui/edit-profile-page.blp:5 data/ui/profile-page.blp:76
 msgid "Edit information"
-msgstr ""
+msgstr "Змінити відомості"
 
 #: data/ui/edit-profile-page.blp:46
 msgid ""
 "Only the fields your school lets you change are shown here. If you need to "
 "change anything else, contact the language school reception."
 msgstr ""
+"Тут показано лише ті поля, які школа дозволяє змінювати. Якщо потрібно "
+"змінити щось інше, зверніться до приймальні мовної школи."
 
 #: data/ui/edit-profile-page.blp:58 data/ui/profile-page.blp:97
 msgid "Contact"
-msgstr ""
+msgstr "Контакти"
 
-#: data/ui/edit-profile-page.blp:61 src/views/profile-page.vala:132
+#: data/ui/edit-profile-page.blp:61 src/views/profile-page.vala:167
 msgid "Phone"
-msgstr ""
+msgstr "Телефон"
 
-#: data/ui/edit-profile-page.blp:67 src/views/profile-page.vala:133
+#: data/ui/edit-profile-page.blp:67 src/views/profile-page.vala:168
 msgid "Mobile"
-msgstr ""
+msgstr "Мобільний"
 
-#: data/ui/edit-profile-page.blp:73 src/views/profile-page.vala:134
+#: data/ui/edit-profile-page.blp:73 src/views/profile-page.vala:169
 msgid "Work phone"
-msgstr ""
+msgstr "Робочий телефон"
 
-#: data/ui/edit-profile-page.blp:79 src/views/profile-page.vala:135
+#: data/ui/edit-profile-page.blp:79 src/views/profile-page.vala:170
 msgid "Work mobile"
-msgstr ""
+msgstr "Робочий мобільний"
 
-#: data/ui/edit-profile-page.blp:85 src/views/profile-page.vala:136
+#: data/ui/edit-profile-page.blp:85 src/views/profile-page.vala:171
 msgid "Email"
-msgstr ""
+msgstr "Ел. пошта"
 
-#: data/ui/edit-profile-page.blp:91 src/views/profile-page.vala:137
+#: data/ui/edit-profile-page.blp:91 src/views/profile-page.vala:172
 msgid "Work email"
-msgstr ""
+msgstr "Робоча ел. пошта"
 
 #: data/ui/edit-profile-page.blp:101
 msgid "Other information"
-msgstr ""
+msgstr "Інші відомості"
+
+#: data/ui/error-details-dialog.blp:10
+msgid "Request Failed"
+msgstr "Запит не виконано"
+
+#: data/ui/error-details-dialog.blp:34
+msgid "Copy to Clipboard"
+msgstr "Скопіювати до буфера обміну"
+
+#: data/ui/error-details-dialog.blp:69 data/ui/school-picker.blp:266
+msgid "Close"
+msgstr "Закрити"
+
+#: data/ui/dashboard-widget.blp:94
+msgid "Not available for this school"
+msgstr "Недоступно для цієї школи"
+
+#: data/ui/dashboard-widget.blp:95
+msgid "This school's system doesn't provide this data."
+msgstr "Система цієї школи не надає цих даних."
+
+#: data/ui/dashboard-widget.blp:119
+msgid "Change size"
+msgstr "Змінити розмір"
+
+#: data/ui/dashboard-widget.blp:128
+msgid "Remove widget"
+msgstr "Прибрати віджет"
 
 #: data/ui/grades-page.blp:30
 msgid "Loading grades…"
-msgstr ""
+msgstr "Завантаження оцінок…"
 
 #: data/ui/grades-page.blp:47
 msgid "No grades"
-msgstr ""
+msgstr "Немає оцінок"
 
 #: data/ui/grades-page.blp:48
 msgid "Grades will appear here once your school registers them."
-msgstr ""
+msgstr "Оцінки з'являться тут, щойно школа їх зареєструє."
 
 #: data/ui/lesson-dialog.blp:5
 msgid "Lesson"
-msgstr ""
+msgstr "Заняття"
 
 #: data/ui/lesson-dialog.blp:78
 msgid "It's not recommended to skip this lesson."
-msgstr ""
+msgstr "Не рекомендується пропускати це заняття."
 
-#: data/ui/main-view.blp:23
+#: data/ui/main-view.blp:37 data/ui/main-view.blp:241
 msgid "Refresh"
-msgstr ""
+msgstr "Оновити"
 
-#: data/ui/main-view.blp:57 src/views/main-view.vala:127
+#: data/ui/main-view.blp:72 src/views/main-view.vala:168
 msgid "Connected"
-msgstr ""
+msgstr "Під'єднано"
 
-#: data/ui/main-view.blp:84
+#: data/ui/main-view.blp:99
 msgid "More"
-msgstr ""
+msgstr "Більше"
 
-#: data/ui/main-view.blp:147
+#: data/ui/main-view.blp:160
 msgid "Student"
-msgstr ""
+msgstr "Студент"
 
-#: data/ui/main-view.blp:163
+#: data/ui/main-view.blp:176
 msgid "Account menu"
-msgstr ""
+msgstr "Меню облікового запису"
 
-#: data/ui/main-view.blp:185 src/views/main-view.vala:58
+#: data/ui/main-view.blp:233 data/ui/main-view.blp:265
+#: src/services/nav-section.vala:79 src/views/main-view.vala:307
 msgid "Overview"
-msgstr ""
+msgstr "Огляд"
 
-#: data/ui/main-view.blp:194
+#: data/ui/main-view.blp:250
 msgid "Main Menu"
-msgstr ""
+msgstr "Головне меню"
 
-#: data/ui/main-view.blp:205 data/ui/schedule-view.blp:19
-#: src/views/main-view.vala:59
+#: data/ui/main-view.blp:258
+msgid "You're offline"
+msgstr "Ви поза мережею"
+
+#: data/ui/main-view.blp:272 data/ui/preferences-dialog.blp:31
+#: data/ui/schedule-view.blp:19 src/services/nav-section.vala:81
+#: src/views/main-view.vala:303
 msgid "Schedule"
-msgstr ""
+msgstr "Розклад"
 
-#: data/ui/main-view.blp:229 src/views/main-view.vala:62
-msgid "Your information"
-msgstr ""
-
-#: data/ui/main-view.blp:241 src/views/main-view.vala:60
+#: data/ui/main-view.blp:279 src/services/dashboard-registry.vala:124
+#: src/services/nav-section.vala:83 src/services/ums-endpoints.vala:56
+#: src/views/main-view.vala:304
 msgid "Grades"
-msgstr ""
+msgstr "Оцінки"
 
-#: data/ui/main-view.blp:253 data/ui/main-view.blp:261
-#: src/views/main-view.vala:64
-msgid "News"
-msgstr ""
+#: data/ui/main-view.blp:293 src/services/nav-section.vala:88
+msgid "You"
+msgstr "Ви"
 
-#: data/ui/main-view.blp:262 data/ui/overview-page.blp:276
-msgid "Your school hasn't published any news."
-msgstr ""
-
-#: data/ui/main-view.blp:269 data/ui/main-view.blp:277
-#: src/views/main-view.vala:65 src/widgets/lesson-dialog.vala:108
-msgid "Homework"
-msgstr ""
-
-#: data/ui/main-view.blp:278
-msgid "Coming soon."
-msgstr ""
-
-#: data/ui/main-view.blp:285 src/views/main-view.vala:66
+#: data/ui/main-view.blp:303 src/services/nav-section.vala:93
 msgid "Links"
-msgstr ""
+msgstr "Посилання"
 
-#: data/ui/main-view.blp:311 data/ui/main-view.blp:336
-msgid "_Log out"
-msgstr ""
+#: data/ui/main-view.blp:315 data/ui/main-view.blp:323
+#: src/services/nav-section.vala:89
+msgid "News"
+msgstr "Новини"
 
-#: data/ui/main-view.blp:318
-msgid "_About OpenSprogskole"
-msgstr ""
+#: data/ui/main-view.blp:324
+msgid "Your school hasn't published any news."
+msgstr "Ваша школа не публікувала новин."
 
-#: data/ui/main-view.blp:329
+#: data/ui/main-view.blp:331 data/ui/main-view.blp:339
+#: src/services/nav-section.vala:91 src/widgets/lesson-dialog.vala:108
+msgid "Homework"
+msgstr "Домашні завдання"
+
+#: data/ui/main-view.blp:340
+msgid "Coming soon."
+msgstr "Незабаром."
+
+#: data/ui/main-view.blp:367 data/ui/main-view.blp:395
 msgid "_Edit information"
-msgstr ""
+msgstr "_Змінити відомості"
 
-#: data/ui/onboarding-view.blp:9 data/ui/onboarding-view.blp:171
+#: data/ui/main-view.blp:374 data/ui/main-view.blp:402
+msgid "_Preferences"
+msgstr "_Параметри"
+
+#: data/ui/main-view.blp:381 data/ui/main-view.blp:409
+msgid "_Log out"
+msgstr "_Вийти"
+
+#: data/ui/main-view.blp:386 data/ui/main-view.blp:414
+msgid "_About OpenSprogskole"
+msgstr "_Про OpenSprogskole"
+
+#: data/ui/onboarding-view.blp:9 data/ui/onboarding-view.blp:184
 msgid "Welcome"
-msgstr ""
+msgstr "Вітаємо"
 
 #: data/ui/onboarding-view.blp:20
 msgid "Your language school — schedule, attendance and grades in one place."
-msgstr ""
+msgstr "Ваша мовна школа — розклад, відвідуваність та оцінки в одному місці."
 
 #: data/ui/onboarding-view.blp:23
 msgid "Get started"
-msgstr ""
+msgstr "Розпочати"
 
-#: data/ui/onboarding-view.blp:37 data/ui/onboarding-view.blp:143
-#: src/views/onboarding-view.vala:96
+#: data/ui/onboarding-view.blp:37 data/ui/onboarding-view.blp:144
+#: src/views/onboarding-view.vala:103
 msgid "Log in"
-msgstr ""
+msgstr "Увійти"
 
 #: data/ui/onboarding-view.blp:82
 msgid "Sign in to continue"
-msgstr ""
+msgstr "Увійдіть, щоб продовжити"
 
 #: data/ui/onboarding-view.blp:97
 msgid "School"
-msgstr ""
+msgstr "Школа"
 
 #: data/ui/onboarding-view.blp:98
 msgid "Choose…"
-msgstr ""
+msgstr "Вибрати…"
 
-#: data/ui/onboarding-view.blp:119 src/services/login-method.vala:68
+#: data/ui/onboarding-view.blp:120 src/services/login-method.vala:68
 msgid "Username"
-msgstr ""
+msgstr "Ім'я користувача"
 
-#: data/ui/onboarding-view.blp:123 src/services/login-method.vala:69
+#: data/ui/onboarding-view.blp:124 src/services/login-method.vala:69
 msgid "Password"
-msgstr ""
+msgstr "Пароль"
 
-#: data/ui/onboarding-view.blp:127
+#: data/ui/onboarding-view.blp:128
 msgid "Remember me"
-msgstr ""
+msgstr "Запам'ятати мене"
 
-#: data/ui/onboarding-view.blp:182
+#: data/ui/onboarding-view.blp:157 data/ui/school-picker.blp:251
+#: data/ui/school-picker.blp:278 data/ui/window.blp:51
+#: src/views/absence-page.vala:252
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: data/ui/onboarding-view.blp:195
 msgid "You're all set"
-msgstr ""
+msgstr "Усе готово"
 
-#: data/ui/onboarding-view.blp:183
+#: data/ui/onboarding-view.blp:196
 msgid "Your account is connected and your details are saved."
-msgstr ""
+msgstr "Обліковий запис під'єднано, дані збережено."
 
-#: data/ui/onboarding-view.blp:186
+#: data/ui/onboarding-view.blp:199
 msgid "Continue"
-msgstr ""
+msgstr "Продовжити"
 
-#: data/ui/overview-page.blp:85
-msgid "Up next"
-msgstr ""
+#: data/ui/dashboard-view.blp:87
+msgid "Add widget"
+msgstr "Додати віджет"
 
-#: data/ui/overview-page.blp:107
-msgid "View schedule"
-msgstr ""
+#: data/ui/dashboard-view.blp:98
+msgid "Edit dashboard"
+msgstr "Змінити панель"
 
-#: data/ui/overview-page.blp:127
-msgid "Loading lessons…"
-msgstr ""
+#: data/ui/dashboard-view.blp:135
+msgid "Your dashboard is empty"
+msgstr "Ваша панель порожня"
 
-#: data/ui/overview-page.blp:149
-msgid "No more lessons"
-msgstr ""
+#: data/ui/dashboard-view.blp:136
+msgid "Tap Edit, then Add widget to get started."
+msgstr "Натисніть «Змінити», потім «Додати віджет», щоб почати."
 
-#: data/ui/overview-page.blp:150
-msgid "You have no upcoming lessons scheduled."
-msgstr ""
+#: data/ui/dashboard-add-dialog.blp:8 data/ui/dashboard-add-dialog.blp:15
+msgid "Add a widget"
+msgstr "Додати віджет"
 
-#: data/ui/overview-page.blp:170
-msgid "Attendance"
-msgstr ""
+#: data/ui/dashboard-add-dialog.blp:45
+msgid "No widgets available"
+msgstr "Немає доступних віджетів"
 
-#: data/ui/overview-page.blp:185
-msgid "Loading attendance…"
-msgstr ""
+#: data/ui/dashboard-add-dialog.blp:46
+msgid "This school's system doesn't provide data for any widgets yet."
+msgstr "Система цієї школи поки не надає даних для жодного віджета."
 
-#: data/ui/overview-page.blp:241
-msgid "Recent grades"
-msgstr ""
+#: data/ui/dashboard-add-dialog.blp:55
+msgid "Preview"
+msgstr "Попередній перегляд"
 
-#: data/ui/overview-page.blp:252
-msgid "All grades"
-msgstr ""
+#: data/ui/dashboard-add-dialog.blp:81
+msgid "Add to dashboard"
+msgstr "Додати на панель"
 
-#: data/ui/overview-page.blp:275
-msgid "No news right now"
+#: data/ui/preferences-dialog.blp:7
+msgid "Preferences"
+msgstr "Параметри"
+
+#: data/ui/preferences-dialog.blp:11
+msgid "Appearance"
+msgstr "Зовнішній вигляд"
+
+#: data/ui/preferences-dialog.blp:15
+msgid "Language"
+msgstr "Мова"
+
+#: data/ui/preferences-dialog.blp:16
+msgid "Override the system language for this app"
+msgstr "Перевизначити системну мову для цього застосунку"
+
+#: data/ui/preferences-dialog.blp:20
+msgid "Color scheme"
+msgstr "Колірна схема"
+
+#: data/ui/preferences-dialog.blp:21
+msgid "Override the system light/dark setting"
+msgstr "Перевизначити системне налаштування світлої/темної теми"
+
+#: data/ui/preferences-dialog.blp:25
+msgid "Accent color"
+msgstr "Акцентний колір"
+
+#: data/ui/preferences-dialog.blp:26
+msgid "Override the system accent"
+msgstr "Перевизначити системний акцентний колір"
+
+#: data/ui/preferences-dialog.blp:34
+msgid "First day of week"
+msgstr "Перший день тижня"
+
+#: data/ui/preferences-dialog.blp:39
+msgid "Data"
+msgstr "Дані"
+
+#: data/ui/preferences-dialog.blp:42
+msgid "Cached data"
+msgstr "Кешовані дані"
+
+#: data/ui/preferences-dialog.blp:43
+msgid ""
+"Schedule, grades and photos saved for offline use. Clearing re-downloads them"
+" when needed."
 msgstr ""
+"Розклад, оцінки та фотографії, збережені для роботи офлайн. Після очищення "
+"вони будуть завантажені знову за потреби."
+
+#: data/ui/preferences-dialog.blp:57
+msgid "Clear"
+msgstr "Очистити"
 
 #: data/ui/profile-page.blp:38
 msgid "Change profile photo"
-msgstr ""
+msgstr "Змінити фото профілю"
 
 #: data/ui/profile-page.blp:87
 msgid "Profile photo awaiting approval"
-msgstr ""
+msgstr "Фото профілю очікує схвалення"
 
 #: data/ui/profile-page.blp:88
 msgid "Remove"
-msgstr ""
+msgstr "Прибрати"
 
 #: data/ui/profile-page.blp:93
 msgid "About"
-msgstr ""
-
-#: data/ui/profile-page.blp:103
-msgid "Preferences"
-msgstr ""
+msgstr "Про себе"
 
 #: data/ui/profile-page.blp:107
-msgid "Receive SMS reminders"
-msgstr ""
+msgid "Account"
+msgstr "Обліковий запис"
 
-#: data/ui/profile-page.blp:108
-msgid "Texts about exams, appointments and schedule changes"
-msgstr ""
+#: data/ui/profile-page.blp:134
+msgid "SMS reminders"
+msgstr "SMS-нагадування"
 
-#: data/ui/profile-page.blp:116
+#: data/ui/profile-page.blp:135 src/views/profile-page.vala:233
+msgid "Reminders about lessons and absence, sent to your phone"
+msgstr "Нагадування про заняття та відсутність на ваш телефон"
+
+#: data/ui/profile-page.blp:142
 msgid "Why this matters"
-msgstr ""
+msgstr "Чому це важливо"
 
-#: data/ui/profile-page.blp:125
+#: data/ui/profile-page.blp:151
 msgid ""
 "SMS reminders are off. You could miss an exam or an important appointment."
 msgstr ""
+"SMS-нагадування вимкнено. Ви можете пропустити іспит або важливу зустріч."
 
-#: data/ui/profile-page.blp:138
-msgid "Picture visibility"
-msgstr ""
+#: data/ui/profile-page.blp:164
+msgid "Profile photo visibility"
+msgstr "Видимість фото профілю"
+
+#: data/ui/profile-page.blp:165 src/views/profile-page.vala:243
+msgid "Who can see your photo"
+msgstr "Хто може бачити ваше фото"
 
 #: data/ui/schedule-view.blp:101
 msgid "Agenda"
-msgstr ""
+msgstr "Список"
 
 #: data/ui/school-picker.blp:5 data/ui/school-picker.blp:15
 msgid "Choose your school"
-msgstr ""
+msgstr "Виберіть свою школу"
 
 #: data/ui/school-picker.blp:46
 msgid "Can't find your school?"
-msgstr ""
+msgstr "Не знайшли свою школу?"
 
 #: data/ui/school-picker.blp:56
 msgid "Enter it manually"
-msgstr ""
+msgstr "Ввести вручну"
 
 #: data/ui/school-picker.blp:72
 msgid "Schools"
-msgstr ""
+msgstr "Школи"
 
-#: data/ui/school-picker.blp:93
+#: data/ui/school-picker.blp:104
 msgid "Search schools"
-msgstr ""
+msgstr "Пошук шкіл"
 
-#: data/ui/school-picker.blp:128 src/views/school-picker.vala:156
+#: data/ui/school-picker.blp:139 src/services/school-config.vala:98
+#: src/views/school-picker.vala:332
 msgid "Custom school"
-msgstr ""
+msgstr "Своя школа"
 
-#: data/ui/school-picker.blp:150
+#: data/ui/school-picker.blp:161
 msgid "Backend"
-msgstr ""
+msgstr "Бекенд"
 
-#: data/ui/school-picker.blp:154
+#: data/ui/school-picker.blp:165
 msgid "Display name"
-msgstr ""
+msgstr "Показуване ім'я"
 
-#: data/ui/school-picker.blp:158
+#: data/ui/school-picker.blp:169
 msgid "Base URL"
-msgstr ""
+msgstr "Базова URL-адреса"
 
-#: data/ui/school-picker.blp:162
+#: data/ui/school-picker.blp:173
 msgid "Realm (OIDC)"
-msgstr ""
-
-#: data/ui/school-picker.blp:168
-msgid "LUDUS sign-in isn't available yet."
-msgstr ""
+msgstr "Realm (OIDC)"
 
 #: data/ui/school-picker.blp:179
-msgid "Use this provider"
+msgid ""
+"Enter an https:// URL — plain http would send your password unencrypted."
 msgstr ""
+"Введіть адресу https:// — звичайний http надіслав би ваш пароль "
+"незашифрованим."
+
+#: data/ui/school-picker.blp:191
+msgid "UMS base URLs usually end with “/api” — double-check if sign-in fails."
+msgstr ""
+"Базові URL-адреси UMS зазвичай закінчуються на «/api» — перевірте ще раз, "
+"якщо вхід не вдається."
+
+#: data/ui/school-picker.blp:203
+msgid "LUDUS sign-in isn't available yet."
+msgstr "Вхід через LUDUS поки недоступний."
+
+#: data/ui/school-picker.blp:214
+msgid "Use this provider"
+msgstr "Використати цього провайдера"
+
+#: data/ui/school-picker.blp:227
+msgid "Copy Config"
+msgstr "Скопіювати конфігурацію"
+
+#: data/ui/school-picker.blp:245
+msgid "Add a Custom School"
+msgstr "Додати свою школу"
+
+#: data/ui/school-picker.blp:246
+msgid "Paste a shared school config, or enter the details manually."
+msgstr "Вставте отриману конфігурацію школи або введіть дані вручну."
+
+#: data/ui/school-picker.blp:252
+msgid "Paste Config"
+msgstr "Вставити конфігурацію"
+
+#: data/ui/school-picker.blp:253
+msgid "Enter Manually"
+msgstr "Ввести вручну"
+
+#: data/ui/school-picker.blp:260
+msgid "Couldn't Use the Config"
+msgstr "Не вдалося використати конфігурацію"
+
+#: data/ui/school-picker.blp:261
+msgid "There is no config on the clipboard."
+msgstr "У буфері обміну немає конфігурації."
+
+#: data/ui/school-picker.blp:273
+msgid "Use this school?"
+msgstr "Використати цю школу?"
+
+#: data/ui/school-picker.blp:279
+msgid "Use"
+msgstr "Використати"
 
 #: data/ui/shortcuts-dialog.blp:6
 msgid "Shortcuts"
-msgstr ""
+msgstr "Комбінації клавіш"
 
 #: data/ui/shortcuts-dialog.blp:9
 msgctxt "shortcut window"
 msgid "Show Shortcuts"
-msgstr ""
+msgstr "Показати комбінації клавіш"
 
 #: data/ui/shortcuts-dialog.blp:14
 msgctxt "shortcut window"
 msgid "Quit"
-msgstr ""
+msgstr "Завершити"
 
-#: data/ui/window.blp:21
+#: data/ui/window.blp:24
 msgid "Updating information…"
-msgstr ""
+msgstr "Оновлення відомостей…"
 
-#: data/ui/window.blp:22
+#: data/ui/window.blp:25
 msgid "Fetching your latest schedule, grades and absence."
-msgstr ""
+msgstr "Завантаження останнього розкладу, оцінок та відсутностей."
 
-#: src/application.vala:66
+#: data/ui/window.blp:46
+msgid "Quit OpenSprogskole?"
+msgstr "Завершити OpenSprogskole?"
+
+#: data/ui/window.blp:52
+msgid "Quit"
+msgstr "Завершити"
+
+#: src/application.vala:162
 msgid "translator-credits"
 msgstr ""
 
+#: src/application.vala:164
+msgid ""
+"View your schedule, grades and homework, and report absence at your Danish language school.\n"
+"\n"
+"This app is not affiliated with Sprogcenter Midt or Inlogic."
+msgstr ""
+"Переглядайте розклад, оцінки та домашні завдання, повідомляйте про відсутність у вашій данській мовній школі.\n"
+"\n"
+"Цей застосунок не пов'язаний зі Sprogcenter Midt чи Inlogic."
+
+#. The school and its backend vendor; a LUDUS link joins these once
+#. LUDUS sign-in actually works.
+#: src/application.vala:168
+msgid "Sprogcenter Midt"
+msgstr "Sprogcenter Midt"
+
+#: src/application.vala:169
+msgid "UMS by Inlogic"
+msgstr "UMS by Inlogic"
+
+#: src/application.vala:175
+msgid "Portions adapted from Tuba"
+msgstr "Окремі частини адаптовано з Tuba"
+
+#. The APK bundles the platform stack a desktop OS would provide as
+#. shared libraries; the notice-requiring licenses get a section.
+#: src/application.vala:190
+msgid "Bundled GNOME platform libraries"
+msgstr "Включені бібліотеки платформи GNOME"
+
+#: src/services/error-reporter.vala:121
+msgid "… [truncated]"
+msgstr "… [обрізано]"
+
+#: src/services/dashboard-registry.vala:114
+msgid "Up next"
+msgstr "Найближче"
+
+#. One attendance widget, two looks: a donut when full/half, the
+#. expressive wave gauge when mini (switch via the resize button).
+#: src/services/dashboard-registry.vala:120
+msgid "Attendance"
+msgstr "Відвідуваність"
+
+#: src/services/dashboard-registry.vala:128
+msgid "Lessons today"
+msgstr "Заняття сьогодні"
+
+#: src/services/dashboard-registry.vala:132
+msgid "Average grade"
+msgstr "Середній бал"
+
+#: src/services/school-config.vala:62
+#, c-format
+msgid "Not a valid school config: %s"
+msgstr "Недійсна конфігурація школи: %s"
+
+#: src/services/school-config.vala:66
+msgid "Not a valid school config (a JSON object was expected)."
+msgstr "Недійсна конфігурація школи (очікувався об'єкт JSON)."
+
+#: src/services/school-config.vala:75
+#, c-format
+msgid "Sign-in for the “%s” provider isn't available yet."
+msgstr "Вхід для провайдера «%s» поки недоступний."
+
+#: src/services/school-config.vala:79
+msgid "The config has no base URL (\"base-url\")."
+msgstr "У конфігурації немає базової URL-адреси (\"base-url\")."
+
+#: src/services/school-config.vala:83
+msgid ""
+"The base URL must use https:// — plain http would send your password "
+"unencrypted."
+msgstr ""
+"Базова URL-адреса має використовувати https:// — звичайний http надіслав би "
+"ваш пароль незашифрованим."
+
+#: src/services/nav-section.vala:87 src/views/main-view.vala:306
+msgid "Your information"
+msgstr "Ваші відомості"
+
+#: src/services/ludus-endpoints.vala:53 src/services/ums-endpoints.vala:55
+msgid "Timetable"
+msgstr "Розклад"
+
+#: src/services/ludus-endpoints.vala:54
+msgid "Absence reasons"
+msgstr "Причини відсутності"
+
+#: src/services/ludus-endpoints.vala:57
+msgid "Assignments"
+msgstr "Завдання"
+
+#: src/services/ludus-endpoints.vala:58
+msgid "Messages"
+msgstr "Повідомлення"
+
+#: src/services/ludus-endpoints.vala:59 src/services/ums-endpoints.vala:69
+msgid "Profile"
+msgstr "Профіль"
+
+#: src/services/ludus-endpoints.vala:60
+msgid "Profile picture"
+msgstr "Фото профілю"
+
+#: src/services/ludus-endpoints.vala:61
+msgid "Configuration"
+msgstr "Конфігурація"
+
+#: src/services/ludus-provider.vala:72
+msgid "Continue to sign-in"
+msgstr "Перейти до входу"
+
 #: src/services/schools.vala:45
 msgid "Demo School"
-msgstr ""
+msgstr "Демо-школа"
 
-#: src/services/session-controller.vala:167
+#: src/services/session-controller.vala:173
 msgid "Couldn't sign you in automatically. Please log in again."
-msgstr ""
+msgstr "Не вдалося увійти автоматично. Будь ласка, увійдіть знову."
 
-#: src/services/session-controller.vala:208
+#: src/services/session-controller.vala:228
 msgid "Invalid username or password."
-msgstr ""
+msgstr "Неправильне ім'я користувача або пароль."
 
-#: src/services/session-controller.vala:209
-#: src/services/session-controller.vala:211
+#: src/services/session-controller.vala:229
+#: src/services/session-controller.vala:236
 #, c-format
 msgid "Login failed: %s"
-msgstr ""
+msgstr "Не вдалося увійти: %s"
 
-#: src/services/ums-provider.vala:90
+#: src/services/ums-client.vala:108 src/services/ums-client.vala:113
+#: src/services/ums-client.vala:176 src/services/ums-client.vala:231
+msgid "Malformed response"
+msgstr "Некоректна відповідь"
+
+#: src/services/ums-endpoints.vala:53
+msgid "Login"
+msgstr "Вхід"
+
+#: src/services/ums-endpoints.vala:54
+msgid "Logout"
+msgstr "Вихід"
+
+#: src/services/ums-endpoints.vala:58
+msgid "Absence settings"
+msgstr "Налаштування відсутності"
+
+#: src/services/ums-endpoints.vala:61
+msgid "Reported absences"
+msgstr "Заявлені відсутності"
+
+#: src/services/ums-endpoints.vala:63
+msgid "Update reported absence"
+msgstr "Оновлення заявленої відсутності"
+
+#: src/services/ums-endpoints.vala:64
+msgid "Delete reported absence"
+msgstr "Видалення заявленої відсутності"
+
+#: src/services/ums-endpoints.vala:65
+msgid "Profile settings"
+msgstr "Налаштування профілю"
+
+#: src/services/ums-endpoints.vala:66
+msgid "Save profile"
+msgstr "Збереження профілю"
+
+#: src/services/ums-endpoints.vala:67
+msgid "Upload profile picture"
+msgstr "Завантаження фото профілю"
+
+#: src/services/ums-endpoints.vala:68
+msgid "Remove pending picture"
+msgstr "Видалення фото, що очікує"
+
+#: src/services/ums-provider.vala:103
 msgid "SSO"
-msgstr ""
+msgstr "SSO"
 
 #: src/views/absence-page.vala:79
 msgid "Couldn't load absences."
-msgstr ""
+msgstr "Не вдалося завантажити відсутності."
 
 #: src/views/absence-page.vala:109
 #, c-format
 msgid "Show %u more"
-msgstr ""
+msgstr "Показати ще %u"
 
-#: src/views/absence-page.vala:151 src/views/absence-page.vala:167
+#: src/views/absence-page.vala:152 src/views/absence-page.vala:168
 msgid "Edit reason"
-msgstr ""
+msgstr "Змінити причину"
 
-#: src/views/absence-page.vala:151 src/views/absence-page.vala:167
+#: src/views/absence-page.vala:152 src/views/absence-page.vala:168
 msgid "Describe absence"
-msgstr ""
+msgstr "Опишіть відсутність"
 
-#: src/views/absence-page.vala:174
+#: src/views/absence-page.vala:175
 msgid "Apply to all absent lessons this day"
-msgstr ""
+msgstr "Застосувати до всіх пропущених занять цього дня"
 
-#: src/views/absence-page.vala:195 src/widgets/lesson-dialog.vala:133
+#: src/views/absence-page.vala:196 src/widgets/lesson-dialog.vala:133
 msgid "Couldn't save reason — check your connection."
-msgstr ""
+msgstr "Не вдалося зберегти причину — перевірте з'єднання."
 
-#: src/views/absence-page.vala:219
+#: src/views/absence-page.vala:221
 msgid "Edit"
-msgstr ""
+msgstr "Змінити"
 
-#: src/views/absence-page.vala:227 src/views/absence-page.vala:251
+#: src/views/absence-page.vala:229 src/views/absence-page.vala:253
 msgid "Delete"
-msgstr ""
-
-#: src/views/absence-page.vala:248
-msgid "Delete this absence?"
-msgstr ""
-
-#: src/views/absence-page.vala:249
-msgid "The reported absence will be removed."
-msgstr ""
+msgstr "Видалити"
 
 #: src/views/absence-page.vala:250
-msgid "Cancel"
-msgstr ""
+msgid "Delete this absence?"
+msgstr "Видалити цю відсутність?"
 
-#: src/views/absence-page.vala:272
+#: src/views/absence-page.vala:251
+msgid "The reported absence will be removed."
+msgstr "Заявлену відсутність буде видалено."
+
+#: src/views/absence-page.vala:274
 msgid "Couldn't delete absence — check your connection."
-msgstr ""
+msgstr "Не вдалося видалити відсутність — перевірте з'єднання."
 
 #: src/views/edit-profile-page.vala:106
 msgid "Couldn't save your changes — check your connection."
-msgstr ""
+msgstr "Не вдалося зберегти зміни — перевірте з'єднання."
 
-#: src/views/grades-page.vala:58
+#: src/views/grades-page.vala:58 src/widgets/tile-grades.vala:94
 msgid "Couldn't load grades."
-msgstr ""
+msgstr "Не вдалося завантажити оцінки."
 
-#: src/views/main-view.vala:127
+#: src/views/main-view.vala:168 src/views/profile-page.vala:124
 msgid "Offline"
-msgstr ""
+msgstr "Поза мережею"
 
-#: src/views/onboarding-view.vala:54
+#: src/views/onboarding-view.vala:57
 #, c-format
 msgid "Version %s"
-msgstr ""
+msgstr "Версія %s"
 
-#: src/views/onboarding-view.vala:96 src/services/login-method.vala:75
+#: src/views/onboarding-view.vala:103 src/services/login-method.vala:75
 msgid "Enter"
-msgstr ""
+msgstr "Увійти"
 
-#: src/views/overview-page.vala:84
+#: src/views/dashboard-view.vala:108
 #, c-format
 msgid "Good night, %s"
-msgstr ""
+msgstr "Доброї ночі, %s"
 
-#: src/views/overview-page.vala:87
+#: src/views/dashboard-view.vala:111
 #, c-format
 msgid "Good morning, %s"
-msgstr ""
+msgstr "Доброго ранку, %s"
 
-#: src/views/overview-page.vala:90
+#: src/views/dashboard-view.vala:114
 #, c-format
 msgid "Good afternoon, %s"
-msgstr ""
+msgstr "Доброго дня, %s"
 
-#: src/views/overview-page.vala:92
+#: src/views/dashboard-view.vala:116
 #, c-format
 msgid "Good evening, %s"
-msgstr ""
+msgstr "Доброго вечора, %s"
 
-#: src/views/overview-page.vala:123
-msgid "Couldn't load lessons."
-msgstr ""
+#. Accent: index 0 = follow system, 1–9 = AdwAccentColor. Index is the
+#. stored value; Application applies it via a CSS override.
+#: src/views/preferences-dialog.vala:58 src/views/preferences-dialog.vala:71
+#: src/views/preferences-dialog.vala:102
+msgid "Follow system"
+msgstr "Як у системі"
 
-#. Translators: a weekday + date, e.g. "Tuesday, 30 June".
-#. Reorder the %A/%-d/%B parts to suit your locale —
-#. see `man strftime` for what each one means.
-#: src/views/overview-page.vala:145
-msgid "%A, %-d %B"
-msgstr ""
+#: src/views/preferences-dialog.vala:58
+msgid "Light"
+msgstr "Світла"
 
-#: src/views/overview-page.vala:158
-msgid "Couldn't load attendance."
-msgstr ""
+#: src/views/preferences-dialog.vala:58
+msgid "Dark"
+msgstr "Темна"
 
-#: src/views/overview-page.vala:168
-msgid "no data"
-msgstr ""
+#: src/views/preferences-dialog.vala:60
+msgid "Use school default"
+msgstr "Стандарт школи"
 
-#: src/views/overview-page.vala:169
-msgid "No attendance data"
-msgstr ""
+#: src/views/preferences-dialog.vala:60 src/views/preferences-dialog.vala:146
+msgid "Monday"
+msgstr "Понеділок"
 
-#: src/views/overview-page.vala:183
-msgid "present"
-msgstr ""
+#: src/views/preferences-dialog.vala:60 src/views/preferences-dialog.vala:152
+msgid "Sunday"
+msgstr "Неділя"
 
-#: src/views/overview-page.vala:184
+#: src/views/preferences-dialog.vala:60 src/views/preferences-dialog.vala:151
+msgid "Saturday"
+msgstr "Субота"
+
+#: src/views/preferences-dialog.vala:71
+msgid "Blue"
+msgstr "Синій"
+
+#: src/views/preferences-dialog.vala:71
+msgid "Teal"
+msgstr "Бірюзовий"
+
+#: src/views/preferences-dialog.vala:71
+msgid "Green"
+msgstr "Зелений"
+
+#: src/views/preferences-dialog.vala:71
+msgid "Yellow"
+msgstr "Жовтий"
+
+#: src/views/preferences-dialog.vala:72
+msgid "Orange"
+msgstr "Помаранчевий"
+
+#: src/views/preferences-dialog.vala:72
+msgid "Red"
+msgstr "Червоний"
+
+#: src/views/preferences-dialog.vala:72
+msgid "Pink"
+msgstr "Рожевий"
+
+#: src/views/preferences-dialog.vala:72
+msgid "Purple"
+msgstr "Фіолетовий"
+
+#: src/views/preferences-dialog.vala:72
+msgid "Slate"
+msgstr "Сіро-синій"
+
+#: src/views/preferences-dialog.vala:112
+msgid "The language changes when you restart the app."
+msgstr "Мова зміниться після перезапуску застосунку."
+
+#: src/views/preferences-dialog.vala:141
 #, c-format
-msgid "Present %.1f%% · Not approved %.1f%% · Late %.1f%%"
-msgstr ""
+msgid "Currently %s"
+msgstr "Зараз %s"
 
-#: src/views/profile-page.vala:65
+#: src/views/preferences-dialog.vala:147
+msgid "Tuesday"
+msgstr "Вівторок"
+
+#: src/views/preferences-dialog.vala:148
+msgid "Wednesday"
+msgstr "Середа"
+
+#: src/views/preferences-dialog.vala:149
+msgid "Thursday"
+msgstr "Четвер"
+
+#: src/views/preferences-dialog.vala:150
+msgid "Friday"
+msgstr "П'ятниця"
+
+#: src/views/preferences-dialog.vala:166
+msgid "Cached data cleared"
+msgstr "Кешовані дані очищено"
+
+#: src/views/profile-page.vala:71
 msgid "Everyone"
-msgstr ""
+msgstr "Усі"
 
-#: src/views/profile-page.vala:65
+#: src/views/profile-page.vala:71
 msgid "School only"
-msgstr ""
+msgstr "Лише школа"
 
-#: src/views/profile-page.vala:65
-msgid "Nobody"
-msgstr ""
+#: src/views/profile-page.vala:71
+msgid "No one"
+msgstr "Ніхто"
 
 #: src/views/profile-page.vala:121
+msgid "Saving…"
+msgstr "Збереження…"
+
+#: src/views/profile-page.vala:127
+msgid "Synced"
+msgstr "Синхронізовано"
+
+#: src/views/profile-page.vala:156
 msgid "Name"
-msgstr ""
-
-#: src/views/profile-page.vala:122
-msgid "Date of birth"
-msgstr ""
-
-#: src/views/profile-page.vala:123
-msgid "Address"
-msgstr ""
-
-#: src/views/profile-page.vala:125
-msgid "Department"
-msgstr ""
-
-#: src/views/profile-page.vala:126
-msgid "Course length"
-msgstr ""
-
-#: src/views/profile-page.vala:128
-msgid "Card number"
-msgstr ""
+msgstr "Ім'я"
 
 #: src/views/profile-page.vala:157
+msgid "Date of birth"
+msgstr "Дата народження"
+
+#: src/views/profile-page.vala:158
+msgid "Address"
+msgstr "Адреса"
+
+#: src/views/profile-page.vala:160
+msgid "Department"
+msgstr "Відділення"
+
+#: src/views/profile-page.vala:161
+msgid "Course length"
+msgstr "Тривалість курсу"
+
+#: src/views/profile-page.vala:163
+msgid "Card number"
+msgstr "Номер картки"
+
+#: src/views/profile-page.vala:193
 msgid "Copy"
-msgstr ""
+msgstr "Копіювати"
 
-#: src/views/profile-page.vala:162
+#: src/views/profile-page.vala:198
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "Скопійовано до буфера обміну"
 
-#: src/views/profile-page.vala:228
+#: src/views/profile-page.vala:234 src/views/profile-page.vala:244
+msgid "Managed by your school"
+msgstr "Керується вашою школою"
+
+#: src/views/profile-page.vala:274
 msgid "SMS reminders are off — you may miss reminders."
-msgstr ""
+msgstr "SMS-нагадування вимкнено — ви можете пропустити нагадування."
 
-#: src/views/profile-page.vala:257
+#: src/views/profile-page.vala:304
 msgid "Couldn't save your change — check your connection."
-msgstr ""
+msgstr "Не вдалося зберегти зміну — перевірте з'єднання."
 
-#: src/views/profile-page.vala:282
+#: src/views/profile-page.vala:333
 msgid "Choose a profile photo"
-msgstr ""
+msgstr "Виберіть фото профілю"
 
-#: src/views/profile-page.vala:284
+#: src/views/profile-page.vala:335
 msgid "Images"
-msgstr ""
+msgstr "Зображення"
 
-#: src/views/profile-page.vala:313
+#: src/views/profile-page.vala:364
 msgid "Photo uploaded — awaiting approval"
-msgstr ""
+msgstr "Фото завантажено — очікує схвалення"
 
-#: src/views/profile-page.vala:316
+#: src/views/profile-page.vala:367
 msgid "Couldn't upload the photo — check your connection."
-msgstr ""
+msgstr "Не вдалося завантажити фото — перевірте з'єднання."
 
-#: src/views/profile-page.vala:328
+#: src/views/profile-page.vala:379
 msgid "Pending photo removed"
-msgstr ""
+msgstr "Фото, що очікувало, видалено"
 
-#: src/views/profile-page.vala:331
+#: src/views/profile-page.vala:382
 msgid "Couldn't remove the photo. Please try again."
-msgstr ""
+msgstr "Не вдалося видалити фото. Спробуйте ще раз."
 
-#: src/views/school-picker.vala:58
+#: src/views/school-picker.vala:71
 msgid "UMS (username / password)"
-msgstr ""
+msgstr "UMS (ім'я користувача / пароль)"
 
-#: src/views/school-picker.vala:59
+#: src/views/school-picker.vala:72
 msgid "LUDUS (OIDC / MitID)"
-msgstr ""
+msgstr "LUDUS (OIDC / MitID)"
 
-#: src/views/school-picker.vala:100
-msgid "No schools yet"
-msgstr ""
+#: src/views/school-picker.vala:166
+msgid "Not available yet"
+msgstr "Поки недоступно"
 
-#: src/views/school-picker.vala:102
-msgid "This provider has no schools listed."
-msgstr ""
-
-#: src/views/school-picker.vala:103
+#: src/views/school-picker.vala:169
 msgid "Sign-in for this provider isn't available yet."
-msgstr ""
+msgstr "Вхід для цього провайдера поки недоступний."
+
+#: src/views/school-picker.vala:178
+msgid "No schools yet"
+msgstr "Шкіл поки немає"
+
+#: src/views/school-picker.vala:179
+msgid "This provider has no schools listed."
+msgstr "У цього провайдера немає шкіл у списку."
+
+#: src/views/school-picker.vala:205
+msgid "Couldn't load schools"
+msgstr "Не вдалося завантажити школи"
+
+#: src/views/school-picker.vala:206
+msgid "Check your connection and try again."
+msgstr "Перевірте з'єднання та спробуйте ще раз."
+
+#: src/views/school-picker.vala:306
+msgid "Copied"
+msgstr "Скопійовано"
 
 #: src/widgets/absence-dialog.vala:91
 msgid "Edit absence"
-msgstr ""
+msgstr "Змінити відсутність"
 
 #: src/widgets/absence-dialog.vala:92
 msgid "Save changes"
-msgstr ""
+msgstr "Зберегти зміни"
 
 #: src/widgets/absence-dialog.vala:94
 #, c-format
 msgid "Last updated %s"
-msgstr ""
+msgstr "Оновлено %s"
 
 #: src/widgets/absence-dialog.vala:143
 msgid "You can only call in sick before 20:30."
-msgstr ""
+msgstr "Повідомити про хворобу можна лише до 20:30."
 
 #: src/widgets/absence-dialog.vala:152 src/widgets/absence-dialog.vala:208
 #: src/widgets/reason-dialog.vala:67
 msgid "Please enter a reason."
-msgstr ""
+msgstr "Будь ласка, вкажіть причину."
 
 #: src/widgets/absence-dialog.vala:174
 msgid "Couldn't call in sick — check your connection."
-msgstr ""
+msgstr "Не вдалося повідомити про хворобу — перевірте з'єднання."
 
 #: src/widgets/absence-dialog.vala:229
 msgid "Couldn't save absence — check your connection."
-msgstr ""
+msgstr "Не вдалося зберегти відсутність — перевірте з'єднання."
 
 #: src/widgets/agenda.vala:110
 msgid "No lessons"
-msgstr ""
+msgstr "Занять немає"
 
-#: src/widgets/agenda.vala:205 src/widgets/day-lessons.vala:128
+#: src/widgets/agenda.vala:206 src/widgets/day-lessons.vala:131
 #, c-format
 msgid "Room %s"
-msgstr ""
+msgstr "Кабінет %s"
+
+#: src/widgets/error-details-dialog.vala:53
+msgid "(empty response body)"
+msgstr "(порожнє тіло відповіді)"
+
+#: src/widgets/tile-up-next.vala:70
+msgid "View schedule"
+msgstr "Відкрити розклад"
+
+#: src/widgets/tile-up-next.vala:96
+msgid "Open"
+msgstr "Відкрити"
+
+#: src/widgets/tile-up-next.vala:124
+msgid "Couldn't load lessons."
+msgstr "Не вдалося завантажити заняття."
+
+#: src/widgets/tile-up-next.vala:133
+msgid "No more lessons"
+msgstr "Занять більше немає"
+
+#: src/widgets/tile-up-next.vala:134
+msgid "You're all caught up."
+msgstr "На сьогодні все."
+
+#: src/widgets/tile-up-next.vala:153 src/widgets/tile-up-next.vala:162
+msgid "NEXT CLASS"
+msgstr "НАСТУПНЕ ЗАНЯТТЯ"
+
+#: src/widgets/tile-up-next.vala:154
+msgid "Nothing scheduled"
+msgstr "Нічого не заплановано"
+
+#: src/widgets/tile-up-next.vala:161
+#, c-format
+msgid "NEXT CLASS · IN %s"
+msgstr "НАСТУПНЕ ЗАНЯТТЯ · ЧЕРЕЗ %s"
+
+#: src/widgets/tile-up-next.vala:202
+#, c-format
+msgid "%d MIN"
+msgstr "%d ХВ"
+
+#: src/widgets/tile-up-next.vala:206
+#, c-format
+msgid "%dH %dMIN"
+msgstr "%dГ %dХВ"
+
+#: src/widgets/tile-up-next.vala:206
+#, c-format
+msgid "%dH"
+msgstr "%dГ"
+
+#. Translators: a weekday + date, e.g. "Tuesday, 30 June".
+#: src/widgets/tile-up-next.vala:218
+msgid "%A, %-d %B"
+msgstr "%A, %-d %B"
+
+#: src/widgets/tile-attendance.vala:101
+msgid "Couldn't load attendance."
+msgstr "Не вдалося завантажити відвідуваність."
+
+#: src/widgets/tile-attendance.vala:115 src/widgets/tile-attendance.vala:129
+msgid "no data"
+msgstr "немає даних"
+
+#: src/widgets/tile-attendance.vala:119
+msgid "Present"
+msgstr "Присутність"
+
+#: src/widgets/tile-attendance.vala:130
+msgid "No attendance data"
+msgstr "Немає даних про відвідуваність"
+
+#: src/widgets/tile-attendance.vala:141
+msgid "present"
+msgstr "присутність"
+
+#: src/widgets/tile-attendance.vala:142
+#, c-format
+msgid "Present %.1f%% · Not approved %.1f%% · Late %.1f%%"
+msgstr "Присутність %.1f%% · Не схвалено %.1f%% · Запізнення %.1f%%"
+
+#: src/widgets/tile-grades.vala:106
+msgid "No grades yet"
+msgstr "Оцінок поки немає"
+
+#: src/widgets/tile-grades.vala:107
+msgid "Grades will appear here once your school posts them."
+msgstr "Оцінки з'являться тут, щойно школа їх виставить."
+
+#: src/widgets/tile-grades.vala:129
+msgid "no grades"
+msgstr "немає оцінок"
+
+#: src/widgets/tile-grades.vala:134
+msgid "passed"
+msgstr "складено"
 
 #: src/widgets/lesson-dialog.vala:111
 msgid "Comment"
-msgstr ""
+msgstr "Коментар"
 
 #: src/widgets/lesson-dialog.vala:129
 msgid "Reason saved."
-msgstr ""
+msgstr "Причину збережено."
 
 #: src/widgets/lesson-dialog.vala:141
 msgid "Rooms"
-msgstr ""
+msgstr "Кабінети"
 
 #: src/widgets/lesson-dialog.vala:174
 msgid "Teachers"
-msgstr ""
+msgstr "Викладачі"
 
-#: src/services/provider-family.vala:49
+#: src/widgets/window.vala:113
+msgid "Details"
+msgstr "Подробиці"
+
+#: src/services/provider-family.vala:58
 msgid "UMS schools"
-msgstr ""
+msgstr "Школи UMS"
 
-#: src/services/provider-family.vala:68
+#: src/services/provider-family.vala:77
 msgid "Demo"
-msgstr ""
+msgstr "Демо"
 
-#: src/services/provider-family.vala:89
+#: src/services/provider-family.vala:100
 msgid "LUDUS schools"
-msgstr ""
-
-#: src/services/provider-family.vala:92
-msgid "Coming soon"
-msgstr ""
+msgstr "Школи LUDUS"
 
 #: src/services/login-method.vala:67
 msgid "Username & password"
-msgstr ""
+msgstr "Ім'я користувача та пароль"
 
-#: src/services/demo-provider.vala:158
+#: src/services/demo-provider.vala:163
 msgid "Reported — see you soon."
-msgstr ""
+msgstr "Повідомлено — до зустрічі."

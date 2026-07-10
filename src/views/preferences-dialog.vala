@@ -28,6 +28,7 @@ namespace Opensprogskole {
     [GtkTemplate (ui = "/moe/ekusu/sprogskole/ui/preferences-dialog.ui")]
     public class PreferencesDialog : Adw.PreferencesDialog {
 
+        [GtkChild] private unowned Adw.ComboRow language_row;
         [GtkChild] private unowned Adw.ComboRow color_scheme_row;
         [GtkChild] private unowned Adw.ComboRow accent_color_row;
         [GtkChild] private unowned Adw.ComboRow first_weekday_row;
@@ -35,6 +36,10 @@ namespace Opensprogskole {
         [GtkChild] private unowned Button clear_button;
 
         private GLib.Settings settings;
+        // Language combo index → stored code, parallel to the combo model.
+        // Index 0 is always "" (follow the system); the rest come from the
+        // compiled-in catalogs (see Localization.available).
+        private string[] language_codes;
         // The school's own week-start, so "Use school default" can show what it
         // resolves to ("Currently Monday").
         private int school_weekday;
@@ -46,6 +51,8 @@ namespace Opensprogskole {
         public PreferencesDialog (GLib.Settings settings, int school_first_weekday) {
             this.settings = settings;
             this.school_weekday = school_first_weekday;
+
+            build_language_row ();
 
             color_scheme_row.model = new StringList ({
                 _("Follow system"), _("Light"), _("Dark") });
@@ -79,6 +86,40 @@ namespace Opensprogskole {
 
             clear_button.clicked.connect (on_clear);
             refresh_cache_size ();
+        }
+
+        /* Language: index 0 = follow system, then one entry per available
+         * catalog (English + compiled-in). The stored value is the language code,
+         * so map both directions. gettext can't re-translate the already-built UI
+         * live, so a change is persisted and applied on the next launch — the
+         * toast says so. */
+        private void build_language_row () {
+            language_codes = { "" };
+            foreach (var code in Localization.available ()) {
+                language_codes += code;
+            }
+
+            string[] names = { _("Follow system") };
+            for (int i = 1; i < language_codes.length; i++) {
+                names += Localization.display_name (language_codes[i]);
+            }
+            language_row.model = new StringList (names);
+
+            language_row.selected = index_for_language (settings.get_string ("language"));
+            language_row.notify["selected"].connect (() => {
+                settings.set_string ("language", language_codes[language_row.selected]);
+                add_toast (new Adw.Toast (
+                    _("The language changes when you restart the app.")));
+            });
+        }
+
+        private uint index_for_language (string code) {
+            for (int i = 0; i < language_codes.length; i++) {
+                if (language_codes[i] == code) {
+                    return i;
+                }
+            }
+            return 0;   // an unavailable pinned code falls back to "Follow system"
         }
 
         private int index_for_weekday (int value) {

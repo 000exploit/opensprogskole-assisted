@@ -1,0 +1,11 @@
+# A drop-in proxy-libintl replacement that actually loads .mo catalogs —
+# frida's original, which GLib falls back to on Android, is a no-op stub
+# that leaves the whole stack untranslatable. The directory is vendored so
+# builds need no network; it is maintained as its own project, and once that
+# is published this can become a [wrap-git] pointing at
+# https://github.com/000exploit/proxy-libintl
+[wrap-file]
+directory = proxy-libintl
+
+[provide]
+dependency_names = intl

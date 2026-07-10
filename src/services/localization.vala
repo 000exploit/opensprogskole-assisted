@@ -33,6 +33,21 @@ namespace Opensprogskole {
      * apply(). "" always means "follow the system". */
     namespace Localization {
 
+        /* Where the compiled catalogs actually live for this process. Set by
+         * init(); Config.LOCALEDIR is only correct for an installed desktop
+         * build — on Android the compiled-in prefix doesn't exist on device
+         * and the catalogs sit in the app's private files tree instead. */
+        private string? locale_dir = null;
+
+        /* Bind our gettext domain to `dir` and remember it for available().
+         * Must run before the first translated string (see main.vala). */
+        public void init (string dir) {
+            locale_dir = dir;
+            Intl.bindtextdomain (Config.GETTEXT_PACKAGE, dir);
+            Intl.bind_textdomain_codeset (Config.GETTEXT_PACKAGE, "UTF-8");
+            Intl.textdomain (Config.GETTEXT_PACKAGE);
+        }
+
         /* Force `code` (e.g. "da") as the UI language for this process. Empty =
          * follow the system (no-op). Best effort: glibc consults LANGUAGE only
          * when LC_MESSAGES resolves to a real (non-C) locale, so when the
@@ -130,11 +145,12 @@ namespace Opensprogskole {
          * running uninstalled (no catalogs) yields just English. Never empty. */
         public string[] available () {
             string[] codes = { "en" };
+            var base_dir = locale_dir ?? Config.LOCALEDIR;
             try {
-                var dir = GLib.Dir.open (Config.LOCALEDIR);
+                var dir = GLib.Dir.open (base_dir);
                 string? name;
                 while ((name = dir.read_name ()) != null) {
-                    var mo = GLib.Path.build_filename (Config.LOCALEDIR, name,
+                    var mo = GLib.Path.build_filename (base_dir, name,
                         "LC_MESSAGES", Config.GETTEXT_PACKAGE + ".mo");
                     if (GLib.FileUtils.test (mo, GLib.FileTest.EXISTS)) {
                         codes += name;

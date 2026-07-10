@@ -25,10 +25,6 @@
 #endif
 
 int main (string[] args) {
-    Intl.bindtextdomain (Config.GETTEXT_PACKAGE, Config.LOCALEDIR);
-    Intl.bind_textdomain_codeset (Config.GETTEXT_PACKAGE, "UTF-8");
-    Intl.textdomain (Config.GETTEXT_PACKAGE);
-
     /* Took from GeopJr/Tuba entirely */
 	#if WINDOWS || DARWIN || HAIKU || ANDROID
 		GLib.Environment.set_variable ("SECRET_BACKEND", "file", false);
@@ -54,6 +50,15 @@ int main (string[] args) {
 		GLib.Environment.set_variable ("XDG_DATA_HOME", @"$(files_dir)/data", true);
 
         g_io_openssl_load (null);
+    #endif
+
+    // Bind gettext after the Android block: on device the catalogs live in
+    // the app's private files tree, not at the compiled-in prefix (same
+    // reason GSETTINGS_SCHEMA_DIR is overridden above).
+    #if ANDROID
+        Opensprogskole.Localization.init (@"$(files_dir)/share/locale");
+    #else
+        Opensprogskole.Localization.init (Config.LOCALEDIR);
     #endif
 
     // Force the user's pinned UI language, if any, before the first string is

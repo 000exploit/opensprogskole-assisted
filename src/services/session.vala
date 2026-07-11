@@ -185,6 +185,27 @@ namespace Opensprogskole {
             refresh_streamed ();
         }
 
+        /* Refresh every cacheable resource and only return once all of them
+         * have landed (the providers persist each successful fetch, so after
+         * this the app can run offline). This is the background-sync
+         * entrypoint — the desktop timer and the headless --sync run it, and
+         * the future Android worker will too — so it must stay free of any
+         * UI assumption. Sequential on purpose: background work has no first
+         * paint to win, and one request at a time is gentler on the school's
+         * backend. Never throws; the per-resource load states record failures. */
+        public async void sync_all () {
+            int64 t0 = get_monotonic_time ();
+            yield refresh ();
+            yield refresh_timetable ();
+            yield refresh_absence ();
+            yield refresh_future_absence ();
+            if (user_info != null && user_info.best_picture_url != "") {
+                yield AvatarCache.prefetch (provider, user_info.best_picture_url);
+            }
+            debug ("sync_all: everything refreshed in %lld ms",
+                   (get_monotonic_time () - t0) / 1000);
+        }
+
         /* The timetable, fetched on its own so a slow GetTimetable doesn't block
          * the first paint. The "Up next" card shows a spinner until this fires. */
         public async void refresh_timetable () {

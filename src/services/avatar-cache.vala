@@ -40,9 +40,7 @@ namespace Opensprogskole {
         /* Deliver the picture at `url` into `sink`, cached copy first. The
          * async call completes when revalidation is done. */
         public async void load (SchoolProvider provider, string url, owned Sink sink) {
-            var file = cache_file (url);
-
-            GLib.Bytes? cached = read_bytes (file);
+            GLib.Bytes? cached = read_bytes (cache_file (url));
             bool delivered = false;
             if (cached != null) {
                 try {
@@ -54,24 +52,46 @@ namespace Opensprogskole {
                 }
             }
 
-            try {
-                GLib.Bytes? bytes = yield provider.fetch_picture (url);
-                if (bytes != null && bytes.get_size () > 0) {
-                    if (cached == null || cached.compare (bytes) != 0) {
-                        var texture = Gdk.Texture.from_bytes (bytes);
-                        save (file, bytes);   // refresh the offline fallback
-                        sink (texture);
-                    }
-                    return;   // unchanged: the cached delivery stands
+            var fresh = yield revalidate (provider, url, cached);
+            if (fresh != null) {
+                try {
+                    sink (Gdk.Texture.from_bytes (fresh));
+                    delivered = true;
+                } catch (GLib.Error e) {
+                    warning ("avatar decode failed: %s", e.message);
                 }
-            } catch (GLib.Error e) {
-                warning ("avatar fetch failed: %s", e.message);
             }
 
             // Offline or undecodable response with nothing shown yet.
             if (!delivered) {
                 sink (null);
             }
+        }
+
+        /* Warm the on-disk copy for `url` without touching any UI type: the
+         * background sync calls this so the avatar renders offline. */
+        public async void prefetch (SchoolProvider provider, string url) {
+            yield revalidate (provider, url, read_bytes (cache_file (url)));
+        }
+
+        /* Fetch `url` and refresh the on-disk copy when it changed. Returns
+         * the fresh bytes only when they differ from `cached`; null means
+         * unchanged, empty response or a failed fetch (never fatal — the
+         * caller falls back to whatever it already has). Bytes only, so it
+         * works headless. */
+        private async GLib.Bytes? revalidate (SchoolProvider provider, string url,
+                                              GLib.Bytes? cached) {
+            try {
+                GLib.Bytes? bytes = yield provider.fetch_picture (url);
+                if (bytes != null && bytes.get_size () > 0
+                        && (cached == null || cached.compare (bytes) != 0)) {
+                    save (cache_file (url), bytes);   // refresh the offline fallback
+                    return bytes;
+                }
+            } catch (GLib.Error e) {
+                warning ("avatar fetch failed: %s", e.message);
+            }
+            return null;
         }
 
         private static GLib.Bytes? read_bytes (GLib.File file) {

@@ -50,8 +50,84 @@ public class Opensprogskole.Application : Adw.Application {
         this.set_accels_for_action ("app.quit", {"<control>q"});
         this.set_accels_for_action ("app.preferences", {"<control>comma"});
 
+        this.add_main_option ("sync", 's', 0, GLib.OptionArg.NONE,
+            _("Refresh the cached data and exit (no window)"), null);
+
         settings = new GLib.Settings (Config.APP_ID);
         controller = new SessionController ();
+    }
+
+    /* Headless cache sync: log in silently, refresh everything the providers
+     * cache, flush the store and exit — GTK never initializes, since we
+     * return before startup(). The same Session.sync_all() drives the
+     * resident background timer and, later, the Android background worker. */
+    public override int handle_local_options (GLib.VariantDict options) {
+        if (!options.contains ("sync")) {
+            return -1;   // continue the normal startup
+        }
+
+        // A running instance already keeps the cache fresh; two processes
+        // rewriting one store would only race each other.
+        try {
+            this.register (null);
+        } catch (GLib.Error e) {
+            printerr ("%s\n", e.message);
+            return 1;
+        }
+        if (this.is_remote) {
+            print ("%s\n", _("Already running — the app keeps its cache fresh itself."));
+            return 0;
+        }
+
+        var loop = new GLib.MainLoop ();
+        int exit_code = 0;
+
+        controller.needs_login.connect ((username, error) => {
+            printerr ("%s\n", error ?? _("Not logged in. Start the app and sign in first."));
+            exit_code = 1;
+            loop.quit ();
+        });
+        controller.login_failed.connect ((message) => {
+            printerr ("%s\n", message);
+            exit_code = 1;
+            loop.quit ();
+        });
+        controller.authenticated.connect ((session) => {
+            session.sync_all.begin ((o, r) => {
+                session.sync_all.end (r);
+                Storage.flush_all ();
+                loop.quit ();
+            });
+        });
+
+        // A stuck request must not leave a zombie process behind.
+        GLib.Timeout.add_seconds (SYNC_TIMEOUT_SECONDS, () => {
+            printerr ("%s\n", _("Sync timed out."));
+            exit_code = 1;
+            loop.quit ();
+            return GLib.Source.REMOVE;
+        });
+
+        controller.start ();
+        loop.run ();
+        return exit_code;
+    }
+
+    private const uint SYNC_TIMEOUT_SECONDS = 180;
+
+    /* The hint that closing the window kept the app running: without it the
+     * resident process is invisible on GNOME (the Background Apps list only
+     * tracks sandboxed apps). The Quit button is also the only way to exit
+     * while hidden that needs no window. Sent on every hide — the fixed id
+     * replaces any earlier one — and withdrawn as soon as the window comes
+     * back. */
+    private const string BACKGROUND_HINT_ID = "background-hint";
+
+    public void notify_hidden_to_background () {
+        var hint = new GLib.Notification (_("Running in the background"));
+        hint.set_body (_("The app keeps refreshing your school data so it stays available offline. Launch it again to reopen the window."));
+        hint.add_button (_("Quit"), "app.quit");
+        this.send_notification (BACKGROUND_HINT_ID, hint);
     }
 
     // The accent override (null = following the system accent).
@@ -131,6 +207,7 @@ public class Opensprogskole.Application : Adw.Application {
         }
         if (this.active_window != null) {
             this.active_window.present ();
+            this.withdraw_notification (BACKGROUND_HINT_ID);
         }
     }
 
@@ -145,6 +222,7 @@ public class Opensprogskole.Application : Adw.Application {
             controller.start ();   // drive the initial screen once the window listens
         } else {
             this.active_window.present ();
+            this.withdraw_notification (BACKGROUND_HINT_ID);
         }
     }
 

@@ -57,6 +57,21 @@ public class Opensprogskole.Window : Adw.ApplicationWindow {
 		            destroy ();
 		        }
 		    });
+		#else
+		    // Desktop: with background sync enabled and a live session, closing
+		    // the window hides it instead — the process stays resident and the
+		    // periodic sync keeps the cache warm (a hidden window keeps
+		    // GtkApplication alive, no hold() needed). Launching the app again
+		    // re-presents it (Application.activate); app.quit exits for real.
+		    var settings = new GLib.Settings (Config.APP_ID);
+		    close_request.connect (() => {
+		        if (settings.get_boolean ("background-sync") && controller.session != null) {
+		            set_visible (false);
+		            ((Opensprogskole.Application) application).notify_hidden_to_background ();
+		            return true;
+		        }
+		        return false;
+		    });
 		#endif
 
         // User intents → controller.

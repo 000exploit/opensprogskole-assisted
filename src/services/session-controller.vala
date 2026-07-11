@@ -77,6 +77,42 @@ namespace Opensprogskole {
                     }
                 }
             });
+
+            // Re-arm the periodic sync when its preferences change mid-session.
+            settings.changed["background-sync"].connect (() => {
+                if (session != null) arm_background_sync ();
+            });
+            settings.changed["sync-interval-minutes"].connect (() => {
+                if (session != null) arm_background_sync ();
+            });
+        }
+
+        /* The periodic background refresh: while a session is live (window
+         * visible or not), re-sync every cacheable resource so the app keeps
+         * working offline. Armed on login, disarmed on logout; skips a beat
+         * when offline — the reconnect retry path covers coming back. */
+        private uint sync_source = 0;
+
+        private void arm_background_sync () {
+            disarm_background_sync ();
+            if (!settings.get_boolean ("background-sync")) {
+                return;
+            }
+            uint minutes = (uint) settings.get_int ("sync-interval-minutes");
+            sync_source = Timeout.add_seconds (minutes * 60, () => {
+                if (session != null && Connectivity.get_default ().online) {
+                    debug ("background sync: refreshing cached data");
+                    session.sync_all.begin ();
+                }
+                return Source.CONTINUE;
+            });
+        }
+
+        private void disarm_background_sync () {
+            if (sync_source != 0) {
+                Source.remove (sync_source);
+                sync_source = 0;
+            }
         }
 
         /* Came back online: retry the failed loads, then keep retrying with an
@@ -305,6 +341,7 @@ namespace Opensprogskole {
             // Slow endpoints stream into their own cards (spinners) afterwards,
             // so a sluggish GetTimetable/GetUserAbsence never holds up startup.
             s.refresh_streamed ();
+            arm_background_sync ();
         }
 
         /* Invalidate the token server-side (best effort), forget the account, and
@@ -350,6 +387,7 @@ namespace Opensprogskole {
             Storage.clear (Session.account_hash (school_id, username));
             AvatarCache.clear_all ();
 
+            disarm_background_sync ();
             session = null;
             needs_login (null, null);
         }

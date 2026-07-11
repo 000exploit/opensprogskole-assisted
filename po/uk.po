@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opensprogskole\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-10 08:31+0200\n"
+"POT-Creation-Date: 2026-07-11 07:35+0200\n"
 "PO-Revision-Date: 2026-07-10 12:00+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -15,7 +15,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: data/moe.ekusu.sprogskole.desktop.in:2
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:7 data/ui/main-view.blp:26
@@ -114,10 +115,34 @@ msgid "0 = use the school's default; 1–7 = ISO weekday (1 Monday … 7 Sunday)
 msgstr "0 = стандарт школи; 1–7 = день тижня за ISO (1 понеділок … 7 неділя)."
 
 #: data/moe.ekusu.sprogskole.gschema.xml:58
+msgid "Keep running in the background to refresh cached data"
+msgstr "Продовжувати роботу у фоні для оновлення кешованих даних"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:59
+msgid ""
+"On desktop, closing the window hides the app instead of quitting it, and the "
+"cache is refreshed periodically (see sync-interval-minutes) so everything "
+"keeps working offline. Quit still exits for real."
+msgstr ""
+"На настільних системах закриття вікна приховує застосунок замість виходу, а "
+"кеш періодично оновлюється (див. sync-interval-minutes), щоб усе працювало "
+"без мережі. «Вийти» так само завершує застосунок."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:64
+msgid "Minutes between background cache refreshes"
+msgstr "Інтервал фонового оновлення кешу в хвилинах"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:65
+msgid "Used while a session is active and background sync is enabled."
+msgstr ""
+"Використовується під час активного сеансу та ввімкненої фонової "
+"синхронізації."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:69
 msgid "Unix time (seconds) the saved session token is valid until"
 msgstr "Час Unix (у секундах), до якого дійсний збережений токен сесії"
 
-#: data/moe.ekusu.sprogskole.gschema.xml:59
+#: data/moe.ekusu.sprogskole.gschema.xml:70
 msgid ""
 "From the JWT 'exp' claim. 0 means unknown (no expiry claim); the token is "
 "still tried."
@@ -147,8 +172,8 @@ msgid ""
 "View your schedule, grades, homework and report when you are sick or "
 "unavailable."
 msgstr ""
-"Переглядайте розклад, оцінки, домашні завдання та повідомляйте, коли ви хворі"
-" або недоступні."
+"Переглядайте розклад, оцінки, домашні завдання та повідомляйте, коли ви "
+"хворі або недоступні."
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:14
 msgid "000exploit"
@@ -174,10 +199,8 @@ msgstr ""
 msgid "opensprogskole"
 msgstr "opensprogskole"
 
-#. All graphical applications having a desktop file must have this tag in the
-#. MetaInfo.
-#. If this is present, appstreamcli compose will pull icons, keywords and
-#. categories from the desktop file.
+#. All graphical applications having a desktop file must have this tag in the MetaInfo.
+#. If this is present, appstreamcli compose will pull icons, keywords and categories from the desktop file.
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:30
 msgid "moe.ekusu.sprogskole.desktop"
 msgstr "moe.ekusu.sprogskole.desktop"
@@ -196,11 +219,11 @@ msgstr "#993d3d"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:44
 msgid ""
-"https://raw.githubusercontent.com/000exploit/opensprogskole-"
-"assisted/refs/heads/main/data/screenshots/greetings.png"
+"https://raw.githubusercontent.com/000exploit/opensprogskole-assisted/refs/"
+"heads/main/data/screenshots/greetings.png"
 msgstr ""
-"https://raw.githubusercontent.com/000exploit/opensprogskole-"
-"assisted/refs/heads/main/data/screenshots/greetings.png"
+"https://raw.githubusercontent.com/000exploit/opensprogskole-assisted/refs/"
+"heads/main/data/screenshots/greetings.png"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:45
 msgid "Greetings"
@@ -679,18 +702,30 @@ msgid "Data"
 msgstr "Дані"
 
 #: data/ui/preferences-dialog.blp:42
+msgid "Keep running in background"
+msgstr "Працювати у фоні"
+
+#: data/ui/preferences-dialog.blp:43
+msgid "Refresh data periodically so the app works offline"
+msgstr "Періодично оновлювати дані, щоб застосунок працював без мережі"
+
+#: data/ui/preferences-dialog.blp:47
+msgid "Refresh every"
+msgstr "Оновлювати кожні"
+
+#: data/ui/preferences-dialog.blp:51
 msgid "Cached data"
 msgstr "Кешовані дані"
 
-#: data/ui/preferences-dialog.blp:43
+#: data/ui/preferences-dialog.blp:52
 msgid ""
-"Schedule, grades and photos saved for offline use. Clearing re-downloads them"
-" when needed."
+"Schedule, grades and photos saved for offline use. Clearing re-downloads "
+"them when needed."
 msgstr ""
 "Розклад, оцінки та фотографії, збережені для роботи офлайн. Після очищення "
 "вони будуть завантажені знову за потреби."
 
-#: data/ui/preferences-dialog.blp:57
+#: data/ui/preferences-dialog.blp:66
 msgid "Clear"
 msgstr "Очистити"
 
@@ -868,41 +903,72 @@ msgstr "Завантаження останнього розкладу, оцін
 msgid "Quit OpenSprogskole?"
 msgstr "Завершити OpenSprogskole?"
 
-#: data/ui/window.blp:52
+#: data/ui/window.blp:52 src/application.vala:129
 msgid "Quit"
 msgstr "Завершити"
 
-#: src/application.vala:162
+#: src/application.vala:54
+msgid "Refresh the cached data and exit (no window)"
+msgstr "Оновити кешовані дані та вийти (без вікна)"
+
+#: src/application.vala:78
+msgid "Already running — the app keeps its cache fresh itself."
+msgstr "Застосунок уже запущено — він сам підтримує кеш свіжим."
+
+#: src/application.vala:86
+msgid "Not logged in. Start the app and sign in first."
+msgstr "Вхід не виконано. Спершу запустіть застосунок і ввійдіть."
+
+#. A stuck request must not leave a zombie process behind.
+#: src/application.vala:105
+msgid "Sync timed out."
+msgstr "Час синхронізації вичерпано."
+
+#: src/application.vala:127
+msgid "Running in the background"
+msgstr "Працює у фоні"
+
+#: src/application.vala:128
+msgid ""
+"The app keeps refreshing your school data so it stays available offline. "
+"Launch it again to reopen the window."
+msgstr ""
+"Застосунок продовжує оновлювати шкільні дані, щоб вони були доступні без "
+"мережі. Запустіть його знову, щоб відкрити вікно."
+
+#: src/application.vala:240
 msgid "translator-credits"
 msgstr ""
 
-#: src/application.vala:164
+#: src/application.vala:242
 msgid ""
-"View your schedule, grades and homework, and report absence at your Danish language school.\n"
+"View your schedule, grades and homework, and report absence at your Danish "
+"language school.\n"
 "\n"
 "This app is not affiliated with Sprogcenter Midt or Inlogic."
 msgstr ""
-"Переглядайте розклад, оцінки та домашні завдання, повідомляйте про відсутність у вашій данській мовній школі.\n"
+"Переглядайте розклад, оцінки та домашні завдання, повідомляйте про "
+"відсутність у вашій данській мовній школі.\n"
 "\n"
 "Цей застосунок не пов'язаний зі Sprogcenter Midt чи Inlogic."
 
 #. The school and its backend vendor; a LUDUS link joins these once
 #. LUDUS sign-in actually works.
-#: src/application.vala:168
+#: src/application.vala:246
 msgid "Sprogcenter Midt"
 msgstr "Sprogcenter Midt"
 
-#: src/application.vala:169
+#: src/application.vala:247
 msgid "UMS by Inlogic"
 msgstr "UMS by Inlogic"
 
-#: src/application.vala:175
+#: src/application.vala:253
 msgid "Portions adapted from Tuba"
 msgstr "Окремі частини адаптовано з Tuba"
 
 #. The APK bundles the platform stack a desktop OS would provide as
 #. shared libraries; the notice-requiring licenses get a section.
-#: src/application.vala:190
+#: src/application.vala:268
 msgid "Bundled GNOME platform libraries"
 msgstr "Включені бібліотеки платформи GNOME"
 
@@ -994,16 +1060,16 @@ msgstr "Перейти до входу"
 msgid "Demo School"
 msgstr "Демо-школа"
 
-#: src/services/session-controller.vala:173
+#: src/services/session-controller.vala:209
 msgid "Couldn't sign you in automatically. Please log in again."
 msgstr "Не вдалося увійти автоматично. Будь ласка, увійдіть знову."
 
-#: src/services/session-controller.vala:228
+#: src/services/session-controller.vala:264
 msgid "Invalid username or password."
 msgstr "Неправильне ім'я користувача або пароль."
 
-#: src/services/session-controller.vala:229
-#: src/services/session-controller.vala:236
+#: src/services/session-controller.vala:265
+#: src/services/session-controller.vala:272
 #, c-format
 msgid "Login failed: %s"
 msgstr "Не вдалося увійти: %s"
@@ -1145,97 +1211,113 @@ msgstr "Доброго вечора, %s"
 
 #. Accent: index 0 = follow system, 1–9 = AdwAccentColor. Index is the
 #. stored value; Application applies it via a CSS override.
-#: src/views/preferences-dialog.vala:58 src/views/preferences-dialog.vala:71
-#: src/views/preferences-dialog.vala:102
+#: src/views/preferences-dialog.vala:63 src/views/preferences-dialog.vala:76
+#: src/views/preferences-dialog.vala:130
 msgid "Follow system"
 msgstr "Як у системі"
 
-#: src/views/preferences-dialog.vala:58
+#: src/views/preferences-dialog.vala:63
 msgid "Light"
 msgstr "Світла"
 
-#: src/views/preferences-dialog.vala:58
+#: src/views/preferences-dialog.vala:63
 msgid "Dark"
 msgstr "Темна"
 
-#: src/views/preferences-dialog.vala:60
+#: src/views/preferences-dialog.vala:65
 msgid "Use school default"
 msgstr "Стандарт школи"
 
-#: src/views/preferences-dialog.vala:60 src/views/preferences-dialog.vala:146
+#: src/views/preferences-dialog.vala:65 src/views/preferences-dialog.vala:174
 msgid "Monday"
 msgstr "Понеділок"
 
-#: src/views/preferences-dialog.vala:60 src/views/preferences-dialog.vala:152
+#: src/views/preferences-dialog.vala:65 src/views/preferences-dialog.vala:180
 msgid "Sunday"
 msgstr "Неділя"
 
-#: src/views/preferences-dialog.vala:60 src/views/preferences-dialog.vala:151
+#: src/views/preferences-dialog.vala:65 src/views/preferences-dialog.vala:179
 msgid "Saturday"
 msgstr "Субота"
 
-#: src/views/preferences-dialog.vala:71
+#: src/views/preferences-dialog.vala:76
 msgid "Blue"
 msgstr "Синій"
 
-#: src/views/preferences-dialog.vala:71
+#: src/views/preferences-dialog.vala:76
 msgid "Teal"
 msgstr "Бірюзовий"
 
-#: src/views/preferences-dialog.vala:71
+#: src/views/preferences-dialog.vala:76
 msgid "Green"
 msgstr "Зелений"
 
-#: src/views/preferences-dialog.vala:71
+#: src/views/preferences-dialog.vala:76
 msgid "Yellow"
 msgstr "Жовтий"
 
-#: src/views/preferences-dialog.vala:72
+#: src/views/preferences-dialog.vala:77
 msgid "Orange"
 msgstr "Помаранчевий"
 
-#: src/views/preferences-dialog.vala:72
+#: src/views/preferences-dialog.vala:77
 msgid "Red"
 msgstr "Червоний"
 
-#: src/views/preferences-dialog.vala:72
+#: src/views/preferences-dialog.vala:77
 msgid "Pink"
 msgstr "Рожевий"
 
-#: src/views/preferences-dialog.vala:72
+#: src/views/preferences-dialog.vala:77
 msgid "Purple"
 msgstr "Фіолетовий"
 
-#: src/views/preferences-dialog.vala:72
+#: src/views/preferences-dialog.vala:77
 msgid "Slate"
 msgstr "Сіро-синій"
 
-#: src/views/preferences-dialog.vala:112
+#: src/views/preferences-dialog.vala:97
+msgid "30 minutes"
+msgstr "30 хвилин"
+
+#: src/views/preferences-dialog.vala:97
+msgid "1 hour"
+msgstr "1 година"
+
+#: src/views/preferences-dialog.vala:97
+msgid "3 hours"
+msgstr "3 години"
+
+#: src/views/preferences-dialog.vala:97
+msgid "6 hours"
+msgstr "6 годин"
+
+#: src/views/preferences-dialog.vala:140
 msgid "The language changes when you restart the app."
 msgstr "Мова зміниться після перезапуску застосунку."
 
-#: src/views/preferences-dialog.vala:141
+#: src/views/preferences-dialog.vala:169
 #, c-format
 msgid "Currently %s"
 msgstr "Зараз %s"
 
-#: src/views/preferences-dialog.vala:147
+#: src/views/preferences-dialog.vala:175
 msgid "Tuesday"
 msgstr "Вівторок"
 
-#: src/views/preferences-dialog.vala:148
+#: src/views/preferences-dialog.vala:176
 msgid "Wednesday"
 msgstr "Середа"
 
-#: src/views/preferences-dialog.vala:149
+#: src/views/preferences-dialog.vala:177
 msgid "Thursday"
 msgstr "Четвер"
 
-#: src/views/preferences-dialog.vala:150
+#: src/views/preferences-dialog.vala:178
 msgid "Friday"
 msgstr "П'ятниця"
 
-#: src/views/preferences-dialog.vala:166
+#: src/views/preferences-dialog.vala:194
 msgid "Cached data cleared"
 msgstr "Кешовані дані очищено"
 
@@ -1516,7 +1598,7 @@ msgstr "Кабінети"
 msgid "Teachers"
 msgstr "Викладачі"
 
-#: src/widgets/window.vala:113
+#: src/widgets/window.vala:128
 msgid "Details"
 msgstr "Подробиці"
 
@@ -1539,3 +1621,13 @@ msgstr "Ім'я користувача та пароль"
 #: src/services/demo-provider.vala:163
 msgid "Reported — see you soon."
 msgstr "Повідомлено — до зустрічі."
+
+#~ msgid "Whether the one-time background notification was shown"
+#~ msgstr "Чи було показано одноразове сповіщення про роботу у фоні"
+
+#~ msgid ""
+#~ "Set after the first time closing the window hides the app instead of "
+#~ "quitting it, so the hint only appears once."
+#~ msgstr ""
+#~ "Встановлюється після того, як закриття вікна вперше приховало застосунок "
+#~ "замість виходу, щоб підказка з'являлася лише один раз."

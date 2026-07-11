@@ -38,6 +38,15 @@ template $OpensprogskolePreferencesDialog: Adw.PreferencesDialog {
     Adw.PreferencesGroup {
       title: _("Data");
 
+      Adw.SwitchRow background_sync_row {
+        title: _("Keep running in background");
+        subtitle: _("Refresh data periodically so the app works offline");
+      }
+
+      Adw.ComboRow sync_interval_row {
+        title: _("Refresh every");
+      }
+
       Adw.ActionRow cache_row {
         title: _("Cached data");
         subtitle: _("Schedule, grades and photos saved for offline use. Clearing re-downloads them when needed.");

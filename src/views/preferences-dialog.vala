@@ -32,6 +32,8 @@ namespace Opensprogskole {
         [GtkChild] private unowned Adw.ComboRow color_scheme_row;
         [GtkChild] private unowned Adw.ComboRow accent_color_row;
         [GtkChild] private unowned Adw.ComboRow first_weekday_row;
+        [GtkChild] private unowned Adw.SwitchRow background_sync_row;
+        [GtkChild] private unowned Adw.ComboRow sync_interval_row;
         [GtkChild] private unowned Label cache_size_label;
         [GtkChild] private unowned Button clear_button;
 
@@ -47,6 +49,9 @@ namespace Opensprogskole {
         // "First day of week" combo index → stored ISO weekday (0 = use school
         // default, 1 = Monday … 7 = Sunday). The combo lists the common choices.
         private const int[] WEEKDAY_VALUES = { 0, 1, 7, 6 };
+
+        // "Refresh every" combo index → stored minutes.
+        private const int[] SYNC_INTERVAL_VALUES = { 30, 60, 180, 360 };
 
         public PreferencesDialog (GLib.Settings settings, int school_first_weekday) {
             this.settings = settings;
@@ -84,8 +89,31 @@ namespace Opensprogskole {
             });
             update_weekday_subtitle ();
 
+            // Background sync: switch binds straight to the setting; the interval
+            // combo maps index ↔ minutes and only matters while the switch is on.
+            settings.bind ("background-sync", background_sync_row, "active",
+                           GLib.SettingsBindFlags.DEFAULT);
+            sync_interval_row.model = new StringList ({
+                _("30 minutes"), _("1 hour"), _("3 hours"), _("6 hours") });
+            sync_interval_row.selected = index_for_interval (settings.get_int ("sync-interval-minutes"));
+            sync_interval_row.notify["selected"].connect (() => {
+                settings.set_int ("sync-interval-minutes",
+                                  SYNC_INTERVAL_VALUES[sync_interval_row.selected]);
+            });
+            background_sync_row.bind_property ("active", sync_interval_row, "sensitive",
+                                               GLib.BindingFlags.SYNC_CREATE);
+
             clear_button.clicked.connect (on_clear);
             refresh_cache_size ();
+        }
+
+        private uint index_for_interval (int minutes) {
+            for (int i = 0; i < SYNC_INTERVAL_VALUES.length; i++) {
+                if (SYNC_INTERVAL_VALUES[i] == minutes) {
+                    return i;
+                }
+            }
+            return 1;   // an out-of-list value (set via gsettings) shows as 1 hour
         }
 
         /* Language: index 0 = follow system, then one entry per available

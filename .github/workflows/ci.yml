@@ -134,27 +134,33 @@ jobs:
       - name: Generate Android project
         run: ./gtk-android-builder/pixiewood generate
 
-      - name: Build APK
-        run: ./gtk-android-builder/pixiewood build
-
-      - name: Sign APKs
+      # Tag builds: gradle signs the release APKs itself (see the fork's
+      # gradle.xsl — signingConfig from these env vars), so no unsigned
+      # intermediates ever exist. Regular builds skip this and stay unsigned.
+      - name: Set up release signing
         if: startsWith(github.ref, 'refs/tags/')
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > /tmp/keystore.jks
-          find .pixiewood/android/app/build/outputs/apk -name '*-unsigned.apk' | while read -r apk; do
-            $ANDROID_HOME/build-tools/36.0.0/apksigner sign \
-              --ks /tmp/keystore.jks \
-              --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
-              --ks-key-alias "$ANDROID_KEY_ALIAS" \
-              --key-pass env:ANDROID_KEY_PASSWORD \
-              --out "${apk%-unsigned.apk}-signed.apk" "$apk"
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/keystore.jks"
+          {
+            echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/keystore.jks"
+            echo "ANDROID_KEYSTORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}"
+            echo "ANDROID_KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}"
+            echo "ANDROID_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }}"
+          } >> "$GITHUB_ENV"
+
+      - name: Build APK
+        run: ./gtk-android-builder/pixiewood build
+
+      # app-<abi>-release.apk → opensprogskole-<tag>-<abi>.apk
+      - name: Rename release APKs
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          find .pixiewood/android/app/build/outputs/apk -name 'app-*-release.apk' | while read -r apk; do
+            abi=$(basename "$apk"); abi=${abi#app-}; abi=${abi%-release.apk}
+            mv "$apk" "$(dirname "$apk")/opensprogskole-${GITHUB_REF_NAME}-${abi}.apk"
           done
-          rm /tmp/keystore.jks
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
@@ -177,5 +183,5 @@ jobs:
         with:
           generate_release_notes: true
           files: |
-            artifacts/android-apks/**/*-signed.apk
+            artifacts/android-apks/**/opensprogskole-*.apk
             artifacts/**/*.flatpak

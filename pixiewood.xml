@@ -25,10 +25,29 @@
     <gtk />
     <libadwaita />
   </dependencies>
-  <build target="opensprogskole">
+  <build target="opensprogskole" extra-java="android/java" extra-res="android/res">
     <architectures>
       <arch>aarch64</arch>
     </architectures>
+    <!-- The periodic cache-refresh worker (android/java/…/SyncWorker.java):
+         WorkManager runs it even while the app is closed; the sync itself is
+         native (opensprogskole_worker_sync in sync-runner.vala). SyncInit
+         re-asserts the schedule at every process start. On success the worker
+         posts a silent notification (strings in android/res; permission is
+         runtime-gated on API 33+, so it stays quiet until granted). -->
+    <gradle-dependencies>
+      <dependency>androidx.work:work-runtime:2.10.1</dependency>
+    </gradle-dependencies>
+    <uses-permissions>
+      <permission>android.permission.POST_NOTIFICATIONS</permission>
+    </uses-permissions>
+    <manifest-extras xmlns:android="http://schemas.android.com/apk/res/android">
+      <provider
+        android:name="moe.ekusu.sprogskole.SyncInit"
+        android:authorities="moe.ekusu.sprogskole.syncinit"
+        android:exported="false"
+      />
+    </manifest-extras>
     <configure-options>
       <option>-Dgtk:media-gstreamer=disabled</option>
       <option>-Dgtk:buildtype=debugoptimized</option>

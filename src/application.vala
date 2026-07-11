@@ -20,7 +20,8 @@
 
 public class Opensprogskole.Application : Adw.Application {
 
-    private SessionController controller;
+    // Read externally by the Android worker path (see SyncRunner.worker_sync).
+    public SessionController controller { get; private set; }
     private GLib.Settings settings;
 
     public Application () {
@@ -79,41 +80,8 @@ public class Opensprogskole.Application : Adw.Application {
             return 0;
         }
 
-        var loop = new GLib.MainLoop ();
-        int exit_code = 0;
-
-        controller.needs_login.connect ((username, error) => {
-            printerr ("%s\n", error ?? _("Not logged in. Start the app and sign in first."));
-            exit_code = 1;
-            loop.quit ();
-        });
-        controller.login_failed.connect ((message) => {
-            printerr ("%s\n", message);
-            exit_code = 1;
-            loop.quit ();
-        });
-        controller.authenticated.connect ((session) => {
-            session.sync_all.begin ((o, r) => {
-                session.sync_all.end (r);
-                Storage.flush_all ();
-                loop.quit ();
-            });
-        });
-
-        // A stuck request must not leave a zombie process behind.
-        GLib.Timeout.add_seconds (SYNC_TIMEOUT_SECONDS, () => {
-            printerr ("%s\n", _("Sync timed out."));
-            exit_code = 1;
-            loop.quit ();
-            return GLib.Source.REMOVE;
-        });
-
-        controller.start ();
-        loop.run ();
-        return exit_code;
+        return SyncRunner.run (controller);
     }
-
-    private const uint SYNC_TIMEOUT_SECONDS = 180;
 
     /* The hint that closing the window kept the app running: without it the
      * resident process is invisible on GNOME (the Background Apps list only

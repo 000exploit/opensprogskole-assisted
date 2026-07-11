@@ -57,6 +57,24 @@ public class Opensprogskole.Window : Adw.ApplicationWindow {
 		            destroy ();
 		        }
 		    });
+
+		    // The background sync's silent notification needs the runtime
+		    // POST_NOTIFICATIONS grant (API 33+). Once the toplevel has its
+		    // activity (mapped), ask the system — once per run; it answers
+		    // repeats from its permission store, but a denied user shouldn't
+		    // be re-prompted every time the window maps.
+		    bool notifications_requested = false;
+		    this.map.connect (() => {
+		        if (notifications_requested) {
+		            return;
+		        }
+		        var surface = this.get_surface ();
+		        if (surface != null && !AndroidGlue.notifications_enabled (surface)) {
+		            debug ("notifications disabled; requesting permission");
+		            AndroidGlue.request_notifications (surface);
+		        }
+		        notifications_requested = true;
+		    });
 		#else
 		    // Desktop: with background sync enabled and a live session, closing
 		    // the window hides it instead — the process stays resident and the

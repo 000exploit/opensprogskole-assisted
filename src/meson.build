@@ -54,6 +54,7 @@ opensprogskole_vala_sources = [
   'services/ludus-provider.vala',
   'services/session.vala',
   'services/session-controller.vala',
+  'services/sync-runner.vala',
   'services/avatar-cache.vala',
   'services/localization.vala',
   'services/dashboard-widget.vala',
@@ -97,6 +98,17 @@ opensprogskole_sources = [
 	opensprogskole_vala_sources,
 	opensprogskole_resources,
 ]
+
+# The JNI seams: the WorkManager background worker's entry (the Java half
+# lives in android/java/, staged into the APK project by pixiewood's
+# extra-java) and the platform bridges Vala calls through android-glue.vapi.
+if host_machine.system() == 'android'
+  opensprogskole_sources += files(
+    'android/sync-jni.c',
+    'android/android-glue.c',
+    'android/android-glue.vapi',
+  )
+endif
 
 # GVDB (GVariant database) copylib, pinned meson subproject. Its dependency
 # exposes the sources directly, so gvdb compiles straight into our target.

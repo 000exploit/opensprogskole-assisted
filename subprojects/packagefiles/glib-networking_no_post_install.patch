@@ -1,0 +1,20 @@
+Drop the gio-querymodules post-install step: it hard-requires a native
+gio-querymodules binary (which e.g. Gentoo ships suffixed as
+gio-querymodules-64, so find_program fails) only to refresh the GIO module
+cache after installation. We build glib-networking exclusively for the
+Android cross target and as a static library — there is no module cache to
+refresh, and the tool couldn't produce a target-valid one anyway.
+
+diff --git a/meson.build b/meson.build
+--- a/meson.build
++++ b/meson.build
+@@ -146,9 +146,6 @@ subdir('po')
+ subdir('proxy')
+ subdir('tls')
+
+-# Will automatically pick it up from the cross file if defined
+-gnome.post_install(gio_querymodules: gio_module_dir)
+-
+ summary({
+   'GnuTLS support': giomodules.contains('giognutls'),
+   'OpenSSL support': giomodules.contains('gioopenssl'),

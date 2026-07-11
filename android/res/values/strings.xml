@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Strings for the Java-side worker (android/java/). The native app speaks
+     gettext (po/); the Java side can't, so its few strings live here — keep
+     both in sync when translating. -->
+<resources>
+    <string name="sync_channel">Background sync</string>
+    <string name="sync_done">School data updated</string>
+</resources>

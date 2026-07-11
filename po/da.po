@@ -142,19 +142,6 @@ msgstr ""
 "Fra JWT-'exp'-claimet. 0 betyder ukendt (intet udløbs-claim); tokenet prøves "
 "alligevel."
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:3
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:18
-msgid "moe.ekusu.sprogskole"
-msgstr "moe.ekusu.sprogskole"
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:4
-msgid "CC0-1.0"
-msgstr "CC0-1.0"
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:5
-msgid "GPL-3.0-or-later"
-msgstr "GPL-3.0-or-later"
-
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:8
 msgid "Your language school life"
 msgstr "Dit sprogskoleliv"
@@ -171,44 +158,6 @@ msgstr ""
 msgid "000exploit"
 msgstr "000exploit"
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:21
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:22
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:25
-msgid "https://github.com/000exploit/opensprogskole-assisted"
-msgstr "https://github.com/000exploit/opensprogskole-assisted"
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:23
-msgid "https://github.com/000exploit/opensprogskole-assisted/issues"
-msgstr "https://github.com/000exploit/opensprogskole-assisted/issues"
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:24
-msgid ""
-"https://github.com/000exploit/opensprogskole-assisted/blob/main/README.md"
-msgstr ""
-"https://github.com/000exploit/opensprogskole-assisted/blob/main/README.md"
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:27
-msgid "opensprogskole"
-msgstr "opensprogskole"
-
-#. All graphical applications having a desktop file must have this tag in the MetaInfo.
-#. If this is present, appstreamcli compose will pull icons, keywords and categories from the desktop file.
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:30
-msgid "moe.ekusu.sprogskole.desktop"
-msgstr "moe.ekusu.sprogskole.desktop"
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:32
-msgid "mild"
-msgstr "mild"
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:38
-msgid "#ff00ff"
-msgstr "#ff00ff"
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:39
-msgid "#993d3d"
-msgstr "#993d3d"
-
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:44
 msgid ""
 "https://raw.githubusercontent.com/000exploit/opensprogskole-assisted/refs/"
@@ -220,14 +169,6 @@ msgstr ""
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:45
 msgid "Greetings"
 msgstr "Velkomst"
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:50
-msgid "always"
-msgstr "always"
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:55
-msgid "https://example.org/changelog.html#version_1.0.1"
-msgstr "https://example.org/changelog.html#version_1.0.1"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:57
 msgid "Early release v0.9.9"

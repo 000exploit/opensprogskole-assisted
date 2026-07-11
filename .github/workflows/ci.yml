@@ -78,7 +78,7 @@ jobs:
           dnf install -y gcc gcc-c++ meson ninja-build vala libadwaita-devel \
             glib2-devel gettext gperf pkgconf pkgconf-pkg-config patch git \
             unzip xz zip which glslc python3-packaging java-25-openjdk-devel \
-            desktop-file-utils appstream perl-interpreter perl-Glib \
+            desktop-file-utils sassc appstream perl-interpreter perl-Glib \
             perl-Glib-Object-Introspection perl-XML-LibXML perl-XML-LibXSLT \
             perl-IPC-Run perl-JSON perl-Set-Scalar perl-Archive-Tar \
             perl-FindBin perl-lib

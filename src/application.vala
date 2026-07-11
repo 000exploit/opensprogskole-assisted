@@ -26,7 +26,7 @@ public class Opensprogskole.Application : Adw.Application {
 
     public Application () {
 #if ANDROID
-        var app_flags = ApplicationFlags.NON_UNIQUE;
+        var app_flags = ApplicationFlags.NON_UNIQUE | ApplicationFlags.HANDLES_OPEN;
 #else
         // HANDLES_OPEN: the OIDC redirect (dk.eg.ludus.mobile://login-callback)
         // reaches us as an "open this URI" request, routed to the running

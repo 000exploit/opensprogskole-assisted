@@ -22,10 +22,18 @@
     <harfbuzz>
     </harfbuzz>
     <fontconfig />
-    <gtk />
+    <gtk>
+      <!-- onNewIntent → GdkContext.open: without it a URI landing on the
+           running app (the OIDC redirect) is dropped. Pairs with
+           launch-mode="singleTask" on <build>. -->
+      <patch>deliver-new-intents</patch>
+      <!-- GdkContext.open handed g_application_open a NULL file for any
+           non-SAF uri (custom schemes!); this delivers them by uri string. -->
+      <patch>open-any-uri</patch>
+    </gtk>
     <libadwaita />
   </dependencies>
-  <build target="opensprogskole" extra-java="android/java" extra-res="android/res">
+  <build target="opensprogskole" extra-java="android/java" extra-res="android/res" launch-mode="singleTask">
     <architectures>
       <arch>aarch64</arch>
     </architectures>
@@ -41,6 +49,9 @@
     <uses-permissions>
       <permission>android.permission.POST_NOTIFICATIONS</permission>
     </uses-permissions>
+    <uri-schemes>
+      <scheme>dk.eg.ludus.mobile</scheme>
+    </uri-schemes>
     <manifest-extras xmlns:android="http://schemas.android.com/apk/res/android">
       <provider
         android:name="moe.ekusu.sprogskole.SyncInit"

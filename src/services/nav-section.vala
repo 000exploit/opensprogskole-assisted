@@ -53,14 +53,18 @@ namespace Opensprogskole {
         public string icon_name { get; construct; }
         public NavPlacement placement { get; construct; }
         public bool pinned { get; construct; }
-        public DataKind capability { get; construct; }
+        // A plain field, not a GObject property: ALWAYS sits outside the enum's
+        // registered range on purpose, and GObject's property validation would
+        // reject it and silently clamp to the first member.
+        public DataKind capability;
 
         public NavSection (string tag, string title, string icon_name,
                            NavPlacement placement, bool pinned, DataKind capability,
                            string? short_title = null) {
             Object (tag: tag, title: title, icon_name: icon_name,
-                    placement: placement, pinned: pinned, capability: capability,
+                    placement: placement, pinned: pinned,
                     short_title: short_title ?? title);
+            this.capability = capability;
         }
 
         /* Whether this section should appear for the given provider: pinned and

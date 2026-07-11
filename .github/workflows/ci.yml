@@ -69,7 +69,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 300
     container:
-      image: fedora:43
+      image: fedora:44
     env:
       ANDROID_HOME: /opt/android-sdk
     steps:

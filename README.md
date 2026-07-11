@@ -5,7 +5,7 @@
 <h1 align="center">OpenSprogskole</h1>
 <h3 align="center">Your language school life</h3>
 
-<p align="center"><img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/000exploit/opensprogskole-assisted"> <img alt="GitHub License" src="https://img.shields.io/github/license/000exploit/opensprogskole-assisted"> <img alt="GitHub Tag" src="https://img.shields.io/github/v/tag/000exploit/opensprogskole-assisted"></p>
+<p align="center"><img alt="Github build status" src="https://github.com/000exploit/opensprogskole-assisted/actions/workflows/ci.yml/badge.svg"> <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/000exploit/opensprogskole-assisted"> <img alt="GitHub License" src="https://img.shields.io/github/license/000exploit/opensprogskole-assisted"> <img alt="GitHub Tag" src="https://img.shields.io/github/v/tag/000exploit/opensprogskole-assisted"></p>
 
 <p align="center"><i>Learning Danish at language school? This app is for you.</i></p>
 

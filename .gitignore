@@ -5,3 +5,6 @@
 # Local build output
 /_build/
 /data/gschemas.compiled
+
+# pixiewood (Android) build root
+/.pixiewood/

@@ -1,0 +1,179 @@
+# CI: desktop (Flatpak, same GNOME 50 env as the manifest) + Android APK.
+#
+# Triggers: every push (temporary — narrow `push.branches` to [main] once the
+# project stabilizes), every PR, and tags. Tag pushes additionally publish a
+# GitHub Release with the signed APK and the Flatpak bundle attached — so the
+# release flow is: update metainfo <release>, push a `v*` tag, done. Never
+# create releases by hand.
+#
+# Signing secrets (Settings → Secrets and variables → Actions):
+#   ANDROID_KEYSTORE_BASE64   `base64 -w0 keystore.jks`
+#   ANDROID_KEYSTORE_PASSWORD
+#   ANDROID_KEY_ALIAS
+#   ANDROID_KEY_PASSWORD
+# PRs from forks never see secrets, so signing runs only on tag pushes.
+
+name: CI
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+# A newer push to the same branch obsoletes the running build.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+env:
+  # Keep in lockstep with the build machine. Bare revision, no "-betaN":
+  # that's both the sdkmanager package id and the install dir name.
+  NDK_VERSION: 30.0.14904198
+
+jobs:
+  # Desktop build + unit/appstream/schema tests, inside the same runtime the
+  # Flatpak manifest targets. Both desktop architectures: x86_64 from the
+  # stock runner, aarch64 natively on the (public-repo-free) arm runner.
+  # The action caches the flatpak deps between runs.
+  flatpak:
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-latest
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+      - uses: flathub-infra/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: opensprogskole-${{ matrix.arch }}.flatpak
+          manifest-path: moe.ekusu.sprogskole.json
+          arch: ${{ matrix.arch }}
+          run-tests: true
+          cache-key: flatpak-builder-${{ matrix.arch }}-${{ github.sha }}
+
+  # Cross-compiles the whole GTK-for-Android toolchain + the app via pixiewood.
+  # Fedora container: the app's Vala compiles against the *host* vapis
+  # (--vapidir), and Ubuntu LTS ships a libadwaita too old for this codebase.
+  # First run takes a long time (GTK & friends from source); the .pixiewood
+  # cache makes later runs incremental. The Android SDK/NDK is NOT preinstalled
+  # inside the container, so it's cached too (~2 GB, survives most runs).
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    container:
+      image: fedora:43
+    env:
+      ANDROID_HOME: /opt/android-sdk
+    steps:
+      - name: Install host toolchain
+        run: |
+          dnf install -y gcc gcc-c++ meson ninja-build vala libadwaita-devel \
+            glib2-devel gettext gperf pkgconf patch git unzip xz zip which \
+            python3-packaging java-21-openjdk-devel appstream \
+            perl-interpreter perl-Glib perl-Glib-Object-Introspection \
+            perl-XML-LibXML perl-XML-LibXSLT perl-IPC-Run perl-JSON \
+            perl-Set-Scalar perl-Archive-Tar perl-FindBin perl-lib
+
+      - uses: actions/checkout@v4
+
+      - name: Check out gtk-android-builder
+        uses: actions/checkout@v4
+        with:
+          repository: 000exploit/gtk-android-builder
+          ref: slopnext
+          path: gtk-android-builder
+
+      - name: Cache Android SDK
+        id: sdk-cache
+        uses: actions/cache@v4
+        with:
+          path: /opt/android-sdk
+          key: android-sdk-${{ env.NDK_VERSION }}
+
+      - name: Install Android SDK + NDK
+        if: steps.sdk-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p $ANDROID_HOME/cmdline-tools
+          curl -sfL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o /tmp/clt.zip
+          unzip -q /tmp/clt.zip -d $ANDROID_HOME/cmdline-tools
+          mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
+            "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+          # Beta NDKs are published on channel 1; stable pins work there too.
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --channel=1 \
+            "ndk;${{ env.NDK_VERSION }}"
+
+      # The expensive part: the cross-compiled GTK stack. Keyed on everything
+      # that shapes the toolchain; restore-keys lets a stale tree be reused
+      # incrementally after e.g. a pixiewood.xml tweak.
+      - name: Cache pixiewood build tree
+        uses: actions/cache@v4
+        with:
+          path: |
+            .pixiewood
+            subprojects
+          key: pixiewood-${{ env.NDK_VERSION }}-${{ hashFiles('pixiewood.xml', 'subprojects/*.wrap', 'subprojects/packagefiles/**') }}
+          restore-keys: |
+            pixiewood-${{ env.NDK_VERSION }}-
+
+      - name: Prepare toolchain
+        if: hashFiles('.pixiewood/pixiewood.ini') == ''
+        run: ./gtk-android-builder/pixiewood prepare --release --sdk $ANDROID_HOME pixiewood.xml
+
+      - name: Generate Android project
+        run: ./gtk-android-builder/pixiewood generate
+
+      - name: Build APK
+        run: ./gtk-android-builder/pixiewood build
+
+      - name: Sign APKs
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > /tmp/keystore.jks
+          find .pixiewood/android/app/build/outputs/apk -name '*-unsigned.apk' | while read -r apk; do
+            $ANDROID_HOME/build-tools/36.0.0/apksigner sign \
+              --ks /tmp/keystore.jks \
+              --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
+              --ks-key-alias "$ANDROID_KEY_ALIAS" \
+              --key-pass env:ANDROID_KEY_PASSWORD \
+              --out "${apk%-unsigned.apk}-signed.apk" "$apk"
+          done
+          rm /tmp/keystore.jks
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apks
+          path: .pixiewood/android/app/build/outputs/apk/**/*.apk
+
+  # Tag pushes: gather the artifacts and publish the GitHub Release.
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [flatpak, android]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            artifacts/android-apks/**/*-signed.apk
+            artifacts/**/*.flatpak

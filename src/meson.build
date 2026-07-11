@@ -36,6 +36,7 @@ opensprogskole_vala_sources = [
   'models/future-absence-item.vala',
   'models/user-info-settings.vala',
   'store/timetable-store.vala',
+  'services/background-portal.vala',
   'services/connectivity.vala',
   'services/storage.vala',
   'services/school-provider.vala',

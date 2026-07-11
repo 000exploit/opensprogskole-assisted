@@ -128,6 +128,19 @@ public class Opensprogskole.Application : Adw.Application {
         hint.set_body (_("The app keeps refreshing your school data so it stays available offline. Launch it again to reopen the window."));
         hint.add_button (_("Quit"), "app.quit");
         this.send_notification (BACKGROUND_HINT_ID, hint);
+        // What GNOME's Background Apps list shows next to the (sandboxed) app.
+        BackgroundPortal.get_default ().set_status (_("Refreshing school data periodically"));
+    }
+
+    /* Flatpak: running windowless needs the Background portal's blessing, so
+     * ask whenever the feature is (re-)enabled — the portal answers repeats
+     * from its permission store without re-prompting. Unsandboxed this is a
+     * no-op and hide-on-close works on trust alone. */
+    private void request_background_permission () {
+        if (settings.get_boolean ("background-sync")) {
+            BackgroundPortal.get_default ().request.begin (
+                _("Keep your school data fresh while the window is closed"));
+        }
     }
 
     // The accent override (null = following the system accent).
@@ -141,6 +154,8 @@ public class Opensprogskole.Application : Adw.Application {
         apply_accent ();
         settings.changed["color-scheme"].connect (apply_color_scheme);
         settings.changed["accent-color"].connect (apply_accent);
+        request_background_permission ();
+        settings.changed["background-sync"].connect (request_background_permission);
         // The standalone accent differs between light/dark, so re-derive it when
         // the effective scheme flips (system change or our own override).
         Adw.StyleManager.get_default ().notify["dark"].connect (apply_accent);

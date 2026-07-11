@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opensprogskole\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 07:35+0200\n"
+"POT-Creation-Date: 2026-07-11 07:44+0200\n"
 "PO-Revision-Date: 2026-07-10 12:00+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -934,11 +934,20 @@ msgstr ""
 "Приложение продолжает обновлять школьные данные, чтобы они были доступны без "
 "сети. Запустите его снова, чтобы открыть окно."
 
-#: src/application.vala:240
+#. What GNOME's Background Apps list shows next to the (sandboxed) app.
+#: src/application.vala:132
+msgid "Refreshing school data periodically"
+msgstr "Периодически обновляет школьные данные"
+
+#: src/application.vala:142
+msgid "Keep your school data fresh while the window is closed"
+msgstr "Обновлять школьные данные, пока окно закрыто"
+
+#: src/application.vala:255
 msgid "translator-credits"
 msgstr ""
 
-#: src/application.vala:242
+#: src/application.vala:257
 msgid ""
 "View your schedule, grades and homework, and report absence at your Danish "
 "language school.\n"
@@ -952,21 +961,21 @@ msgstr ""
 
 #. The school and its backend vendor; a LUDUS link joins these once
 #. LUDUS sign-in actually works.
-#: src/application.vala:246
+#: src/application.vala:261
 msgid "Sprogcenter Midt"
 msgstr "Sprogcenter Midt"
 
-#: src/application.vala:247
+#: src/application.vala:262
 msgid "UMS by Inlogic"
 msgstr "UMS by Inlogic"
 
-#: src/application.vala:253
+#: src/application.vala:268
 msgid "Portions adapted from Tuba"
 msgstr "Отдельные части адаптированы из Tuba"
 
 #. The APK bundles the platform stack a desktop OS would provide as
 #. shared libraries; the notice-requiring licenses get a section.
-#: src/application.vala:268
+#: src/application.vala:283
 msgid "Bundled GNOME platform libraries"
 msgstr "Включённые библиотеки платформы GNOME"
 
@@ -1596,7 +1605,7 @@ msgstr "Кабинеты"
 msgid "Teachers"
 msgstr "Преподаватели"
 
-#: src/widgets/window.vala:128
+#: src/widgets/window.vala:132
 msgid "Details"
 msgstr "Подробности"
 

@@ -65,7 +65,11 @@ public class Opensprogskole.Window : Adw.ApplicationWindow {
 		    // re-presents it (Application.activate); app.quit exits for real.
 		    var settings = new GLib.Settings (Config.APP_ID);
 		    close_request.connect (() => {
-		        if (settings.get_boolean ("background-sync") && controller.session != null) {
+		        // In Flatpak the hide additionally needs the Background portal's
+		        // permission (requested by Application on startup); denied means
+		        // closing quits for real, like with the feature off.
+		        if (settings.get_boolean ("background-sync") && controller.session != null
+		                && BackgroundPortal.get_default ().allowed) {
 		            set_visible (false);
 		            ((Opensprogskole.Application) application).notify_hidden_to_background ();
 		            return true;

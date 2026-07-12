@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) YEAR 000exploit
 # This file is distributed under the same license as the opensprogskole package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -7,8 +7,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: opensprogskole\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-12 12:04+0200\n"
+"Report-Msgid-Bugs-To: https://github.com/000exploit/opensprogskole-assisted/"
+"issues\n"
+"POT-Creation-Date: 2026-07-12 13:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +17,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: data/moe.ekusu.sprogskole.desktop.in:2
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:7 data/ui/main-view.blp:26
@@ -149,19 +149,6 @@ msgid ""
 "still tried."
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:3
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:18
-msgid "moe.ekusu.sprogskole"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:4
-msgid "CC0-1.0"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:5
-msgid "GPL-3.0-or-later"
-msgstr ""
-
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:8
 msgid "Your language school life"
 msgstr ""
@@ -172,59 +159,8 @@ msgid ""
 "unavailable."
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:14
-msgid "000exploit"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:21
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:22
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:25
-msgid "https://github.com/000exploit/opensprogskole-assisted"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:23
-msgid "https://github.com/000exploit/opensprogskole-assisted/issues"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:24
-msgid ""
-"https://github.com/000exploit/opensprogskole-assisted/blob/main/README.md"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:27
-msgid "opensprogskole"
-msgstr ""
-
-#. All graphical applications having a desktop file must have this tag in the MetaInfo.
-#. If this is present, appstreamcli compose will pull icons, keywords and categories from the desktop file.
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:30
-msgid "moe.ekusu.sprogskole.desktop"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:32
-msgid "mild"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:38
-msgid "#ff00ff"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:39
-msgid "#993d3d"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:44
-msgid ""
-"https://raw.githubusercontent.com/000exploit/opensprogskole-assisted/refs/"
-"heads/main/data/screenshots/greetings.png"
-msgstr ""
-
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:45
 msgid "Greetings"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:50
-msgid "always"
 msgstr ""
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:56
@@ -235,7 +171,7 @@ msgid ""
 msgstr ""
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:57
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:79
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:80
 msgid "This release adds the following features:"
 msgstr ""
 
@@ -244,54 +180,58 @@ msgid "Background sync"
 msgstr ""
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:60
-msgid "Error dialog, just in case"
+msgid "Added notifications for scheduled exams and new grades"
 msgstr ""
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:61
-msgid "Scrollable calendar on the schedule page"
+msgid "Error dialog, just in case"
 msgstr ""
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:62
-msgid "Navigation overhaul with handy mobile view"
+msgid "Scrollable calendar on the schedule page"
 msgstr ""
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:63
-msgid "Preferences: now it's possible to change app settings"
+msgid "Navigation overhaul with handy mobile view"
 msgstr ""
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:64
-msgid "School config: share non-standard configurations with your friends"
+msgid "Preferences: now it's possible to change app settings"
 msgstr ""
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:65
+msgid "School config: share non-standard configurations with your friends"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:66
 msgid "Overview: new, completely modular and adaptive for different schools"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:67
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:68
 msgid "This release includes the following changes:"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:69
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:70
 msgid "More reliable caching, its loading and cleaning on logout"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:70
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:71
 msgid "Initial LUDUS API implementation"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:71
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:72
 msgid "Enforced HTTPS"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:72
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:73
 msgid "Bearer token leaking prevention"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:73
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:74
 msgid "Added Danish, Russian and Ukrainian translations"
 msgstr ""
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:81
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:82
 msgid "Initial android port"
 msgstr ""
 
@@ -964,65 +904,42 @@ msgstr ""
 msgid "Quit OpenSprogskole?"
 msgstr ""
 
-#: data/ui/window.blp:52 src/application.vala:152
+#: data/ui/window.blp:52 src/application.vala:100
 msgid "Quit"
 msgstr ""
 
-#: src/application.vala:55
+#: src/application.vala:57
 msgid "Refresh the cached data and exit (no window)"
 msgstr ""
 
-#: src/application.vala:86
-msgid "New grade"
-msgid_plural "New grades"
-msgstr[0] ""
-msgstr[1] ""
-
-#. Translators: an exam line in a notification — subject, then
-#. e.g. "Mon 20 May, 08:15".
-#: src/application.vala:104
-#, c-format
-msgid "%s — %s"
-msgstr ""
-
-#: src/application.vala:105
-msgid "%a %e %b, %H:%M"
-msgstr ""
-
-#: src/application.vala:111
-msgid "Exam scheduled"
-msgid_plural "Exams scheduled"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/application.vala:134
+#: src/application.vala:82
 msgid "Already running — the app keeps its cache fresh itself."
 msgstr ""
 
-#: src/application.vala:150
+#: src/application.vala:98
 msgid "Running in the background"
 msgstr ""
 
-#: src/application.vala:151
+#: src/application.vala:99
 msgid ""
 "The app keeps refreshing your school data so it stays available offline. "
 "Launch it again to reopen the window."
 msgstr ""
 
 #. What GNOME's Background Apps list shows next to the (sandboxed) app.
-#: src/application.vala:155
+#: src/application.vala:103
 msgid "Refreshing school data periodically"
 msgstr ""
 
-#: src/application.vala:165
+#: src/application.vala:113
 msgid "Keep your school data fresh while the window is closed"
 msgstr ""
 
-#: src/application.vala:279
+#: src/application.vala:227
 msgid "translator-credits"
 msgstr ""
 
-#: src/application.vala:281
+#: src/application.vala:229
 msgid ""
 "View your schedule, grades and homework, and report absence at your Danish "
 "language school.\n"
@@ -1032,21 +949,21 @@ msgstr ""
 
 #. The school and its backend vendor; a LUDUS link joins these once
 #. LUDUS sign-in actually works.
-#: src/application.vala:285
+#: src/application.vala:233
 msgid "Sprogcenter Midt"
 msgstr ""
 
-#: src/application.vala:286
+#: src/application.vala:234
 msgid "UMS by Inlogic"
 msgstr ""
 
-#: src/application.vala:292
+#: src/application.vala:240
 msgid "Portions adapted from Tuba"
 msgstr ""
 
 #. The APK bundles the platform stack a desktop OS would provide as
 #. shared libraries; the notice-requiring licenses get a section.
-#: src/application.vala:307
+#: src/application.vala:255
 msgid "Bundled GNOME platform libraries"
 msgstr ""
 
@@ -1136,16 +1053,16 @@ msgstr ""
 msgid "Demo School"
 msgstr ""
 
-#: src/services/session-controller.vala:209
+#: src/services/session-controller.vala:216
 msgid "Couldn't sign you in automatically. Please log in again."
 msgstr ""
 
-#: src/services/session-controller.vala:264
+#: src/services/session-controller.vala:271
 msgid "Invalid username or password."
 msgstr ""
 
-#: src/services/session-controller.vala:265
 #: src/services/session-controller.vala:272
+#: src/services/session-controller.vala:279
 #, c-format
 msgid "Login failed: %s"
 msgstr ""
@@ -1195,7 +1112,7 @@ msgstr ""
 msgid "Remove pending picture"
 msgstr ""
 
-#: src/services/ums-provider.vala:103
+#: src/services/ums-provider.vala:109
 msgid "SSO"
 msgstr ""
 

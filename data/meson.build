@@ -12,12 +12,23 @@ if desktop_utils.found()
   test('Validate desktop file', desktop_utils, args: [desktop_file])
 endif
 
-appstream_file = i18n.merge_file(
+# Translation merge on the namespace-less source (so gettext's ITS rules
+# actually match, keeping licenses/urls/etc out of the catalogs — see
+# scripts/metainfo-add-ns.py), then the namespace pixiewood requires is
+# injected into the final artifact.
+appstream_merged = i18n.merge_file(
         input: 'moe.ekusu.sprogskole.metainfo.xml.in',
-       output: 'moe.ekusu.sprogskole.metainfo.xml',
+       output: 'moe.ekusu.sprogskole.metainfo.nons.xml',
        po_dir: '../po',
+)
+
+appstream_file = custom_target('metainfo-ns',
+        input: appstream_merged,
+       output: 'moe.ekusu.sprogskole.metainfo.xml',
+      command: [find_program('python3'), files('../scripts/metainfo-add-ns.py'),
+                '@INPUT@', '@OUTPUT@'],
       install: true,
-  install_dir: get_option('datadir') / 'metainfo'
+  install_dir: get_option('datadir') / 'metainfo',
 )
 
 appstreamcli = find_program('appstreamcli', required: false, disabler: true)

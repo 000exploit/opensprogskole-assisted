@@ -6,8 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: opensprogskole\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-12 12:04+0200\n"
+"Report-Msgid-Bugs-To: https://github.com/000exploit/opensprogskole-assisted/"
+"issues\n"
+"POT-Creation-Date: 2026-07-12 13:33+0200\n"
 "PO-Revision-Date: 2026-07-10 12:00+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -143,7 +144,9 @@ msgstr "Уведомлять о новых оценках"
 msgid ""
 "Detected by the background refresh against the grades already seen; off by "
 "default."
-msgstr "Определяется фоновым обновлением по уже увиденным оценкам; по умолчанию выключено."
+msgstr ""
+"Определяется фоновым обновлением по уже увиденным оценкам; по умолчанию "
+"выключено."
 
 #: data/moe.ekusu.sprogskole.gschema.xml:74
 msgid "Notify when new exams are scheduled"
@@ -153,7 +156,9 @@ msgstr "Уведомлять о новых экзаменах"
 msgid ""
 "An exam is an upcoming lesson the school marks as non-skippable; off by "
 "default."
-msgstr "Экзамен — это предстоящее занятие, которое школа помечает как обязательное; по умолчанию выключено."
+msgstr ""
+"Экзамен — это предстоящее занятие, которое школа помечает как обязательное; "
+"по умолчанию выключено."
 
 #: data/moe.ekusu.sprogskole.gschema.xml:79
 msgid "Unix time (seconds) the saved session token is valid until"
@@ -168,19 +173,6 @@ msgstr ""
 "Из утверждения 'exp' JWT. 0 — неизвестно (нет утверждения о сроке); токен "
 "всё равно пробуется."
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:3
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:18
-msgid "moe.ekusu.sprogskole"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:4
-msgid "CC0-1.0"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:5
-msgid "GPL-3.0-or-later"
-msgstr ""
-
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:8
 msgid "Your language school life"
 msgstr "Ваша жизнь в языковой школе"
@@ -193,60 +185,9 @@ msgstr ""
 "Просматривайте расписание, оценки, домашние задания и сообщайте, когда вы "
 "больны или недоступны."
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:14
-msgid "000exploit"
-msgstr "000exploit"
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:21
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:22
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:25
-msgid "https://github.com/000exploit/opensprogskole-assisted"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:23
-msgid "https://github.com/000exploit/opensprogskole-assisted/issues"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:24
-msgid ""
-"https://github.com/000exploit/opensprogskole-assisted/blob/main/README.md"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:27
-msgid "opensprogskole"
-msgstr ""
-
-#. All graphical applications having a desktop file must have this tag in the MetaInfo.
-#. If this is present, appstreamcli compose will pull icons, keywords and categories from the desktop file.
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:30
-msgid "moe.ekusu.sprogskole.desktop"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:32
-msgid "mild"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:38
-msgid "#ff00ff"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:39
-msgid "#993d3d"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:44
-msgid ""
-"https://raw.githubusercontent.com/000exploit/opensprogskole-assisted/refs/"
-"heads/main/data/screenshots/greetings.png"
-msgstr ""
-
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:45
 msgid "Greetings"
 msgstr "Приветствие"
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:50
-msgid "always"
-msgstr ""
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:56
 msgid ""
@@ -254,65 +195,72 @@ msgid ""
 "modular overview page, shareable school configs, the new mobile view and "
 "just polishing."
 msgstr ""
+"Этот выпуск содержит много нового: самое заметное — модульная страница "
+"обзора, конфигурации школ, которыми можно делиться, новый мобильный вид и "
+"просто полировка."
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:57
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:79
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:80
 msgid "This release adds the following features:"
-msgstr ""
+msgstr "Этот выпуск добавляет следующие функции:"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:59
 msgid "Background sync"
-msgstr ""
+msgstr "Фоновая синхронизация"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:60
-msgid "Error dialog, just in case"
-msgstr ""
+msgid "Added notifications for scheduled exams and new grades"
+msgstr "Добавлены уведомления о запланированных экзаменах и новых оценках"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:61
-msgid "Scrollable calendar on the schedule page"
-msgstr ""
+msgid "Error dialog, just in case"
+msgstr "Диалог ошибок — на всякий случай"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:62
-msgid "Navigation overhaul with handy mobile view"
-msgstr ""
+msgid "Scrollable calendar on the schedule page"
+msgstr "Прокручиваемый календарь на странице расписания"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:63
-msgid "Preferences: now it's possible to change app settings"
-msgstr ""
+msgid "Navigation overhaul with handy mobile view"
+msgstr "Переработанная навигация с удобным мобильным видом"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:64
-msgid "School config: share non-standard configurations with your friends"
-msgstr ""
+msgid "Preferences: now it's possible to change app settings"
+msgstr "Параметры: теперь можно менять настройки приложения"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:65
+msgid "School config: share non-standard configurations with your friends"
+msgstr "Конфигурация школы: делитесь нестандартными конфигурациями с друзьями"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:66
 msgid "Overview: new, completely modular and adaptive for different schools"
-msgstr ""
+msgstr "Обзор: новый, полностью модульный и адаптивный для разных школ"
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:67
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:68
 msgid "This release includes the following changes:"
-msgstr ""
-
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:69
-msgid "More reliable caching, its loading and cleaning on logout"
-msgstr ""
+msgstr "Этот выпуск включает следующие изменения:"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:70
-msgid "Initial LUDUS API implementation"
-msgstr ""
+msgid "More reliable caching, its loading and cleaning on logout"
+msgstr "Более надёжное кэширование, его загрузка и очистка при выходе"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:71
-msgid "Enforced HTTPS"
-msgstr ""
+msgid "Initial LUDUS API implementation"
+msgstr "Первоначальная реализация LUDUS API"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:72
-msgid "Bearer token leaking prevention"
-msgstr ""
+msgid "Enforced HTTPS"
+msgstr "Принудительный HTTPS"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:73
-msgid "Added Danish, Russian and Ukrainian translations"
-msgstr ""
+msgid "Bearer token leaking prevention"
+msgstr "Предотвращение утечки bearer-токена"
 
-#: data/moe.ekusu.sprogskole.metainfo.xml.in:81
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:74
+msgid "Added Danish, Russian and Ukrainian translations"
+msgstr "Добавлены датский, русский и украинский переводы"
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:82
 msgid "Initial android port"
 msgstr "Первый порт на Android"
 
@@ -994,48 +942,23 @@ msgstr "Загрузка последнего расписания, оценок
 msgid "Quit OpenSprogskole?"
 msgstr "Завершить OpenSprogskole?"
 
-#: data/ui/window.blp:52 src/application.vala:152
+#: data/ui/window.blp:52 src/application.vala:100
 msgid "Quit"
 msgstr "Завершить"
 
-#: src/application.vala:55
+#: src/application.vala:57
 msgid "Refresh the cached data and exit (no window)"
 msgstr "Обновить кэшированные данные и выйти (без окна)"
 
-#: src/application.vala:86
-msgid "New grade"
-msgid_plural "New grades"
-msgstr[0] "Новая оценка"
-msgstr[1] "Новые оценки"
-msgstr[2] "Новые оценки"
-
-#. Translators: an exam line in a notification — subject, then
-#. e.g. "Mon 20 May, 08:15".
-#: src/application.vala:104
-#, c-format
-msgid "%s — %s"
-msgstr "%s — %s"
-
-#: src/application.vala:105
-msgid "%a %e %b, %H:%M"
-msgstr "%a %e %b, %H:%M"
-
-#: src/application.vala:111
-msgid "Exam scheduled"
-msgid_plural "Exams scheduled"
-msgstr[0] "Запланирован экзамен"
-msgstr[1] "Запланированы экзамены"
-msgstr[2] "Запланированы экзамены"
-
-#: src/application.vala:134
+#: src/application.vala:82
 msgid "Already running — the app keeps its cache fresh itself."
 msgstr "Приложение уже запущено — оно само поддерживает кэш свежим."
 
-#: src/application.vala:150
+#: src/application.vala:98
 msgid "Running in the background"
 msgstr "Работает в фоне"
 
-#: src/application.vala:151
+#: src/application.vala:99
 msgid ""
 "The app keeps refreshing your school data so it stays available offline. "
 "Launch it again to reopen the window."
@@ -1044,19 +967,19 @@ msgstr ""
 "сети. Запустите его снова, чтобы открыть окно."
 
 #. What GNOME's Background Apps list shows next to the (sandboxed) app.
-#: src/application.vala:155
+#: src/application.vala:103
 msgid "Refreshing school data periodically"
 msgstr "Периодически обновляет школьные данные"
 
-#: src/application.vala:165
+#: src/application.vala:113
 msgid "Keep your school data fresh while the window is closed"
 msgstr "Обновлять школьные данные, пока окно закрыто"
 
-#: src/application.vala:279
+#: src/application.vala:227
 msgid "translator-credits"
 msgstr ""
 
-#: src/application.vala:281
+#: src/application.vala:229
 msgid ""
 "View your schedule, grades and homework, and report absence at your Danish "
 "language school.\n"
@@ -1070,21 +993,21 @@ msgstr ""
 
 #. The school and its backend vendor; a LUDUS link joins these once
 #. LUDUS sign-in actually works.
-#: src/application.vala:285
+#: src/application.vala:233
 msgid "Sprogcenter Midt"
 msgstr "Sprogcenter Midt"
 
-#: src/application.vala:286
+#: src/application.vala:234
 msgid "UMS by Inlogic"
 msgstr "UMS by Inlogic"
 
-#: src/application.vala:292
+#: src/application.vala:240
 msgid "Portions adapted from Tuba"
 msgstr "Отдельные части адаптированы из Tuba"
 
 #. The APK bundles the platform stack a desktop OS would provide as
 #. shared libraries; the notice-requiring licenses get a section.
-#: src/application.vala:307
+#: src/application.vala:255
 msgid "Bundled GNOME platform libraries"
 msgstr "Включённые библиотеки платформы GNOME"
 
@@ -1176,16 +1099,16 @@ msgstr "Перейти ко входу"
 msgid "Demo School"
 msgstr "Демо-школа"
 
-#: src/services/session-controller.vala:209
+#: src/services/session-controller.vala:216
 msgid "Couldn't sign you in automatically. Please log in again."
 msgstr "Не удалось войти автоматически. Пожалуйста, войдите снова."
 
-#: src/services/session-controller.vala:264
+#: src/services/session-controller.vala:271
 msgid "Invalid username or password."
 msgstr "Неверное имя пользователя или пароль."
 
-#: src/services/session-controller.vala:265
 #: src/services/session-controller.vala:272
+#: src/services/session-controller.vala:279
 #, c-format
 msgid "Login failed: %s"
 msgstr "Не удалось войти: %s"
@@ -1235,7 +1158,7 @@ msgstr "Загрузка фото профиля"
 msgid "Remove pending picture"
 msgstr "Удаление ожидающего фото"
 
-#: src/services/ums-provider.vala:103
+#: src/services/ums-provider.vala:109
 msgid "SSO"
 msgstr "SSO"
 
@@ -1737,22 +1660,3 @@ msgstr "Имя пользователя и пароль"
 #: src/services/demo-provider.vala:163
 msgid "Reported — see you soon."
 msgstr "Сообщено — до скорой встречи."
-
-#~ msgid "Early release v0.9.9"
-#~ msgstr "Ранний выпуск v0.9.9"
-
-#~ msgid "Not logged in. Start the app and sign in first."
-#~ msgstr "Вход не выполнен. Сначала запустите приложение и войдите."
-
-#~ msgid "Sync timed out."
-#~ msgstr "Время синхронизации истекло."
-
-#~ msgid "Whether the one-time background notification was shown"
-#~ msgstr "Показано ли одноразовое уведомление о работе в фоне"
-
-#~ msgid ""
-#~ "Set after the first time closing the window hides the app instead of "
-#~ "quitting it, so the hint only appears once."
-#~ msgstr ""
-#~ "Устанавливается после того, как закрытие окна впервые скрыло приложение "
-#~ "вместо выхода, чтобы подсказка появлялась только один раз."

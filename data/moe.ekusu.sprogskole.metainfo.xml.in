@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component type="desktop" xmlns="https://specifications.freedesktop.org/metainfo/1.0">
+<component type="desktop">
   <id>moe.ekusu.sprogskole</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
@@ -51,12 +51,13 @@
   </requires>
 
   <releases>
-    <release type="development" version="0.9.10" date="2026-07-12T00:23:28Z">
+    <release type="development" version="0.9.10" date="2026-07-12T11:23:43Z">
       <description>
         <p>This release features a lot of new stuff, the most noticeable are the modular overview page, shareable school configs, the new mobile view and just polishing.</p>
         <p>This release adds the following features:</p>
         <ul>
           <li>Background sync</li>
+          <li>Added notifications for scheduled exams and new grades</li>
           <li>Error dialog, just in case</li>
           <li>Scrollable calendar on the schedule page</li>
           <li>Navigation overhaul with handy mobile view</li>

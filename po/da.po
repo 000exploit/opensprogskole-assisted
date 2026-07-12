@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opensprogskole\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-11 07:44+0200\n"
+"POT-Creation-Date: 2026-07-12 12:04+0200\n"
 "PO-Revision-Date: 2026-07-10 12:00+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -131,16 +131,49 @@ msgstr ""
 "Bruges, mens en session er aktiv, og baggrundssynkronisering er slået til."
 
 #: data/moe.ekusu.sprogskole.gschema.xml:69
+msgid "Notify when new grades appear"
+msgstr "Giv besked om nye karakterer"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:70
+msgid ""
+"Detected by the background refresh against the grades already seen; off by "
+"default."
+msgstr "Registreres af baggrundsopdateringen ud fra de allerede sete karakterer; slået fra som standard."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:74
+msgid "Notify when new exams are scheduled"
+msgstr "Giv besked om nye eksamener"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:75
+msgid ""
+"An exam is an upcoming lesson the school marks as non-skippable; off by "
+"default."
+msgstr "En eksamen er en kommende lektion, som skolen markerer som ikke til at springe over; slået fra som standard."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:79
 msgid "Unix time (seconds) the saved session token is valid until"
 msgstr "Unix-tid (sekunder) som det gemte sessionstoken er gyldigt indtil"
 
-#: data/moe.ekusu.sprogskole.gschema.xml:70
+#: data/moe.ekusu.sprogskole.gschema.xml:80
 msgid ""
 "From the JWT 'exp' claim. 0 means unknown (no expiry claim); the token is "
 "still tried."
 msgstr ""
 "Fra JWT-'exp'-claimet. 0 betyder ukendt (intet udløbs-claim); tokenet prøves "
 "alligevel."
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:3
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:18
+msgid "moe.ekusu.sprogskole"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:4
+msgid "CC0-1.0"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:5
+msgid "GPL-3.0-or-later"
+msgstr ""
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:8
 msgid "Your language school life"
@@ -158,23 +191,122 @@ msgstr ""
 msgid "000exploit"
 msgstr "000exploit"
 
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:21
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:22
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:25
+msgid "https://github.com/000exploit/opensprogskole-assisted"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:23
+msgid "https://github.com/000exploit/opensprogskole-assisted/issues"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:24
+msgid ""
+"https://github.com/000exploit/opensprogskole-assisted/blob/main/README.md"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:27
+msgid "opensprogskole"
+msgstr ""
+
+#. All graphical applications having a desktop file must have this tag in the MetaInfo.
+#. If this is present, appstreamcli compose will pull icons, keywords and categories from the desktop file.
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:30
+msgid "moe.ekusu.sprogskole.desktop"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:32
+msgid "mild"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:38
+msgid "#ff00ff"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:39
+msgid "#993d3d"
+msgstr ""
+
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:44
 msgid ""
 "https://raw.githubusercontent.com/000exploit/opensprogskole-assisted/refs/"
 "heads/main/data/screenshots/greetings.png"
 msgstr ""
-"https://raw.githubusercontent.com/000exploit/opensprogskole-assisted/refs/"
-"heads/main/data/screenshots/greetings.png"
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:45
 msgid "Greetings"
 msgstr "Velkomst"
 
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:50
+msgid "always"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:56
+msgid ""
+"This release features a lot of new stuff, the most noticeable are the "
+"modular overview page, shareable school configs, the new mobile view and "
+"just polishing."
+msgstr ""
+
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:57
-msgid "Early release v0.9.9"
-msgstr "Tidlig udgivelse v0.9.9"
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:79
+msgid "This release adds the following features:"
+msgstr ""
 
 #: data/moe.ekusu.sprogskole.metainfo.xml.in:59
+msgid "Background sync"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:60
+msgid "Error dialog, just in case"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:61
+msgid "Scrollable calendar on the schedule page"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:62
+msgid "Navigation overhaul with handy mobile view"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:63
+msgid "Preferences: now it's possible to change app settings"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:64
+msgid "School config: share non-standard configurations with your friends"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:65
+msgid "Overview: new, completely modular and adaptive for different schools"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:67
+msgid "This release includes the following changes:"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:69
+msgid "More reliable caching, its loading and cleaning on logout"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:70
+msgid "Initial LUDUS API implementation"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:71
+msgid "Enforced HTTPS"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:72
+msgid "Bearer token leaking prevention"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:73
+msgid "Added Danish, Russian and Ukrainian translations"
+msgstr ""
+
+#: data/moe.ekusu.sprogskole.metainfo.xml.in:81
 msgid "Initial android port"
 msgstr "Første Android-port"
 
@@ -273,7 +405,7 @@ msgid "Save"
 msgstr "Gem"
 
 #: data/ui/absence-page.blp:26 data/ui/lesson-dialog.blp:105
-#: data/ui/main-view.blp:286 src/services/nav-section.vala:85
+#: data/ui/main-view.blp:286 src/services/nav-section.vala:89
 #: src/services/ludus-endpoints.vala:55 src/services/ludus-endpoints.vala:56
 #: src/services/ums-endpoints.vala:57 src/views/absence-page.vala:138
 #: src/views/absence-page.vala:205 src/views/main-view.vala:305
@@ -433,7 +565,7 @@ msgid "Account menu"
 msgstr "Kontomenu"
 
 #: data/ui/main-view.blp:233 data/ui/main-view.blp:265
-#: src/services/nav-section.vala:79 src/views/main-view.vala:307
+#: src/services/nav-section.vala:83 src/views/main-view.vala:307
 msgid "Overview"
 msgstr "Oversigt"
 
@@ -446,27 +578,27 @@ msgid "You're offline"
 msgstr "Du er offline"
 
 #: data/ui/main-view.blp:272 data/ui/preferences-dialog.blp:31
-#: data/ui/schedule-view.blp:19 src/services/nav-section.vala:81
+#: data/ui/schedule-view.blp:19 src/services/nav-section.vala:85
 #: src/views/main-view.vala:303
 msgid "Schedule"
 msgstr "Skema"
 
 #: data/ui/main-view.blp:279 src/services/dashboard-registry.vala:124
-#: src/services/nav-section.vala:83 src/services/ums-endpoints.vala:56
+#: src/services/nav-section.vala:87 src/services/ums-endpoints.vala:56
 #: src/views/main-view.vala:304
 msgid "Grades"
 msgstr "Karakterer"
 
-#: data/ui/main-view.blp:293 src/services/nav-section.vala:88
+#: data/ui/main-view.blp:293 src/services/nav-section.vala:92
 msgid "You"
 msgstr "Dig"
 
-#: data/ui/main-view.blp:303 src/services/nav-section.vala:93
+#: data/ui/main-view.blp:303 src/services/nav-section.vala:97
 msgid "Links"
 msgstr "Links"
 
 #: data/ui/main-view.blp:315 data/ui/main-view.blp:323
-#: src/services/nav-section.vala:89
+#: src/services/nav-section.vala:93
 msgid "News"
 msgstr "Nyheder"
 
@@ -475,7 +607,7 @@ msgid "Your school hasn't published any news."
 msgstr "Din skole har ikke offentliggjort nogen nyheder."
 
 #: data/ui/main-view.blp:331 data/ui/main-view.blp:339
-#: src/services/nav-section.vala:91 src/widgets/lesson-dialog.vala:108
+#: src/services/nav-section.vala:95 src/widgets/lesson-dialog.vala:108
 msgid "Homework"
 msgstr "Lektier"
 
@@ -631,26 +763,46 @@ msgid "First day of week"
 msgstr "Ugens første dag"
 
 #: data/ui/preferences-dialog.blp:39
+msgid "Notifications"
+msgstr "Notifikationer"
+
+#: data/ui/preferences-dialog.blp:42
+msgid "New grades"
+msgstr "Nye karakterer"
+
+#: data/ui/preferences-dialog.blp:43
+msgid "Notify when a new grade appears"
+msgstr "Giv besked, når der kommer en ny karakter"
+
+#: data/ui/preferences-dialog.blp:47
+msgid "Scheduled exams"
+msgstr "Planlagte eksamener"
+
+#: data/ui/preferences-dialog.blp:48
+msgid "Notify when a lesson you cannot skip is scheduled"
+msgstr "Giv besked, når der planlægges en lektion, du ikke kan springe over"
+
+#: data/ui/preferences-dialog.blp:53
 msgid "Data"
 msgstr "Data"
 
-#: data/ui/preferences-dialog.blp:42
+#: data/ui/preferences-dialog.blp:56
 msgid "Keep running in background"
 msgstr "Kør i baggrunden"
 
-#: data/ui/preferences-dialog.blp:43
+#: data/ui/preferences-dialog.blp:57
 msgid "Refresh data periodically so the app works offline"
 msgstr "Opdatér data jævnligt, så programmet virker offline"
 
-#: data/ui/preferences-dialog.blp:47
+#: data/ui/preferences-dialog.blp:61
 msgid "Refresh every"
 msgstr "Opdatér hver"
 
-#: data/ui/preferences-dialog.blp:51
+#: data/ui/preferences-dialog.blp:65
 msgid "Cached data"
 msgstr "Mellemlagrede data"
 
-#: data/ui/preferences-dialog.blp:52
+#: data/ui/preferences-dialog.blp:66
 msgid ""
 "Schedule, grades and photos saved for offline use. Clearing re-downloads "
 "them when needed."
@@ -658,7 +810,7 @@ msgstr ""
 "Skema, karakterer og billeder gemt til offlinebrug. Rydning henter dem igen "
 "efter behov."
 
-#: data/ui/preferences-dialog.blp:66
+#: data/ui/preferences-dialog.blp:80
 msgid "Clear"
 msgstr "Ryd"
 
@@ -837,32 +989,46 @@ msgstr "Henter dit nyeste skema, karakterer og fravær."
 msgid "Quit OpenSprogskole?"
 msgstr "Afslut OpenSprogskole?"
 
-#: data/ui/window.blp:52 src/application.vala:129
+#: data/ui/window.blp:52 src/application.vala:152
 msgid "Quit"
 msgstr "Afslut"
 
-#: src/application.vala:54
+#: src/application.vala:55
 msgid "Refresh the cached data and exit (no window)"
 msgstr "Opdatér data i cachen og afslut (uden vindue)"
 
-#: src/application.vala:78
+#: src/application.vala:86
+msgid "New grade"
+msgid_plural "New grades"
+msgstr[0] "Ny karakter"
+msgstr[1] "Nye karakterer"
+
+#. Translators: an exam line in a notification — subject, then
+#. e.g. "Mon 20 May, 08:15".
+#: src/application.vala:104
+#, c-format
+msgid "%s — %s"
+msgstr "%s — %s"
+
+#: src/application.vala:105
+msgid "%a %e %b, %H:%M"
+msgstr "%a %e %b, %H:%M"
+
+#: src/application.vala:111
+msgid "Exam scheduled"
+msgid_plural "Exams scheduled"
+msgstr[0] "Eksamen planlagt"
+msgstr[1] "Eksamener planlagt"
+
+#: src/application.vala:134
 msgid "Already running — the app keeps its cache fresh itself."
 msgstr "Kører allerede — programmet holder selv sin cache opdateret."
 
-#: src/application.vala:86
-msgid "Not logged in. Start the app and sign in first."
-msgstr "Ikke logget ind. Start programmet og log ind først."
-
-#. A stuck request must not leave a zombie process behind.
-#: src/application.vala:105
-msgid "Sync timed out."
-msgstr "Tidsfristen for synkronisering udløb."
-
-#: src/application.vala:127
+#: src/application.vala:150
 msgid "Running in the background"
 msgstr "Kører i baggrunden"
 
-#: src/application.vala:128
+#: src/application.vala:151
 msgid ""
 "The app keeps refreshing your school data so it stays available offline. "
 "Launch it again to reopen the window."
@@ -871,19 +1037,19 @@ msgstr ""
 "offline. Start det igen for at åbne vinduet."
 
 #. What GNOME's Background Apps list shows next to the (sandboxed) app.
-#: src/application.vala:132
+#: src/application.vala:155
 msgid "Refreshing school data periodically"
 msgstr "Opdaterer skoledata jævnligt"
 
-#: src/application.vala:142
+#: src/application.vala:165
 msgid "Keep your school data fresh while the window is closed"
 msgstr "Hold dine skoledata opdaterede, mens vinduet er lukket"
 
-#: src/application.vala:255
+#: src/application.vala:279
 msgid "translator-credits"
 msgstr ""
 
-#: src/application.vala:257
+#: src/application.vala:281
 msgid ""
 "View your schedule, grades and homework, and report absence at your Danish "
 "language school.\n"
@@ -897,21 +1063,21 @@ msgstr ""
 
 #. The school and its backend vendor; a LUDUS link joins these once
 #. LUDUS sign-in actually works.
-#: src/application.vala:261
+#: src/application.vala:285
 msgid "Sprogcenter Midt"
 msgstr "Sprogcenter Midt"
 
-#: src/application.vala:262
+#: src/application.vala:286
 msgid "UMS by Inlogic"
 msgstr "UMS by Inlogic"
 
-#: src/application.vala:268
+#: src/application.vala:292
 msgid "Portions adapted from Tuba"
 msgstr "Dele tilpasset fra Tuba"
 
 #. The APK bundles the platform stack a desktop OS would provide as
 #. shared libraries; the notice-requiring licenses get a section.
-#: src/application.vala:283
+#: src/application.vala:307
 msgid "Bundled GNOME platform libraries"
 msgstr "Medfølgende GNOME-platformsbiblioteker"
 
@@ -963,7 +1129,7 @@ msgstr ""
 "Basis-URL'en skal bruge https:// — almindelig http ville sende din "
 "adgangskode ukrypteret."
 
-#: src/services/nav-section.vala:87 src/views/main-view.vala:306
+#: src/services/nav-section.vala:91 src/views/main-view.vala:306
 msgid "Your information"
 msgstr "Dine oplysninger"
 
@@ -1154,113 +1320,113 @@ msgstr "Godaften, %s"
 
 #. Accent: index 0 = follow system, 1–9 = AdwAccentColor. Index is the
 #. stored value; Application applies it via a CSS override.
-#: src/views/preferences-dialog.vala:63 src/views/preferences-dialog.vala:76
-#: src/views/preferences-dialog.vala:130
+#: src/views/preferences-dialog.vala:65 src/views/preferences-dialog.vala:78
+#: src/views/preferences-dialog.vala:136
 msgid "Follow system"
 msgstr "Følg systemet"
 
-#: src/views/preferences-dialog.vala:63
+#: src/views/preferences-dialog.vala:65
 msgid "Light"
 msgstr "Lys"
 
-#: src/views/preferences-dialog.vala:63
+#: src/views/preferences-dialog.vala:65
 msgid "Dark"
 msgstr "Mørk"
 
-#: src/views/preferences-dialog.vala:65
+#: src/views/preferences-dialog.vala:67
 msgid "Use school default"
 msgstr "Brug skolens standard"
 
-#: src/views/preferences-dialog.vala:65 src/views/preferences-dialog.vala:174
+#: src/views/preferences-dialog.vala:67 src/views/preferences-dialog.vala:180
 msgid "Monday"
 msgstr "Mandag"
 
-#: src/views/preferences-dialog.vala:65 src/views/preferences-dialog.vala:180
+#: src/views/preferences-dialog.vala:67 src/views/preferences-dialog.vala:186
 msgid "Sunday"
 msgstr "Søndag"
 
-#: src/views/preferences-dialog.vala:65 src/views/preferences-dialog.vala:179
+#: src/views/preferences-dialog.vala:67 src/views/preferences-dialog.vala:185
 msgid "Saturday"
 msgstr "Lørdag"
 
-#: src/views/preferences-dialog.vala:76
+#: src/views/preferences-dialog.vala:78
 msgid "Blue"
 msgstr "Blå"
 
-#: src/views/preferences-dialog.vala:76
+#: src/views/preferences-dialog.vala:78
 msgid "Teal"
 msgstr "Blågrøn"
 
-#: src/views/preferences-dialog.vala:76
+#: src/views/preferences-dialog.vala:78
 msgid "Green"
 msgstr "Grøn"
 
-#: src/views/preferences-dialog.vala:76
+#: src/views/preferences-dialog.vala:78
 msgid "Yellow"
 msgstr "Gul"
 
-#: src/views/preferences-dialog.vala:77
+#: src/views/preferences-dialog.vala:79
 msgid "Orange"
 msgstr "Orange"
 
-#: src/views/preferences-dialog.vala:77
+#: src/views/preferences-dialog.vala:79
 msgid "Red"
 msgstr "Rød"
 
-#: src/views/preferences-dialog.vala:77
+#: src/views/preferences-dialog.vala:79
 msgid "Pink"
 msgstr "Lyserød"
 
-#: src/views/preferences-dialog.vala:77
+#: src/views/preferences-dialog.vala:79
 msgid "Purple"
 msgstr "Lilla"
 
-#: src/views/preferences-dialog.vala:77
+#: src/views/preferences-dialog.vala:79
 msgid "Slate"
 msgstr "Skifer"
 
-#: src/views/preferences-dialog.vala:97
+#: src/views/preferences-dialog.vala:103
 msgid "30 minutes"
 msgstr "30 minutter"
 
-#: src/views/preferences-dialog.vala:97
+#: src/views/preferences-dialog.vala:103
 msgid "1 hour"
 msgstr "1 time"
 
-#: src/views/preferences-dialog.vala:97
+#: src/views/preferences-dialog.vala:103
 msgid "3 hours"
 msgstr "3 timer"
 
-#: src/views/preferences-dialog.vala:97
+#: src/views/preferences-dialog.vala:103
 msgid "6 hours"
 msgstr "6 timer"
 
-#: src/views/preferences-dialog.vala:140
+#: src/views/preferences-dialog.vala:146
 msgid "The language changes when you restart the app."
 msgstr "Sproget skifter, når du genstarter appen."
 
-#: src/views/preferences-dialog.vala:169
+#: src/views/preferences-dialog.vala:175
 #, c-format
 msgid "Currently %s"
 msgstr "I øjeblikket %s"
 
-#: src/views/preferences-dialog.vala:175
+#: src/views/preferences-dialog.vala:181
 msgid "Tuesday"
 msgstr "Tirsdag"
 
-#: src/views/preferences-dialog.vala:176
+#: src/views/preferences-dialog.vala:182
 msgid "Wednesday"
 msgstr "Onsdag"
 
-#: src/views/preferences-dialog.vala:177
+#: src/views/preferences-dialog.vala:183
 msgid "Thursday"
 msgstr "Torsdag"
 
-#: src/views/preferences-dialog.vala:178
+#: src/views/preferences-dialog.vala:184
 msgid "Friday"
 msgstr "Fredag"
 
-#: src/views/preferences-dialog.vala:194
+#: src/views/preferences-dialog.vala:200
 msgid "Cached data cleared"
 msgstr "Mellemlagrede data ryddet"
 
@@ -1541,7 +1707,7 @@ msgstr "Lokaler"
 msgid "Teachers"
 msgstr "Lærere"
 
-#: src/widgets/window.vala:132
+#: src/widgets/window.vala:150
 msgid "Details"
 msgstr "Detaljer"
 
@@ -1564,6 +1730,15 @@ msgstr "Brugernavn og adgangskode"
 #: src/services/demo-provider.vala:163
 msgid "Reported — see you soon."
 msgstr "Meldt — vi ses snart."
+
+#~ msgid "Early release v0.9.9"
+#~ msgstr "Tidlig udgivelse v0.9.9"
+
+#~ msgid "Not logged in. Start the app and sign in first."
+#~ msgstr "Ikke logget ind. Start programmet og log ind først."
+
+#~ msgid "Sync timed out."
+#~ msgstr "Tidsfristen for synkronisering udløb."
 
 #~ msgid "Whether the one-time background notification was shown"
 #~ msgstr "Om engangsbeskeden om baggrundskørsel er blevet vist"

@@ -41,6 +41,8 @@ opensprogskole_vala_sources = [
   'services/storage.vala',
   'services/school-provider.vala',
   'services/nav-section.vala',
+  'services/news-notifier.vala',
+  'services/news-tracker.vala',
   'services/login-method.vala',
   'services/provider-family.vala',
   'services/demo-provider.vala',

@@ -64,6 +64,15 @@ namespace Opensprogskole {
             return true;
         }
 
+        /* Whether this timetable entry is an exam — each backend encodes that
+         * differently (UMS: the lesson is marked non-skippable; LUDUS: unknown
+         * until its data model is mapped). Default: the backend has no exam
+         * concept, so nothing is ever detected as one. Drives the exam
+         * notifications (see NewsTracker). */
+        public virtual bool is_exam (TimetableItem item) {
+            return false;
+        }
+
         /* The dashboard widget type-ids this backend suggests on a fresh
          * dashboard, in order. Empty by default — each provider defines its own
          * starter set to match what it actually serves (a backend with no data,

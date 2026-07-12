@@ -32,6 +32,8 @@ namespace Opensprogskole {
         [GtkChild] private unowned Adw.ComboRow color_scheme_row;
         [GtkChild] private unowned Adw.ComboRow accent_color_row;
         [GtkChild] private unowned Adw.ComboRow first_weekday_row;
+        [GtkChild] private unowned Adw.SwitchRow notify_grades_row;
+        [GtkChild] private unowned Adw.SwitchRow notify_exams_row;
         [GtkChild] private unowned Adw.SwitchRow background_sync_row;
         [GtkChild] private unowned Adw.ComboRow sync_interval_row;
         [GtkChild] private unowned Label cache_size_label;
@@ -91,6 +93,10 @@ namespace Opensprogskole {
 
             // Background sync: switch binds straight to the setting; the interval
             // combo maps index ↔ minutes and only matters while the switch is on.
+            settings.bind ("notify-new-grades", notify_grades_row, "active",
+                           GLib.SettingsBindFlags.DEFAULT);
+            settings.bind ("notify-new-exams", notify_exams_row, "active",
+                           GLib.SettingsBindFlags.DEFAULT);
             settings.bind ("background-sync", background_sync_row, "active",
                            GLib.SettingsBindFlags.DEFAULT);
             sync_interval_row.model = new StringList ({

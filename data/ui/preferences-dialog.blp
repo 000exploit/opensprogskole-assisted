@@ -36,6 +36,20 @@ template $OpensprogskolePreferencesDialog: Adw.PreferencesDialog {
     }
 
     Adw.PreferencesGroup {
+      title: _("Notifications");
+
+      Adw.SwitchRow notify_grades_row {
+        title: _("New grades");
+        subtitle: _("Notify when a new grade appears");
+      }
+
+      Adw.SwitchRow notify_exams_row {
+        title: _("Scheduled exams");
+        subtitle: _("Notify when a lesson you cannot skip is scheduled");
+      }
+    }
+
+    Adw.PreferencesGroup {
       title: _("Data");
 
       Adw.SwitchRow background_sync_row {

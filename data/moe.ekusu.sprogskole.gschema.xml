@@ -64,6 +64,16 @@
 			<summary>Minutes between background cache refreshes</summary>
 			<description>Used while a session is active and background sync is enabled.</description>
 		</key>
+		<key name="notify-new-grades" type="b">
+			<default>false</default>
+			<summary>Notify when new grades appear</summary>
+			<description>Detected by the background refresh against the grades already seen; off by default.</description>
+		</key>
+		<key name="notify-new-exams" type="b">
+			<default>false</default>
+			<summary>Notify when new exams are scheduled</summary>
+			<description>An exam is an upcoming lesson the school marks as non-skippable; off by default.</description>
+		</key>
 		<key name="token-valid-until" type="x">
 			<default>0</default>
 			<summary>Unix time (seconds) the saved session token is valid until</summary>

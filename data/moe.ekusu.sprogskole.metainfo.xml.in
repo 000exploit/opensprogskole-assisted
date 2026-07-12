@@ -51,7 +51,7 @@
   </requires>
 
   <releases>
-    <release type="development" version="0.9.10" date="2026-07-12T00:06:25Z">
+    <release type="development" version="0.9.10" date="2026-07-12T00:23:28Z">
       <description>
         <p>This release features a lot of new stuff, the most noticeable are the modular overview page, shareable school configs, the new mobile view and just polishing.</p>
         <p>This release adds the following features:</p>

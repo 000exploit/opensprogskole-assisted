@@ -57,6 +57,12 @@ namespace Opensprogskole {
         }
 
         /* Both are disabled server-side and can't be implemented right now */
+        /* UMS encodes exams as lessons that can't be skipped: absence
+         * reporting is disabled on them (AllowAbsence false). */
+        public bool is_exam (TimetableItem item) {
+            return !item.allow_absence;
+        }
+
         public bool supports (DataKind data) {
             if (data == DataKind.NEWS || data == DataKind.HOMEWORK)
                 return false;

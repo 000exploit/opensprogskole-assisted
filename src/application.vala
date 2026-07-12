@@ -23,6 +23,8 @@ public class Opensprogskole.Application : Adw.Application {
     // Read externally by the Android worker path (see SyncRunner.worker_sync).
     public SessionController controller { get; private set; }
     private GLib.Settings settings;
+    // News → notifications; the service holds all delivery policy.
+    private NewsNotifier notifier;
 
     public Application () {
 #if ANDROID
@@ -56,6 +58,7 @@ public class Opensprogskole.Application : Adw.Application {
 
         settings = new GLib.Settings (Config.APP_ID);
         controller = new SessionController ();
+        notifier = new NewsNotifier (this, settings, controller);
     }
 
     /* Headless cache sync: log in silently, refresh everything the providers

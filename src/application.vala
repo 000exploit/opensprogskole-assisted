@@ -218,6 +218,7 @@ public class Opensprogskole.Application : Adw.Application {
             resource_base_path + "/" + Config.APP_ID + ".metainfo.xml",
             Config.PACKAGE_VERSION);
 
+        about.version = Config.PACKAGE_VERSION;
         about.developers = { "000exploit" };
         about.designers = { "000exploit" };
         about.translator_credits = _("translator-credits");

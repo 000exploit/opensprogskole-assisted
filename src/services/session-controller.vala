@@ -94,6 +94,12 @@ namespace Opensprogskole {
         private uint sync_source = 0;
 
         private void arm_background_sync () {
+#if ANDROID
+            // WorkManager owns background periodicity on Android (SyncInit):
+            // the OS freezes/kills cached processes, so an in-process timer is
+            // unreliable — and worse, a tick would consume news outside the
+            // worker's return path (see SyncRunner), losing the notification.
+#else
             disarm_background_sync ();
             if (!settings.get_boolean ("background-sync")) {
                 return;
@@ -106,6 +112,7 @@ namespace Opensprogskole {
                 }
                 return Source.CONTINUE;
             });
+#endif
         }
 
         private void disarm_background_sync () {

@@ -75,6 +75,59 @@ namespace Opensprogskole {
         }
     }
 
+    /* Where Android's notification content crosses the JNI boundary. There is
+     * no GNotification backend on Android, so NewsNotifier queues its payloads
+     * here instead of sending; worker_sync drains the queue into its return
+     * value and the Java side (SyncWorker) posts real notifications. Only the
+     * worker path needs this: the in-process periodic timer is disabled on
+     * Android (see SessionController), and foreground refreshes are suppressed
+     * by the focus policy anyway. */
+    public class PendingNotes {
+        private class Note {
+            public string id;
+            public string title;
+            public string body;
+
+            public Note (string id, string title, string body) {
+                this.id = id;
+                this.title = title;
+                this.body = body;
+            }
+        }
+
+        private static GLib.GenericArray<Note>? notes = null;
+
+        public static void queue (string id, string title, string body) {
+            if (notes == null) {
+                notes = new GLib.GenericArray<Note> ();
+            }
+            notes.add (new Note (id, title, body));
+            debug ("queued note '%s' for the worker", id);
+        }
+
+        /* All queued notes as a JSON array of {id,title,body}; empties the
+         * queue. "[]" when there is nothing to tell. */
+        public static string drain () {
+            var builder = new Json.Builder ();
+            builder.begin_array ();
+            if (notes != null) {
+                for (uint i = 0; i < notes.length; i++) {
+                    builder.begin_object ();
+                    builder.set_member_name ("id");
+                    builder.add_string_value (notes[i].id);
+                    builder.set_member_name ("title");
+                    builder.add_string_value (notes[i].title);
+                    builder.set_member_name ("body");
+                    builder.add_string_value (notes[i].body);
+                    builder.end_object ();
+                }
+                notes = null;
+            }
+            builder.end_array ();
+            return Json.to_string (builder.get_root (), false);
+        }
+    }
+
     /* The cross-thread handshake behind worker_sync: the WorkManager thread
      * parks on wait() while the GTK thread reports the outcome via finish().
      * A heap object on purpose — Vala closures capture Mutex/Cond *structs*
@@ -118,9 +171,11 @@ namespace Opensprogskole {
      * at *every* process start, activity or not, so by the time WorkManager
      * runs us a resident Application always exists. All this does is ask it,
      * from the worker's thread, to run one sync_all() and block here until
-     * that lands (0) or fails/times out (1, WorkManager retries). */
+     * that lands or fails/times out. Returns the drained news payload as a
+     * JSON array ("[]" = synced, nothing new) or null on failure — the Java
+     * side posts the notifications and maps null to a WorkManager retry. */
     [CCode (cname = "opensprogskole_worker_sync")]
-    public int worker_sync () {
+    public string? worker_sync () {
         var gate = new SyncGate ();
 
         GLib.MainContext.default ().invoke (() => {
@@ -158,7 +213,10 @@ namespace Opensprogskole {
             return GLib.Source.REMOVE;
         });
 
-        return gate.wait (SyncRunner.DEFAULT_TIMEOUT_SECONDS);
+        if (gate.wait (SyncRunner.DEFAULT_TIMEOUT_SECONDS) != 0) {
+            return null;
+        }
+        return PendingNotes.drain ();
     }
 
     private void worker_sync_now (Session session, SyncGate gate) {

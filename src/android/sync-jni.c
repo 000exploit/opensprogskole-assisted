@@ -21,16 +21,23 @@
 /* The one JNI symbol the WorkManager side needs: SyncWorker.nativeSync()
  * (android/java/moe/ekusu/sprogskole/SyncWorker.java) resolves to this after
  * its System.loadLibrary. Runs on the worker's own thread — the handshake
- * with the GTK thread lives in worker_sync (src/services/sync-runner.vala). */
+ * with the GTK thread lives in worker_sync (src/services/sync-runner.vala).
+ * Returns the news payload as a JSON array of {id,title,body} ("[]" when the
+ * sync succeeded quietly), or NULL on failure → the Java side retries. */
 
 #include <jni.h>
+#include <glib.h>
 
-extern int opensprogskole_worker_sync (void);
+extern char *opensprogskole_worker_sync (void);
 
-JNIEXPORT jint JNICALL
+JNIEXPORT jstring JNICALL
 Java_moe_ekusu_sprogskole_SyncWorker_nativeSync (JNIEnv *env, jclass klass)
 {
-  (void) env;
   (void) klass;
-  return opensprogskole_worker_sync ();
+  char *news = opensprogskole_worker_sync ();
+  if (news == NULL)
+    return NULL;
+  jstring result = (*env)->NewStringUTF (env, news);
+  g_free (news);
+  return result;
 }

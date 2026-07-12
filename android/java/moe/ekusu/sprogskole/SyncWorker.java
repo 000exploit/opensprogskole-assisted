@@ -35,6 +35,10 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Refreshes the app's offline cache in the background (scheduled by
  * {@link SyncInit}). No environment bootstrapping happens here on purpose:
@@ -51,8 +55,12 @@ public final class SyncWorker extends Worker {
 		super(context, params);
 	}
 
-	/** Implemented by src/android/sync-jni.c in libopensprogskole.so. */
-	private static native int nativeSync();
+	/**
+	 * Implemented by src/android/sync-jni.c in libopensprogskole.so. Returns
+	 * the news detected during the sync as a JSON array of {id,title,body}
+	 * ("[]" when the sync succeeded quietly), or null on failure.
+	 */
+	private static native String nativeSync();
 
 	@Override
 	public @NonNull Result doWork() {
@@ -64,18 +72,22 @@ public final class SyncWorker extends Worker {
 			Log.e(TAG, "native library unavailable", err);
 			return Result.failure();
 		}
-		int status = nativeSync();
-		Log.i(TAG, "background sync finished with status " + status);
-		if (status == 0) {
-			notifySynced();
+		String news = nativeSync();
+		Log.i(TAG, "background sync finished; news: " + news);
+		if (news == null) {
+			// Transient states (not logged in yet, timeout) — let WorkManager
+			// retry with its backoff rather than giving up.
+			return Result.retry();
 		}
-		// Non-zero covers transient states (not logged in yet, timeout) —
-		// let WorkManager retry with its backoff rather than giving up.
-		return status == 0 ? Result.success() : Result.retry();
+		notifySynced();
+		postNews(news);
+		return Result.success();
 	}
 
 	private static final String CHANNEL_ID = "background-sync";
+	private static final String NEWS_CHANNEL_ID = "news";
 	private static final int NOTIFICATION_ID = 1;
+	private static final int NEWS_NOTIFICATION_ID = 2;
 
 	/**
 	 * The silent "cache is fresh" marker: an IMPORTANCE_MIN notification (no
@@ -108,5 +120,57 @@ public final class SyncWorker extends Worker {
 					context, 0, launch, PendingIntent.FLAG_IMMUTABLE));
 		}
 		manager.notify(NOTIFICATION_ID, builder.build());
+	}
+
+	/**
+	 * News the native side detected during this sync (new grades, scheduled
+	 * exams — see NewsNotifier/PendingNotes). Unlike the silent sync marker,
+	 * these ride a default-importance channel: they are the pings the user
+	 * explicitly opted into (the native side already applied the preference
+	 * gates, so everything arriving here is meant to be shown).
+	 */
+	private void postNews(String json) {
+		android.content.Context context = getApplicationContext();
+		if (Build.VERSION.SDK_INT >= 33
+				&& context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+				   != PackageManager.PERMISSION_GRANTED) {
+			return;
+		}
+		JSONArray notes;
+		try {
+			notes = new JSONArray(json);
+		} catch (JSONException err) {
+			Log.e(TAG, "unparseable news payload", err);
+			return;
+		}
+		if (notes.length() == 0) {
+			return;
+		}
+		NotificationManager manager = context.getSystemService(NotificationManager.class);
+		manager.createNotificationChannel(new NotificationChannel(
+				NEWS_CHANNEL_ID, context.getString(R.string.news_channel),
+				NotificationManager.IMPORTANCE_DEFAULT));
+		Intent launch = context.getPackageManager()
+				.getLaunchIntentForPackage(context.getPackageName());
+		for (int i = 0; i < notes.length(); i++) {
+			JSONObject note = notes.optJSONObject(i);
+			if (note == null)
+				continue;
+			Notification.Builder builder = new Notification.Builder(context, NEWS_CHANNEL_ID)
+					.setSmallIcon(R.drawable.ic_launcher_monochrome)
+					.setContentTitle(note.optString("title"))
+					.setStyle(new Notification.BigTextStyle()
+							.bigText(note.optString("body")))
+					.setContentText(note.optString("body"))
+					.setAutoCancel(true)
+					.setShowWhen(true);
+			if (launch != null) {
+				builder.setContentIntent(PendingIntent.getActivity(
+						context, 0, launch, PendingIntent.FLAG_IMMUTABLE));
+			}
+			// One slot per news kind ("new-grades"/"new-exams"): a newer ping
+			// of the same kind replaces the older one instead of stacking.
+			manager.notify(note.optString("id"), NEWS_NOTIFICATION_ID, builder.build());
+		}
 	}
 }

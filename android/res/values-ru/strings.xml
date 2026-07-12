@@ -2,4 +2,5 @@
 <resources>
     <string name="sync_channel">Фоновая синхронизация</string>
     <string name="sync_done">Школьные данные обновлены</string>
+    <string name="news_channel">Школьные новости</string>
 </resources>

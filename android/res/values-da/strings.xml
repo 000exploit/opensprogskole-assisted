@@ -2,4 +2,5 @@
 <resources>
     <string name="sync_channel">Baggrundssynkronisering</string>
     <string name="sync_done">Skoledata opdateret</string>
+    <string name="news_channel">Skolenyheder</string>
 </resources>

@@ -5,4 +5,5 @@
 <resources>
     <string name="sync_channel">Background sync</string>
     <string name="sync_done">School data updated</string>
+    <string name="news_channel">School news</string>
 </resources>

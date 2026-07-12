@@ -52,6 +52,19 @@ namespace Opensprogskole {
             return app.active_window != null && app.active_window.is_active;
         }
 
+        /* Platform seam: GNotification has no Android backend, so there the
+         * payload goes to the worker's queue (PendingNotes) and the Java side
+         * posts it as a real Android notification. */
+        private void deliver (string id, string title, string body) {
+#if ANDROID
+            PendingNotes.queue (id, title, body);
+#else
+            var note = new GLib.Notification (title);
+            note.set_body (body);
+            app.send_notification (id, note);
+#endif
+        }
+
         private void on_grades_added (GradeItem[] items) {
             if (!settings.get_boolean ("notify-new-grades") || window_in_view ()) {
                 debug ("suppressing new-grades notification (%d items)", items.length);
@@ -65,10 +78,9 @@ namespace Opensprogskole {
                 }
                 lines.append_printf ("%s: %s", item.course, item.display_label);
             }
-            var note = new GLib.Notification (
-                GLib.ngettext ("New grade", "New grades", items.length));
-            note.set_body (lines.str);
-            app.send_notification ("new-grades", note);
+            deliver ("new-grades",
+                     GLib.ngettext ("New grade", "New grades", items.length),
+                     lines.str);
         }
 
         private void on_exams_added (TimetableItem[] items) {
@@ -92,10 +104,9 @@ namespace Opensprogskole {
                     lines.append (item.subject);
                 }
             }
-            var note = new GLib.Notification (
-                GLib.ngettext ("Exam scheduled", "Exams scheduled", items.length));
-            note.set_body (lines.str);
-            app.send_notification ("new-exams", note);
+            deliver ("new-exams",
+                     GLib.ngettext ("Exam scheduled", "Exams scheduled", items.length),
+                     lines.str);
         }
     }
 }

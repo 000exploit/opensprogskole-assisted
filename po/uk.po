@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: opensprogskole\n"
 "Report-Msgid-Bugs-To: https://github.com/000exploit/opensprogskole-assisted/"
 "issues\n"
-"POT-Creation-Date: 2026-07-12 13:33+0200\n"
+"POT-Creation-Date: 2026-07-12 18:42+0200\n"
 "PO-Revision-Date: 2026-07-10 12:00+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -140,21 +140,32 @@ msgstr ""
 "синхронізації."
 
 #: data/moe.ekusu.sprogskole.gschema.xml:69
+msgid "Display name of the active school"
+msgstr "Відображувана назва активної школи"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:70
+msgid ""
+"Saved at login for schools that only exist in a live directory (LUDUS), so a "
+"relaunch can rebuild the school without the network."
+msgstr ""
+"Зберігається під час входу для шкіл, що існують лише в онлайн-каталозі (LUDUS), щоб перезапуск міг відновити школу без мережі."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:74
 msgid "Notify when new grades appear"
 msgstr "Сповіщати про нові оцінки"
 
-#: data/moe.ekusu.sprogskole.gschema.xml:70
+#: data/moe.ekusu.sprogskole.gschema.xml:75
 msgid ""
 "Detected by the background refresh against the grades already seen; off by "
 "default."
 msgstr ""
 "Визначається фоновим оновленням за вже побаченими оцінками; типово вимкнено."
 
-#: data/moe.ekusu.sprogskole.gschema.xml:74
+#: data/moe.ekusu.sprogskole.gschema.xml:79
 msgid "Notify when new exams are scheduled"
 msgstr "Сповіщати про нові іспити"
 
-#: data/moe.ekusu.sprogskole.gschema.xml:75
+#: data/moe.ekusu.sprogskole.gschema.xml:80
 msgid ""
 "An exam is an upcoming lesson the school marks as non-skippable; off by "
 "default."
@@ -162,11 +173,11 @@ msgstr ""
 "Іспит — це майбутнє заняття, яке школа позначає як обов'язкове; типово "
 "вимкнено."
 
-#: data/moe.ekusu.sprogskole.gschema.xml:79
+#: data/moe.ekusu.sprogskole.gschema.xml:84
 msgid "Unix time (seconds) the saved session token is valid until"
 msgstr "Час Unix (у секундах), до якого дійсний збережений токен сесії"
 
-#: data/moe.ekusu.sprogskole.gschema.xml:80
+#: data/moe.ekusu.sprogskole.gschema.xml:85
 msgid ""
 "From the JWT 'exp' claim. 0 means unknown (no expiry claim); the token is "
 "still tried."
@@ -1104,12 +1115,12 @@ msgstr "Демо-школа"
 msgid "Couldn't sign you in automatically. Please log in again."
 msgstr "Не вдалося увійти автоматично. Будь ласка, увійдіть знову."
 
-#: src/services/session-controller.vala:271
+#: src/services/session-controller.vala:274
 msgid "Invalid username or password."
 msgstr "Неправильне ім'я користувача або пароль."
 
-#: src/services/session-controller.vala:272
-#: src/services/session-controller.vala:279
+#: src/services/session-controller.vala:275
+#: src/services/session-controller.vala:282
 #, c-format
 msgid "Login failed: %s"
 msgstr "Не вдалося увійти: %s"

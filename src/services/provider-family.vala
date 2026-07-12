@@ -105,6 +105,16 @@ namespace Opensprogskole {
         // Palette index for the (identical) LUDUS school avatars in the picker.
         private const int LUDUS_ACCENT = 5;
 
+        /* A LUDUS School is fully determined by its institution number (the
+         * "ludus:<number>" id) and display name — everything else is shared
+         * constants. One builder, so the directory fetch and the saved-session
+         * rebuild (SessionController.resolve_saved_school) can't drift. */
+        public static School for_institution (string number, string name) {
+            return new School ("ludus:" + number, name, "", "L",
+                               LudusConfig.API_GATEWAY,
+                               "1030", LUDUS_ACCENT, 0, 0, 1, "ludus");
+        }
+
         public GLib.GenericArray<School> list_schools () {
             return new GLib.GenericArray<School> ();   // directory: see fetch_schools
         }
@@ -132,9 +142,7 @@ namespace Opensprogskole {
                 if (name == "") {
                     name = obj.get_string_member_with_default ("name", inst);
                 }
-                list.add (new School ("ludus:" + inst, name, "", "L",
-                                      LudusConfig.API_GATEWAY,
-                                      "1030", LUDUS_ACCENT, 0, 0, 1, "ludus"));
+                list.add (for_institution (inst, name));
             }
             return list;
         }

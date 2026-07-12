@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: opensprogskole\n"
 "Report-Msgid-Bugs-To: https://github.com/000exploit/opensprogskole-assisted/"
 "issues\n"
-"POT-Creation-Date: 2026-07-12 13:33+0200\n"
+"POT-Creation-Date: 2026-07-12 18:42+0200\n"
 "PO-Revision-Date: 2026-07-10 12:00+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -137,10 +137,21 @@ msgid "Used while a session is active and background sync is enabled."
 msgstr "Используется при активном сеансе и включённой фоновой синхронизации."
 
 #: data/moe.ekusu.sprogskole.gschema.xml:69
+msgid "Display name of the active school"
+msgstr "Отображаемое имя активной школы"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:70
+msgid ""
+"Saved at login for schools that only exist in a live directory (LUDUS), so a "
+"relaunch can rebuild the school without the network."
+msgstr ""
+"Сохраняется при входе для школ, существующих только в онлайн-каталоге (LUDUS), чтобы перезапуск мог восстановить школу без сети."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:74
 msgid "Notify when new grades appear"
 msgstr "Уведомлять о новых оценках"
 
-#: data/moe.ekusu.sprogskole.gschema.xml:70
+#: data/moe.ekusu.sprogskole.gschema.xml:75
 msgid ""
 "Detected by the background refresh against the grades already seen; off by "
 "default."
@@ -148,11 +159,11 @@ msgstr ""
 "Определяется фоновым обновлением по уже увиденным оценкам; по умолчанию "
 "выключено."
 
-#: data/moe.ekusu.sprogskole.gschema.xml:74
+#: data/moe.ekusu.sprogskole.gschema.xml:79
 msgid "Notify when new exams are scheduled"
 msgstr "Уведомлять о новых экзаменах"
 
-#: data/moe.ekusu.sprogskole.gschema.xml:75
+#: data/moe.ekusu.sprogskole.gschema.xml:80
 msgid ""
 "An exam is an upcoming lesson the school marks as non-skippable; off by "
 "default."
@@ -160,12 +171,12 @@ msgstr ""
 "Экзамен — это предстоящее занятие, которое школа помечает как обязательное; "
 "по умолчанию выключено."
 
-#: data/moe.ekusu.sprogskole.gschema.xml:79
+#: data/moe.ekusu.sprogskole.gschema.xml:84
 msgid "Unix time (seconds) the saved session token is valid until"
 msgstr ""
 "Время Unix (в секундах), до которого действителен сохранённый токен сессии"
 
-#: data/moe.ekusu.sprogskole.gschema.xml:80
+#: data/moe.ekusu.sprogskole.gschema.xml:85
 msgid ""
 "From the JWT 'exp' claim. 0 means unknown (no expiry claim); the token is "
 "still tried."
@@ -1103,12 +1114,12 @@ msgstr "Демо-школа"
 msgid "Couldn't sign you in automatically. Please log in again."
 msgstr "Не удалось войти автоматически. Пожалуйста, войдите снова."
 
-#: src/services/session-controller.vala:271
+#: src/services/session-controller.vala:274
 msgid "Invalid username or password."
 msgstr "Неверное имя пользователя или пароль."
 
-#: src/services/session-controller.vala:272
-#: src/services/session-controller.vala:279
+#: src/services/session-controller.vala:275
+#: src/services/session-controller.vala:282
 #, c-format
 msgid "Login failed: %s"
 msgstr "Не удалось войти: %s"

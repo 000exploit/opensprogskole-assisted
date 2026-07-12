@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: opensprogskole\n"
 "Report-Msgid-Bugs-To: https://github.com/000exploit/opensprogskole-assisted/"
 "issues\n"
-"POT-Creation-Date: 2026-07-12 13:33+0200\n"
+"POT-Creation-Date: 2026-07-12 18:42+0200\n"
 "PO-Revision-Date: 2026-07-10 12:00+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -132,10 +132,21 @@ msgstr ""
 "Bruges, mens en session er aktiv, og baggrundssynkronisering er slået til."
 
 #: data/moe.ekusu.sprogskole.gschema.xml:69
+msgid "Display name of the active school"
+msgstr "Visningsnavn for den aktive skole"
+
+#: data/moe.ekusu.sprogskole.gschema.xml:70
+msgid ""
+"Saved at login for schools that only exist in a live directory (LUDUS), so a "
+"relaunch can rebuild the school without the network."
+msgstr ""
+"Gemmes ved login for skoler, der kun findes i et online-katalog (LUDUS), så en genstart kan genskabe skolen uden netværk."
+
+#: data/moe.ekusu.sprogskole.gschema.xml:74
 msgid "Notify when new grades appear"
 msgstr "Giv besked om nye karakterer"
 
-#: data/moe.ekusu.sprogskole.gschema.xml:70
+#: data/moe.ekusu.sprogskole.gschema.xml:75
 msgid ""
 "Detected by the background refresh against the grades already seen; off by "
 "default."
@@ -143,11 +154,11 @@ msgstr ""
 "Registreres af baggrundsopdateringen ud fra de allerede sete karakterer; "
 "slået fra som standard."
 
-#: data/moe.ekusu.sprogskole.gschema.xml:74
+#: data/moe.ekusu.sprogskole.gschema.xml:79
 msgid "Notify when new exams are scheduled"
 msgstr "Giv besked om nye eksamener"
 
-#: data/moe.ekusu.sprogskole.gschema.xml:75
+#: data/moe.ekusu.sprogskole.gschema.xml:80
 msgid ""
 "An exam is an upcoming lesson the school marks as non-skippable; off by "
 "default."
@@ -155,11 +166,11 @@ msgstr ""
 "En eksamen er en kommende lektion, som skolen markerer som ikke til at "
 "springe over; slået fra som standard."
 
-#: data/moe.ekusu.sprogskole.gschema.xml:79
+#: data/moe.ekusu.sprogskole.gschema.xml:84
 msgid "Unix time (seconds) the saved session token is valid until"
 msgstr "Unix-tid (sekunder) som det gemte sessionstoken er gyldigt indtil"
 
-#: data/moe.ekusu.sprogskole.gschema.xml:80
+#: data/moe.ekusu.sprogskole.gschema.xml:85
 msgid ""
 "From the JWT 'exp' claim. 0 means unknown (no expiry claim); the token is "
 "still tried."
@@ -1098,12 +1109,12 @@ msgstr "Demoskole"
 msgid "Couldn't sign you in automatically. Please log in again."
 msgstr "Kunne ikke logge dig ind automatisk. Log venligst ind igen."
 
-#: src/services/session-controller.vala:271
+#: src/services/session-controller.vala:274
 msgid "Invalid username or password."
 msgstr "Ugyldigt brugernavn eller adgangskode."
 
-#: src/services/session-controller.vala:272
-#: src/services/session-controller.vala:279
+#: src/services/session-controller.vala:275
+#: src/services/session-controller.vala:282
 #, c-format
 msgid "Login failed: %s"
 msgstr "Login mislykkedes: %s"

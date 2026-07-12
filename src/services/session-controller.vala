@@ -34,6 +34,7 @@ namespace Opensprogskole {
         private const int RECONNECT_MAX_DELAY = 16;
 
         private GLib.Settings settings;
+        private Accounts accounts;
         private string device_name;
         private string device_id;
         // Logged in but waiting for the user to confirm the welcome page.
@@ -59,6 +60,8 @@ namespace Opensprogskole {
 
         construct {
             settings = new GLib.Settings ("moe.ekusu.sprogskole");
+            accounts = Accounts.get_default ();
+            accounts.migrate_legacy (settings);
             device_name = "OpenSprogskole on %s".printf (Environment.get_host_name ());
             device_id = ensure_device_id ();
 
@@ -167,30 +170,30 @@ namespace Opensprogskole {
 
         /* Decide the initial screen: silent login if an account is saved. */
         public void start () {
-            string username = settings.get_string ("username");
-            if (username == "") {
+            var record = accounts.active ();
+            if (record == null) {
                 needs_login (null, null);
                 return;
             }
             loading ();
-            silent_login.begin (username);
+            silent_login.begin (record);
         }
 
-        private async void silent_login (string username) {
-            string school_id = settings.get_string ("active-school");
-            string method_id = settings.get_string ("login-method");
-            var school = resolve_saved_school (school_id);
+        private async void silent_login (AccountRecord record) {
+            string username = record.username;
+            string school_id = record.school_id;
+            var school = resolve_saved_school (record);
             var family = Families.by_id (school.family_id);
             try {
                 var provider = family.create_provider (school, device_name, device_id);
-                var method = yield resolve_method (provider, method_id);
+                var method = yield resolve_method (provider, record.login_method);
 
                 if (method.kind != LoginKind.NONE) {
                     // Reuse a still-valid saved secret without contacting the server.
                     // valid_until == 0 means no expiry claim — still try it.
                     string? secret = yield SecretStore.lookup_token (school_id, username);
                     GLib.Variant? saved = secret != null ? parse_secret (secret) : null;
-                    int64 valid_until = settings.get_int64 ("token-valid-until");
+                    int64 valid_until = record.token_valid_until;
                     int64 now = GLib.get_real_time () / 1000000;
 
                     if (saved != null && (valid_until == 0 || valid_until > now + 60)) {
@@ -246,14 +249,19 @@ namespace Opensprogskole {
                     account = school.id;   // credential-free (Demo)
                 }
 
-                settings.set_string ("active-school", school.id);
-                settings.set_string ("username", account);
-                settings.set_string ("login-method", method.id);
+                var record = new AccountRecord ();
+                record.school_id = school.id;
+                // For schools that only exist in a live directory (LUDUS) or
+                // were hand-entered, the name and url are facts a relaunch
+                // can't re-derive; the registry keeps them per account.
+                record.school_name = school.name;
+                record.username = account;
+                record.login_method = method.id;
                 if (school.is_custom) {
-                    settings.set_string ("custom-name", school.name);
-                    settings.set_string ("custom-base-url", school.base_url);
-                    settings.set_string ("custom-family", school.family_id);
+                    record.base_url = school.base_url;
+                    record.family_id = school.family_id;
                 }
+                accounts.save_active (record);
 
                 if (method.kind != LoginKind.NONE) {
                     yield store_secret (school, account, provider);
@@ -284,15 +292,22 @@ namespace Opensprogskole {
             }
         }
 
-        /* The saved school: a registry entry, or a hand-entered (Custom) one
-         * rebuilt from settings. */
-        private School resolve_saved_school (string id) {
-            if (id == "custom") {
+        /* The saved school: a registry entry, or one that only exists outside
+         * the static registry — hand-entered (Custom) or from LUDUS's live
+         * directory — rebuilt from the account record. Works offline on
+         * purpose: everything needed is in the record (or constants), so
+         * resuming never waits on a directory fetch. */
+        private School resolve_saved_school (AccountRecord record) {
+            if (record.school_id == "custom") {
                 return SchoolPicker.custom_ums_school (
-                    settings.get_string ("custom-name"),
-                    settings.get_string ("custom-base-url"));
+                    record.school_name, record.base_url);
             }
-            return Schools.by_id (id);
+            if (record.school_id.has_prefix ("ludus:")) {
+                return LudusFamily.for_institution (
+                    record.school_id.substring ("ludus:".length),
+                    record.school_name != "" ? record.school_name : record.school_id);
+            }
+            return Schools.by_id (record.school_id);
         }
 
         /* The saved method by id, or the provider's first/default. */
@@ -358,8 +373,9 @@ namespace Opensprogskole {
         }
 
         private async void do_logout () {
-            string school_id = settings.get_string ("active-school");
-            string username = settings.get_string ("username");
+            var record = accounts.active ();
+            string school_id = record != null ? record.school_id : "";
+            string username = record != null ? record.username : "";
 
             if (session != null) {
                 // Abort the in-flight loads first: a fetch completing after the
@@ -385,8 +401,7 @@ namespace Opensprogskole {
             } catch (GLib.Error e) {
                 warning ("clear password failed: %s", e.message);
             }
-            settings.set_string ("username", "");
-            settings.set_int64 ("token-valid-until", 0);
+            accounts.remove_active ();
 
             // Wipe this account's whole on-disk store along with its secrets,
             // and the (account-agnostic) avatar cache so the profile photo
@@ -401,7 +416,12 @@ namespace Opensprogskole {
 
         private async void store_secret (School school, string account,
                                          SchoolProvider provider) throws GLib.Error {
-            settings.set_int64 ("token-valid-until", provider.token_expires_at);
+            var record = accounts.active ();
+            if (record != null && record.school_id == school.id
+                    && record.username == account) {
+                record.token_valid_until = provider.token_expires_at;
+                accounts.save_active (record);
+            }
             yield SecretStore.store_token (school.id, account, to_json (provider.session_secret));
         }
     }

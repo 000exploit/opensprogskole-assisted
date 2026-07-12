@@ -57,6 +57,7 @@ opensprogskole_vala_sources = [
   'services/session.vala',
   'services/session-controller.vala',
   'services/sync-runner.vala',
+  'services/accounts.vala',
   'services/avatar-cache.vala',
   'services/localization.vala',
   'services/dashboard-widget.vala',

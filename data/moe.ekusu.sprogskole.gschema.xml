@@ -64,6 +64,11 @@
 			<summary>Minutes between background cache refreshes</summary>
 			<description>Used while a session is active and background sync is enabled.</description>
 		</key>
+		<key name="active-school-name" type="s">
+			<default>""</default>
+			<summary>Display name of the active school</summary>
+			<description>Saved at login for schools that only exist in a live directory (LUDUS), so a relaunch can rebuild the school without the network.</description>
+		</key>
 		<key name="notify-new-grades" type="b">
 			<default>false</default>
 			<summary>Notify when new grades appear</summary>

@@ -62,6 +62,19 @@ namespace Opensprogskole {
             live ().set (account, this);
         }
 
+        /* A store under the *data* dir instead of the per-account cache tree —
+         * for durable app-level records (the account registry) that must
+         * survive cache cleaning, and that clear_all()/total_size() must not
+         * treat as cached data. */
+        public Storage.durable (string name) {
+            this.account = name;
+            file_path = Path.build_filename (
+                Environment.get_user_data_dir (), "opensprogskole",
+                name, "store.gvdb");
+            load ();
+            live ().set (name, this);
+        }
+
         ~Storage () {
             // A pending source holds a ref on us, so finalization implies no
             // queued write — this is pure registry hygiene. Guard against a

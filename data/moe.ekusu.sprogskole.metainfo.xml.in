@@ -51,10 +51,32 @@
   </requires>
 
   <releases>
-    <release version="0.9.9" date="2026-06-28">
-      <url type="details">https://example.org/changelog.html#version_1.0.1</url>
-      <description translate="no">
-        <p>Early release v0.9.9</p>
+    <release type="development" version="0.9.10" date="2026-07-12T00:06:25Z">
+      <description>
+        <p>This release features a lot of new stuff, the most noticeable are the modular overview page, shareable school configs, the new mobile view and just polishing.</p>
+        <p>This release adds the following features:</p>
+        <ul>
+          <li>Background sync</li>
+          <li>Error dialog, just in case</li>
+          <li>Scrollable calendar on the schedule page</li>
+          <li>Navigation overhaul with handy mobile view</li>
+          <li>Preferences: now it's possible to change app settings</li>
+          <li>School config: share non-standard configurations with your friends</li>
+          <li>Overview: new, completely modular and adaptive for different schools</li>
+        </ul>
+        <p>This release includes the following changes:</p>
+        <ul>
+          <li>More reliable caching, its loading and cleaning on logout</li>
+          <li>Initial LUDUS API implementation</li>
+          <li>Enforced HTTPS</li>
+          <li>Bearer token leaking prevention</li>
+          <li>Added Danish, Russian and Ukrainian translations</li>
+        </ul>
+      </description>
+    </release>
+    <release type="stable" version="0.9.9" date="2026-06-28T00:00:00Z">
+      <description>
+        <p>This release adds the following features:</p>
         <ul>
           <li>Initial android port</li>
         </ul>

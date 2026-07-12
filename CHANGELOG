@@ -1,0 +1,29 @@
+Version 0.9.10
+~~~~~~~~~~~~~
+Released: 2026-07-xx
+
+Note:
+This release features a lot of new stuff, the most noticeable are the modular overview page, shareable school configs, the new mobile view and just polishing.
+
+Features:
+ * Background sync
+ * Error dialog, just in case
+ * Scrollable calendar on the schedule page
+ * Navigation overhaul with handy mobile view
+ * Preferences: now it's possible to change app settings
+ * School config: share non-standard configurations with your friends
+ * Overview: new, completely modular and adaptive for different schools
+
+Misc:
+ * More reliable caching, its loading and cleaning on logout
+ * Initial LUDUS API implementation
+ * Enforced HTTPS
+ * Bearer token leaking prevention
+ * Added Danish, Russian and Ukrainian translations
+
+Version 0.9.9
+~~~~~~~~~~~~~
+Released: 2026-06-28
+
+Features:
+ * Initial android port
